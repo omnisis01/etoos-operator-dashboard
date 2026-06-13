@@ -1,0 +1,14 @@
+{
+  "name": "etoos-operator-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "description": "이투스ECI 운영자 대시보드",
+  "scripts": {
+    "serve": "python3 -m http.server 8931",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0"
+  }
+}
