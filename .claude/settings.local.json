@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(textutil -convert txt -output /tmp/report.txt \"가맹점주 운영대시보드_수정개선_최종비교보고서.docx\")",
+      "Read(//tmp/**)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(perl -0pi -e \"s/'Noto Sans KR',sans-serif/'Pretendard Variable',Pretendard,system-ui,sans-serif/g\" \"운영자 인텔리전스 대시보드_v1.html\")",
+      "Bash(perl -0pi -e 's/font-size:\\(\\\\d+\\(?:\\\\.\\\\d+\\)?\\)px/\"font-size:\".\\(sprintf\\(\"%g\",int\\($1*1.15*2+0.5\\)\\\\/2\\)\\).\"px\"/ge' \"운영자 인텔리전스 대시보드_v1.html\")",
+      "Bash(sort -t: -k2 -n)",
+      "Bash(cat > *)",
+      "Bash(perl -0pi -e 's/font-size:\\(\\\\d+\\(?:\\\\.\\\\d+\\)?\\)px/\"font-size:\".sprintf\\(\"%g\",\\($1<18 ? $1+1.5 : $1<32 ? $1+2 : $1+3\\)\\).\"px\"/ge' \"운영자 인텔리전스 대시보드_v1.html\")",
+      "Bash(grep -n 'color:#fff\\\\|background:rgba\\(19,20,31\\\\|tb-title{' \"운영자 대시보드_v3_라이트다크.html\")",
+      "Bash(node -v)",
+      "Bash(npm -v)",
+      "Bash(git --version)",
+      "Bash(which psql *)",
+      "Bash(git rev-parse *)",
+      "Bash(git config *)",
+      "Bash(git init *)"
+    ]
+  }
+}

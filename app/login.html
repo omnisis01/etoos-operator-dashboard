@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>이투스ECI 운영자 대시보드 — 로그인</title>
+<style>
+  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(900px 600px at 15% -5%,rgba(124,58,237,.25),transparent 60%),
+               radial-gradient(800px 600px at 100% 110%,rgba(34,211,238,.12),transparent 55%),#13141F;color:#EDEFF8}
+  .card{width:380px;background:#1C1D2B;border:1px solid #2C2F45;border-radius:20px;padding:40px 36px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+  .brand{font-size:24px;font-weight:800;letter-spacing:-.3px}
+  .sub{font-size:13px;color:#6E7392;margin:6px 0 28px}
+  label{display:block;font-size:13px;font-weight:600;color:#A6ABC8;margin:16px 0 7px}
+  input{width:100%;background:#13141F;border:1px solid #2C2F45;border-radius:11px;padding:13px 15px;color:#EDEFF8;font-family:inherit;font-size:15px;outline:none}
+  input:focus{border-color:#A66BFF}
+  .btn{width:100%;margin-top:26px;border:none;border-radius:12px;padding:14px;font-family:inherit;font-size:15px;font-weight:700;color:#fff;cursor:pointer;
+    background:linear-gradient(135deg,#A66BFF,#7C3AED);box-shadow:0 8px 22px rgba(124,58,237,.4)}
+  .btn:active{transform:translateY(1px)}
+  .err{margin-top:14px;font-size:13px;color:#F87171;min-height:18px}
+  .hint{margin-top:18px;font-size:12px;color:#6E7392;line-height:1.6;border-top:1px solid #24263A;padding-top:16px}
+</style>
+</head>
+<body>
+  <form class="card" id="loginForm">
+    <div class="brand">이투스ECI</div>
+    <div class="sub">운영자 대시보드 로그인</div>
+    <label for="email">이메일</label>
+    <input id="email" type="email" autocomplete="username" placeholder="director@etoos.com" required>
+    <label for="pw">비밀번호</label>
+    <input id="pw" type="password" autocomplete="current-password" placeholder="••••••••" required>
+    <button class="btn" type="submit">로그인</button>
+    <div class="err" id="err"></div>
+    <div class="hint" id="hint"></div>
+  </form>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="lib/supabase.js"></script>
+  <script src="lib/auth.js"></script>
+  <script>
+    if (window.USE_MOCK) {
+      document.getElementById("hint").textContent =
+        "현재 MOCK 모드입니다. 아무 값이나 입력 후 로그인하면 대시보드로 이동합니다. (Supabase 키를 config.js 에 넣으면 실제 인증으로 전환)";
+    }
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const err = document.getElementById("err"); err.textContent = "";
+      const { error } = await signIn(email.value, pw.value);
+      if (error) { err.textContent = "로그인 실패: " + error.message; return; }
+      location.href = "index.html";
+    });
+  </script>
+</body>
+</html>
