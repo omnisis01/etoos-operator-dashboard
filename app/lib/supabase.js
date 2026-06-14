@@ -2,7 +2,7 @@
 // (HTML 에서 @supabase/supabase-js CDN 로드 후 이 파일을 불러옵니다)
 (function () {
   const c = window.APP_CONFIG || {};
-  window.USE_MOCK = !(c.SUPABASE_URL && c.SUPABASE_ANON_KEY);
+  window.USE_MOCK = !(c.USE_SUPABASE && c.SUPABASE_URL && c.SUPABASE_ANON_KEY);
   window.sb = window.USE_MOCK
     ? null
     : window.supabase.createClient(c.SUPABASE_URL, c.SUPABASE_ANON_KEY);

@@ -187,6 +187,19 @@ $$;
 -- 본인 프로필
 create policy profiles_self on profiles for select using (id = auth.uid());
 
+-- 신규 로그인 계정 → profiles 자동 생성 (기본 원장, 지점 미지정)
+create or replace function handle_new_user() returns trigger
+  language plpgsql security definer set search_path = public as $$
+begin
+  insert into public.profiles (id, name, role)
+  values (new.id, coalesce(new.raw_user_meta_data->>'name','운영자'), 'director')
+  on conflict (id) do nothing;
+  return new;
+end $$;
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created after insert on auth.users
+  for each row execute function handle_new_user();
+
 -- 공통 정책: 임원은 전부, 원장은 자기 지점만 (branch_id 기준)
 do $$
 declare t text;
