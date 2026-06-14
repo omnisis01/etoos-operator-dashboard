@@ -6,18 +6,18 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('로그인', () => {
   test('MOCK 안내 표시 & 로그인 시 대시보드로 이동', async ({ page }) => {
-    await page.goto('/app/login.html');
+    await page.goto('/app/login.html?mock=1');
     await expect(page.locator('#hint')).toContainText('MOCK');
     await page.fill('#email', 'director@etoos.com');
     await page.fill('#pw', 'whatever');
     await page.click('button[type="submit"]');
-    await expect(page).toHaveURL(/index\.html$/);
+    await expect(page).toHaveURL(/index\.html/);
     await expect(page.locator('#kpiStudents')).toHaveText('187');
   });
 });
 
 test.describe('대시보드 렌더 (데이터 레이어)', () => {
-  test.beforeEach(async ({ page }) => { await page.goto('/app/index.html'); });
+  test.beforeEach(async ({ page }) => { await page.goto('/app/index.html?mock=1'); });
 
   test('KPI가 DATA에서 채워짐', async ({ page }) => {
     await expect(page.locator('#kpiRevenue')).toHaveText('1,840');
@@ -48,7 +48,7 @@ test.describe('대시보드 렌더 (데이터 레이어)', () => {
 
 test.describe('테마 & 역할', () => {
   test('라이트/다크 토글', async ({ page }) => {
-    await page.goto('/app/index.html');
+    await page.goto('/app/index.html?mock=1');
     await expect(page.locator('body')).not.toHaveClass(/light/);
     await page.click('#themeBtn');
     await expect(page.locator('body')).toHaveClass(/light/);
@@ -57,7 +57,7 @@ test.describe('테마 & 역할', () => {
   });
 
   test('원장(director)은 전사 토글이 숨겨짐', async ({ page }) => {
-    await page.goto('/app/index.html');
+    await page.goto('/app/index.html?mock=1');
     await expect(page.locator('#btnHQ')).toBeHidden();
   });
 });

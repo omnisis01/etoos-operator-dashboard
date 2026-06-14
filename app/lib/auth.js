@@ -30,7 +30,7 @@ async function requireAuth() {
 }
 
 async function signIn(email, password) {
-  if (window.USE_MOCK) { location.href = "index.html"; return { error: null }; }
+  if (window.USE_MOCK) return { error: null };   // 이동은 호출부(login.html)에서
   return sb.auth.signInWithPassword({ email, password });
 }
 

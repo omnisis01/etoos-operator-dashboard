@@ -50,7 +50,7 @@
       const err = document.getElementById("err"); err.textContent = "";
       const { error } = await signIn(email.value, pw.value);
       if (error) { err.textContent = "로그인 실패: " + error.message; return; }
-      location.href = "index.html";
+      location.href = "index.html" + location.search;   // ?mock=1 등 유지
     });
   </script>
 </body>
