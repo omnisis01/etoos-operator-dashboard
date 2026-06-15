@@ -111,7 +111,7 @@ async function dbBranch(branchId) {
       total_students: s.total_students ?? (at?.total ?? null),
       n_repeat: s.n_repeat ?? null, n_current: s.n_current ?? null,
       occupancy: s.occupancy ?? null, attend_rate: attendRate,
-      mtd_revenue: sales ? Number(sales.net_revenue) : (s.mtd_revenue ?? null),
+      mtd_revenue: sales ? Number(sales.net_revenue) : (s.mtd_revenue || null),
       unpaid_total: unpaidTotal, unpaid_count: unpaid.length,
       month_withdraw: wd ? wd.month_total : (s.month_withdraw ?? null),
       ytd_withdraw: wd ? wd.ytd_total : null,
