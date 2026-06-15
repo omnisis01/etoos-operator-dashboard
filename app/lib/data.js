@@ -42,18 +42,10 @@ const MOCK = {
     ],
   },
   hq: {
-    snap: { total_students:9840, occupancy:79, mtd_revenue:312000000, churn_rate:4.1, unpaid_total:240000000 },
+    snap: { students:9840, occupancy:79, revenueEok:31.2, churnRate:4.1, unpaidEok:2.4 },
     daily: { months:MONTHS, revenue:[26,27,29,28,30,31.2], students:[9200,9350,9500,9620,9720,9840] },
-    branches: [
-      { name:"강남 직영점", grade:"A", students:228, occ:91, rev:"2.41억", mom:"+14%", churn:"2.1%", unpaid:"2.8%", note:"증설 검토 권장 — 대기 12명" },
-      { name:"수원 영통점", grade:"A", students:196, occ:84, rev:"1.92억", mom:"+11%", churn:"2.6%", unpaid:"3.1%", note:"안정 — 재등록률 전사 1위" },
-      { name:"강남구 직영점 ★", grade:"A", students:187, occ:82, rev:"1.84억", mom:"+12%", churn:"3.3%", unpaid:"4.0%", note:"개선 추세 — 퇴원율 13%p 개선" },
-      { name:"부산 서면점", grade:"B", students:164, occ:76, rev:"1.52억", mom:"+4%",  churn:"4.4%", unpaid:"5.2%", note:"미납 알림 지연 — 자동화 권장" },
-      { name:"인천 송도점", grade:"B", students:152, occ:74, rev:"1.38억", mom:"−2%",  churn:"4.8%", unpaid:"5.8%", note:"신규 등록 둔화 — 마케팅 점검" },
-      { name:"대구 범어점", grade:"C", students:141, occ:68, rev:"1.21억", mom:"−7%",  churn:"6.2%", unpaid:"7.4%", note:"경쟁사 영향 — 현장 점검 필요" },
-    ],
-    barBranch: { labels:["강남","수원","강남구","부산","송도","범어"], values:[2.41,1.92,1.84,1.52,1.38,1.21] },
-    region: [ {label:"수도권",pct:45,amt:"14.2억"},{label:"영남",pct:26,amt:"8.1억"},{label:"충청",pct:16,amt:"4.9억"},{label:"호남·기타",pct:13,amt:"4.0억"} ],
+    barBranch: { labels:["강남","수원","강남구","부산","인천","대구"], values:[2.41,1.92,1.84,1.52,1.38,1.21] },
+    region: [ {label:"수도권",pct:45,amt:14.2},{label:"영남",pct:26,amt:8.1},{label:"충청",pct:16,amt:4.9},{label:"호남·기타",pct:13,amt:4.0} ],
     reasonsAll: [ {label:"성적 부진",pct:39},{label:"타 학원",pct:33},{label:"번아웃",pct:17},{label:"비용",pct:11} ],
   },
 };
@@ -90,15 +82,41 @@ async function dbBranch(branchId) {
   };
 }
 
+async function dbHq() {
+  const [sumR, monR, regR, reaR, brR] = await Promise.all([
+    sb.from("hq_summary").select("*").eq("id", 1).single(),
+    sb.from("hq_monthly").select("*").order("month"),
+    sb.from("hq_region").select("*").order("revenue_eok", { ascending: false }),
+    sb.from("churn_reasons").select("reason,pct,rank").eq("scope", "all").order("rank"),
+    sb.from("metrics_snapshot").select("mtd_revenue,branches(name)").order("mtd_revenue", { ascending: false }),
+  ]);
+  const s = sumR.data || {};
+  const mon = monR.data || [];
+  const reg = regR.data || [];
+  const total = reg.reduce((a, r) => a + Number(r.revenue_eok), 0) || 1;
+  const br = brR.data || [];
+  const shortName = (n) => (n || "").split(" ")[0];
+  return {
+    snap: { students:s.total_students, occupancy:Number(s.occupancy), revenueEok:Number(s.mtd_revenue_eok),
+      churnRate:Number(s.churn_rate), unpaidEok:Number(s.unpaid_eok) },
+    daily: { months:mon.map(r=>new Date(r.month).getMonth()+1+"월"),
+      revenue:mon.map(r=>Number(r.revenue_eok)), students:mon.map(r=>r.students) },
+    region: reg.map(r=>({ label:r.region, amt:Number(r.revenue_eok), pct:Math.round(Number(r.revenue_eok)/total*100) })),
+    reasonsAll: (reaR.data||[]).map(r=>({ label:r.reason, pct:Number(r.pct) })),
+    barBranch: { labels:br.map(b=>shortName(b.branches?.name)), values:br.map(b=>+(b.mtd_revenue/1e8).toFixed(2)) },
+  };
+}
+
 // ── 공개 API ──────────────────────────────────────────────
 const DATA = {
   async branch(branchId) {
     if (window.USE_MOCK) return MOCK.branch;
     try { return await dbBranch(branchId); }
-    catch (e) { console.warn("DB 조회 실패 → MOCK 사용", e); return MOCK.branch; }
+    catch (e) { console.warn("지점 DB 조회 실패 → MOCK 사용", e); return MOCK.branch; }
   },
   async hq() {
-    // 전사 집계는 뷰/RPC 설계 후 연결 — 현재는 MOCK 반환
-    return MOCK.hq;
+    if (window.USE_MOCK) return MOCK.hq;
+    try { return await dbHq(); }
+    catch (e) { console.warn("전사 DB 조회 실패 → MOCK 사용", e); return MOCK.hq; }
   },
 };

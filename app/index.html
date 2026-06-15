@@ -275,7 +275,7 @@
         <div class="top-row">
           <div class="hero p">
             <div class="hero-lbl">당월 누적 매출</div>
-            <div class="hero-val"><span class="hero-num" id="kpiRevenue">1,840</span><span class="hero-unit">만원</span></div>
+            <div class="hero-val"><span class="hero-num" id="kpiRevenue">1,840</span><span class="hero-unit" id="kpiRevenueUnit">만원</span></div>
             <div class="hero-foot">전월 동기 대비 ▲ +12%</div>
           </div>
           <div class="hero c">
@@ -411,23 +411,23 @@
         <div class="top-row">
           <div class="hero p">
             <div class="hero-lbl">당월 전사 매출</div>
-            <div class="hero-val"><span class="hero-num">31.2</span><span class="hero-unit">억</span></div>
+            <div class="hero-val"><span class="hero-num" id="hqRevenue">31.2</span><span class="hero-unit">억</span></div>
             <div class="hero-foot">전월 동기 대비 ▲ +9% · 목표 페이스 102%</div>
           </div>
           <div class="hero c">
             <div class="hero-lbl">전사 재원생</div>
-            <div class="hero-val"><span class="hero-num">9,840</span><span class="hero-unit">명</span></div>
+            <div class="hero-val"><span class="hero-num" id="hqStudents">9,840</span><span class="hero-unit">명</span></div>
             <div class="hero-foot">62개 지점 · 전월 ▲ +214명</div>
           </div>
           <div class="mini-stack">
             <div class="mini">
               <div class="mini-ic pink">퇴원</div>
-              <div class="mini-body"><div class="mini-lbl">평균 퇴원율</div><div class="mini-val">4.1%</div></div>
+              <div class="mini-body"><div class="mini-lbl">평균 퇴원율</div><div class="mini-val" id="hqChurn">4.1%</div></div>
               <span class="badge b-dn">+0.3%p</span>
             </div>
             <div class="mini">
               <div class="mini-ic cyan">미납</div>
-              <div class="mini-body"><div class="mini-lbl">전사 미납</div><div class="mini-val">2.4억</div></div>
+              <div class="mini-body"><div class="mini-lbl">전사 미납</div><div class="mini-val" id="hqUnpaid">2.4억</div></div>
               <span class="badge b-dn">+0.3억</span>
             </div>
           </div>
@@ -515,10 +515,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
-<script src="lib/supabase.js"></script>
-<script src="lib/auth.js"></script>
-<script src="lib/data.js"></script>
+<script src="config.js?v=hq"></script>
+<script src="lib/supabase.js?v=hq"></script>
+<script src="lib/auth.js?v=hq"></script>
+<script src="lib/data.js?v=hq"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
 /* ── 테마 팔레트 ── */
@@ -594,7 +594,8 @@ function buildHQ(){
 function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
 function renderBranchKPI(){
   const s=BR.snap;
-  setText('kpiRevenue',Math.round(s.mtd_revenue/10000).toLocaleString());
+  if(s.mtd_revenue>=1e8){ setText('kpiRevenue',(s.mtd_revenue/1e8).toFixed(2)); setText('kpiRevenueUnit','억'); }
+  else { setText('kpiRevenue',Math.round(s.mtd_revenue/1e4).toLocaleString()); setText('kpiRevenueUnit','만원'); }
   setText('kpiStudents',s.total_students);
   setText('kpiStudentsSub',`N수 ${s.n_repeat} · 재학 ${s.n_current} · 전주 ▲ +3명`);
   setText('kpiUnpaid',won(s.unpaid_total));
@@ -613,8 +614,15 @@ function renderBranchKPI(){
     groups[k].map(a=>`<span class="plan-kw">${a.title}${a.time?` <span class="t">${a.time}</span>`:''}</span>`).join('')+`</div>`).join('');
 }
 
+function renderHqKPI(){
+  if(!HQ) return; const s=HQ.snap;
+  setText('hqRevenue', s.revenueEok);
+  setText('hqStudents', Number(s.students).toLocaleString());
+  setText('hqChurn', s.churnRate+'%');
+  setText('hqUnpaid', s.unpaidEok+'억');
+}
 function curMode(){return document.getElementById('viewHQ').classList.contains('on')?'hq':'branch';}
-async function ensureHQ(){ if(!HQ) HQ=await DATA.hq(); }
+async function ensureHQ(){ if(!HQ) HQ=await DATA.hq(); renderHqKPI(); }
 
 function setMode(m){
   document.getElementById('viewBranch').classList.toggle('on',m==='branch');

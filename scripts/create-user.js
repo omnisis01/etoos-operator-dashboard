@@ -3,7 +3,9 @@
 //       node scripts/create-user.js <email> <password> <branch_id>
 const { Client } = require('pg');
 
-const [email, password, branchId] = process.argv.slice(2);
+// 사용: node scripts/create-user.js <email> <password> <role:director|exec> [branchId]
+const [email, password, role = 'director', branchId = null] = process.argv.slice(2);
+const displayName = role === 'exec' ? '운영 임원' : '이○○ 원장';
 
 (async () => {
   const c = new Client({
@@ -46,8 +48,9 @@ const [email, password, branchId] = process.argv.slice(2);
     console.log('✅ identity 생성');
   }
 
-  // 트리거가 profiles 자동 생성 → 지점 매핑 + 역할
-  await c.query(`update profiles set branch_id=$2, role='director', name='이○○ 원장' where id=$1`, [uid, branchId]);
+  // 트리거가 profiles 자동 생성 → 역할/지점 매핑
+  await c.query(`update profiles set branch_id=$2, role=$3, name=$4 where id=$1`,
+    [uid, branchId, role, displayName]);
   const p = await c.query('select name, role, branch_id from profiles where id=$1', [uid]);
   console.log('✅ 프로필 매핑:', p.rows[0]);
   await c.end();
