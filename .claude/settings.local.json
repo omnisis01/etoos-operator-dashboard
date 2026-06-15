@@ -31,7 +31,8 @@
       "Bash(gh api *)",
       "Bash(gh workflow *)",
       "Bash(gh run *)",
-      "Bash(curl -s https://omnisis01.github.io/etoos-operator-dashboard/config.js)"
+      "Bash(curl -s https://omnisis01.github.io/etoos-operator-dashboard/config.js)",
+      "Bash(perl -pi -e 's/font-size:\\(\\\\d+\\(?:\\\\.\\\\d+\\)?\\)px/\"font-size:\".\\($1<22 ? sprintf\\(\"%g\",$1+1.5\\) : $1\\).\"px\"/ge' app/index.html)"
     ]
   }
 }
