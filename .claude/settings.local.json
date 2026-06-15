@@ -26,7 +26,8 @@
       "Bash(PGHOST=aws-1-ap-northeast-2.pooler.supabase.com PGPORT=5432 PGUSER=postgres.oquuwouxgiskxgawjyjv PGPASSWORD='!CSwrF-,V2$ia5E' node -e ' *)",
       "Bash(PGHOST=aws-1-ap-northeast-2.pooler.supabase.com PGPORT=5432 PGUSER=postgres.oquuwouxgiskxgawjyjv PGPASSWORD='!CSwrF-,V2$ia5E' node scripts/migrate.js db/hq.sql)",
       "Bash(PGHOST=aws-1-ap-northeast-2.pooler.supabase.com PGPORT=5432 PGUSER=postgres.oquuwouxgiskxgawjyjv PGPASSWORD='!CSwrF-,V2$ia5E' SUPABASE_URL=https://oquuwouxgiskxgawjyjv.supabase.co ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xdXV3b3V4Z2lza3hnYXdqeWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0Mjg0ODAsImV4cCI6MjA5NzAwNDQ4MH0.kDxalxU6JF1d5Nt28NYbqKxBagciy-LJBh2DIZ4_AM4 node scripts/create-user.js exec@etoos.com etoos1234! exec)",
-      "Bash(PGHOST=aws-1-ap-northeast-2.pooler.supabase.com PGPORT=5432 PGUSER=postgres.oquuwouxgiskxgawjyjv PGPASSWORD='!CSwrF-,V2$ia5E' node scripts/migrate.js db/upload.sql)"
+      "Bash(PGHOST=aws-1-ap-northeast-2.pooler.supabase.com PGPORT=5432 PGUSER=postgres.oquuwouxgiskxgawjyjv PGPASSWORD='!CSwrF-,V2$ia5E' node scripts/migrate.js db/upload.sql)",
+      "Bash(gh repo *)"
     ]
   }
 }
