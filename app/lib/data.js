@@ -110,7 +110,7 @@ async function dbHq() {
 // ── 공개 API ──────────────────────────────────────────────
 const DATA = {
   async branch(branchId) {
-    if (window.USE_MOCK) return MOCK.branch;
+    if (window.USE_MOCK || !branchId) return MOCK.branch;   // 임원(지점 미지정)은 샘플
     try { return await dbBranch(branchId); }
     catch (e) { console.warn("지점 DB 조회 실패 → MOCK 사용", e); return MOCK.branch; }
   },

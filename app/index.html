@@ -90,7 +90,10 @@
   .view.on{display:block}
 
   /* ── 그리드 ── */
-  .grid-main{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start}
+  .grid-main{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:stretch}
+  /* 오른쪽 컬럼 카드가 왼쪽 컬럼 높이에 맞춰 늘어나고 차트가 카드를 채움 */
+  .col-right > .panel{flex:1;display:flex;flex-direction:column;min-height:0}
+  #areaBranch,#barBranch,#areaHQ,#barHQ{flex:1;min-height:0}
   .col-left{display:flex;flex-direction:column;gap:24px;min-width:0}
   .col-right{display:flex;flex-direction:column;gap:24px}
   .top-row{display:grid;grid-template-columns:1fr 1fr 1.05fr;gap:20px}
@@ -516,10 +519,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=hq"></script>
-<script src="lib/supabase.js?v=hq"></script>
-<script src="lib/auth.js?v=hq"></script>
-<script src="lib/data.js?v=hq"></script>
+<script src="config.js?v=hq2"></script>
+<script src="lib/supabase.js?v=hq2"></script>
+<script src="lib/auth.js?v=hq2"></script>
+<script src="lib/data.js?v=hq2"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
 /* ── 테마 팔레트 ── */
@@ -544,8 +547,8 @@ function lineChart(el,cats,reg,quit,maxLabel){const p=PAL();
     markers:{size:0,hover:{size:6}},legend:{show:false},
     yaxis:YA(),xaxis:XA(cats),fill:{type:'solid'},
     annotations:maxLabel?{points:[{x:maxLabel.x,y:maxLabel.y,marker:{size:6,fillColor:'#22D3EE',strokeColor:p.mk},label:{text:maxLabel.text,borderColor:'#A66BFF',style:{background:'#A66BFF',color:'#fff',fontWeight:700,padding:{left:8,right:8,top:4,bottom:4}}}}]}:{}});}
-function areaChart(el,cats,data,color,fmt){
-  mk(el,{...BASE(),chart:{...BASE().chart,type:'area',height:200},
+function areaChart(el,cats,data,color,fmt,height){
+  mk(el,{...BASE(),chart:{...BASE().chart,type:'area',height:height||200},
     series:[{name:'값',data:data}],stroke:{width:3,curve:'smooth'},colors:[color],
     fill:{type:'gradient',gradient:{shadeIntensity:1,opacityFrom:.45,opacityTo:.04,stops:[0,100]}},
     dataLabels:{enabled:false},markers:{size:0,hover:{size:5}},
@@ -559,8 +562,8 @@ function donutChart(el,data,labels,colors){const p=PAL();
       total:{show:true,label:labels[0],color:p.cLbl,fontSize:'12px',formatter:()=>data[0]+'%'},
       value:{color:p.cVal,fontSize:'22px',fontWeight:800,formatter:v=>v+'%'}}}}},
     legend:{show:false},dataLabels:{enabled:false},tooltip:{theme:p.tip,y:{formatter:v=>v+'%'}}});}
-function barChart(el,cats,data,fmt){
-  mk(el,{...BASE(),chart:{...BASE().chart,type:'bar',height:240},
+function barChart(el,cats,data,fmt,height){
+  mk(el,{...BASE(),chart:{...BASE().chart,type:'bar',height:height||240},
     series:[{name:'값',data:data}],plotOptions:{bar:{borderRadius:6,columnWidth:'52%'}},
     colors:['#22D3EE'],fill:{type:'gradient',gradient:{shade:'dark',type:'vertical',gradientToColors:['#A66BFF'],stops:[0,100],opacityFrom:1,opacityTo:1}},
     dataLabels:{enabled:false},grid:{borderColor:PAL().grid,strokeDashArray:4},
@@ -575,19 +578,19 @@ function buildBranch(){
   const d=BR;
   lineChart('#lineBranch',d.daily.months,d.daily.newEnroll,d.daily.withdraw,
     {x:d.daily.months[d.daily.months.length-1],y:Math.max(...d.daily.newEnroll),text:'최고 '+Math.max(...d.daily.newEnroll)+'건'});
-  areaChart('#areaBranch',d.daily.months,d.daily.revenue,'#22D3EE');
+  areaChart('#areaBranch',d.daily.months,d.daily.revenue,'#22D3EE',null,'100%');
   donutChart('#donutReason',d.reasons.map(r=>r.pct),d.reasons.map(r=>r.label),RC);
   donutChart('#donutNew',[d.newReturned.new,d.newReturned.returned],['신규','재등록'],['#A66BFF','#EC4899']);
-  barChart('#barBranch',['월','화','수','목','금','토'],d.weekdayConsult);
+  barChart('#barBranch',['월','화','수','목','금','토'],d.weekdayConsult,null,'100%');
   built.branch=true;
 }
 function buildHQ(){
   const d=HQ;
   areaChart('#lineHQ',d.daily.months,d.daily.revenue,'#A66BFF',v=>v+'억');
-  areaChart('#areaHQ',d.daily.months,d.daily.students,'#A66BFF');
+  areaChart('#areaHQ',d.daily.months,d.daily.students,'#A66BFF',null,'100%');
   donutChart('#donutRegion',d.region.map(r=>r.pct),d.region.map(r=>r.label),RC);
   donutChart('#donutReasonHQ',d.reasonsAll.map(r=>r.pct),d.reasonsAll.map(r=>r.label),RC);
-  barChart('#barHQ',d.barBranch.labels,d.barBranch.values,v=>v+'억');
+  barChart('#barHQ',d.barBranch.labels,d.barBranch.values,v=>v+'억','100%');
   built.hq=true;
 }
 
@@ -656,6 +659,8 @@ function toggleTheme(){
   BR = await DATA.branch(profile?.branch_id);
   renderBranchKPI();
   buildBranch();
+  // 임원은 전사 화면으로 시작 (지점 미지정)
+  if(profile?.role==='exec'){ setMode('hq'); }
 })();
 </script>
 </body>
