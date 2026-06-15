@@ -371,13 +371,10 @@
             </div>
           </div>
           <div class="panel">
-            <div class="panel-hd"><div class="panel-title">신규 vs 재등록</div><a class="panel-more">이번 달</a></div>
+            <div class="panel-hd"><div class="panel-title">금일 출결 현황</div><a class="panel-more">출결 →</a></div>
             <div class="donut-wrap">
               <div id="donutNew" class="donut-chart"></div>
-              <div class="donut-legend">
-                <div class="dl-item"><span class="ring" style="border-color:#A66BFF"></span> 신규 <b>37.2%</b></div>
-                <div class="dl-item"><span class="ring" style="border-color:#EC4899"></span> 재등록 <b>62.8%</b></div>
-              </div>
+              <div class="donut-legend" id="attendLegend"></div>
             </div>
           </div>
         </div>
@@ -554,10 +551,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=hq7"></script>
-<script src="lib/supabase.js?v=hq7"></script>
-<script src="lib/auth.js?v=hq7"></script>
-<script src="lib/data.js?v=hq7"></script>
+<script src="config.js?v=hq8"></script>
+<script src="lib/supabase.js?v=hq8"></script>
+<script src="lib/auth.js?v=hq8"></script>
+<script src="lib/data.js?v=hq8"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
 /* ── 테마 팔레트 ── */
@@ -589,14 +586,14 @@ function areaChart(el,cats,data,color,fmt,height){
     dataLabels:{enabled:false},markers:{size:0,hover:{size:5}},
     grid:{borderColor:PAL().grid,strokeDashArray:4,padding:{left:8,right:8}},
     xaxis:XA(cats,'11px'),yaxis:fmt?YA(fmt):{show:false}});}
-function donutChart(el,data,labels,colors){const p=PAL();
+function donutChart(el,data,labels,colors,suffix){const p=PAL();const u=suffix||'%';
   mk(el,{...BASE(),chart:{...BASE().chart,type:'donut',height:210},
     series:data,labels:labels,colors:colors,stroke:{width:0},
     plotOptions:{pie:{donut:{size:'72%',labels:{show:true,
       name:{color:p.cLbl,fontSize:'12px'},
-      total:{show:true,label:labels[0],color:p.cLbl,fontSize:'12px',formatter:()=>data[0]+'%'},
-      value:{color:p.cVal,fontSize:'22px',fontWeight:800,formatter:v=>v+'%'}}}}},
-    legend:{show:false},dataLabels:{enabled:false},tooltip:{theme:p.tip,y:{formatter:v=>v+'%'}}});}
+      total:{show:true,label:labels[0],color:p.cLbl,fontSize:'12px',formatter:()=>data[0]+u},
+      value:{color:p.cVal,fontSize:'22px',fontWeight:800,formatter:v=>v+u}}}}},
+    legend:{show:false},dataLabels:{enabled:false},tooltip:{theme:p.tip,y:{formatter:v=>v+u}}});}
 function barChart(el,cats,data,fmt,height){
   mk(el,{...BASE(),chart:{...BASE().chart,type:'bar',height:height||240},
     series:[{name:'값',data:data}],plotOptions:{bar:{borderRadius:6,columnWidth:'52%'}},
@@ -615,7 +612,14 @@ function buildBranch(){
     {x:d.daily.months[d.daily.months.length-1],y:Math.max(...d.daily.newEnroll),text:'최고 '+Math.max(...d.daily.newEnroll)+'건'});
   areaChart('#areaBranch',d.daily.months,d.daily.revenue,'#22D3EE',null,230);
   donutChart('#donutReason',d.reasons.map(r=>r.pct),d.reasons.map(r=>r.label),RC);
-  donutChart('#donutNew',[d.newReturned.new,d.newReturned.returned],['신규','재등록'],['#A66BFF','#EC4899']);
+  const at=d.attend;
+  if(at){
+    const A6=['#22D3EE','#FBBF24','#F87171','#A66BFF','#EC4899','#34D399'];
+    const aL=['등원','지각','결석','조퇴','외출','하원'], aV=[at.present,at.late,at.absent,at.early_leave,at.out_cnt,at.left_cnt];
+    donutChart('#donutNew',aV,aL,A6,'명');
+    const lg=document.getElementById('attendLegend');
+    if(lg) lg.innerHTML=aL.map((l,i)=>`<div class="dl-item"><span class="ring" style="border-color:${A6[i]}"></span> ${l} <b>${aV[i]}</b></div>`).join('');
+  }
   barChart('#barBranch',['신규등록','전화상담','방문상담'],[d.consult.new_enroll,d.consult.phone,d.consult.visit],null,320);
   built.branch=true;
 }
@@ -648,7 +652,7 @@ function renderBranchKPI(){
   setText('kpiUnpaid', s.unpaid_total ? won(s.unpaid_total) : '0원');
   setText('kpiUnpaidCnt', (s.unpaid_count||0)+'명');
   setText('payTitle',`미납·결제 관리 · 총 ${s.unpaid_total?won(s.unpaid_total):'0원'}`);
-  setText('kpiAttend', s.occupancy!=null ? s.occupancy+'%' : '—');
+  setText('kpiAttend', s.attend_rate!=null ? s.attend_rate+'%' : '—');
   const tagCls={urgent:'t-u',watch:'t-w'}, tagTxt={urgent:'긴급',watch:'주의'}, scCls={urgent:'s-r',watch:'s-g'};
   document.getElementById('riskList').innerHTML = BR.risks.map(r=>
     `<div class="row"><span class="nm">${r.name}</span><span class="tag ${tagCls[r.level]}">${tagTxt[r.level]}</span><span class="why">${r.signals.join(' · ')}</span><span class="score ${scCls[r.level]}">${r.score}</span></div>`).join('');

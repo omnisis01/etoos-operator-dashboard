@@ -10,10 +10,10 @@ const COLORS = ["#A66BFF","#EC4899","#22D3EE","#4F7CFF"];
 const MOCK = {
   branch: {
     snap: { total_students:187, n_repeat:94, n_current:93, occupancy:82,
-      mtd_revenue:18400000, unpaid_total:4120000, unpaid_count:7,
-      attend:{present:154,late:3,absent:2,long:5,onleave:7},
+      mtd_revenue:18400000, unpaid_total:4120000, unpaid_count:7, attend_rate:88,
       week_enroll:4, week_withdraw:1, month_enroll:13, month_withdraw:4,
       percentile_rank:18 },
+    attend: { present:107, late:62, absent:28, early_leave:11, out_cnt:15, left_cnt:12, total:235 },
     daily: { months:MONTHS, newEnroll:[13,15,12,14,16,20], withdraw:[4,3,5,4,6,5],
       revenue:[1450,1520,1380,1610,1720,1840] },
     risks: [
@@ -64,7 +64,7 @@ const MOCK = {
 
 // ── DB 조회 (Supabase) ────────────────────────────────────
 async function dbBranch(branchId) {
-  const [snapR, dailyR, riskR, unpaidR, reasonR, actR, consR, salesR, wdR] = await Promise.all([
+  const [snapR, dailyR, riskR, unpaidR, reasonR, actR, consR, salesR, wdR, attR] = await Promise.all([
     sb.from("metrics_snapshot").select("*").eq("branch_id", branchId).maybeSingle(),
     sb.from("daily_metrics").select("*").eq("branch_id", branchId).order("date"),
     sb.from("churn_risks").select("score,level,signals,students(name)").eq("branch_id", branchId).order("score",{ascending:false}),
@@ -74,18 +74,20 @@ async function dbBranch(branchId) {
     sb.from("branch_consult").select("new_enroll,phone,visit,total").eq("branch_id", branchId).maybeSingle(),
     sb.from("branch_sales").select("net_revenue").eq("branch_id", branchId).order("period",{ascending:false}).limit(1).maybeSingle(),
     sb.from("branch_withdrawals").select("month_total,ytd_total").eq("branch_id", branchId).maybeSingle(),
+    sb.from("branch_attendance").select("present,late,absent,early_leave,out_cnt,left_cnt,total").eq("branch_id", branchId).maybeSingle(),
   ]);
   const s = snapR.data || {};
   const d = dailyR.data || [];
   const unpaid = unpaidR.data || [];
   const unpaidTotal = unpaid.reduce((a,x)=>a+Number(x.amount||0),0);
-  const sales = salesR.data, wd = wdR.data;
+  const sales = salesR.data, wd = wdR.data, at = attR.data;
   const reasons = (reasonR.data||[]).map(r=>({ label:r.reason, pct:Number(r.pct) }));
+  const attendRate = at && at.total ? Math.round((at.total - at.absent) / at.total * 100) : null;
   return {
     snap: {
-      total_students: s.total_students ?? null,
+      total_students: s.total_students ?? (at?.total ?? null),
       n_repeat: s.n_repeat ?? null, n_current: s.n_current ?? null,
-      occupancy: s.occupancy ?? null,
+      occupancy: s.occupancy ?? null, attend_rate: attendRate,
       mtd_revenue: sales ? Number(sales.net_revenue) : (s.mtd_revenue ?? null),
       unpaid_total: unpaidTotal, unpaid_count: unpaid.length,
       month_withdraw: wd ? wd.month_total : (s.month_withdraw ?? null),
@@ -99,6 +101,7 @@ async function dbBranch(branchId) {
     reasons: reasons.length ? reasons : MOCK.branch.reasons,
     newReturned: MOCK.branch.newReturned,
     consult: consR.data || { new_enroll:0, phone:0, visit:0, total:0 },
+    attend: at || null,
     actions: (actR.data||[]).map(r=>({ priority:r.priority, title:r.title, time:(r.due_time||"").slice(0,5) })),
   };
 }
