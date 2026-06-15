@@ -212,6 +212,21 @@
   .ai-note{margin-top:14px;font-size:14.5px;color:var(--text2);line-height:1.5}
   .ai-note::before{content:'AI';display:inline-block;background:rgba(34,211,238,.12);color:var(--cyan);font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:6px;margin-right:8px}
 
+  /* ── 지점 비교 (전사 모드) ── */
+  .cmp-bar{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .cmp-bar .lbl{font-size:14px;color:var(--text3);font-weight:600}
+  .cmp-bar select{background:var(--panel);border:1px solid var(--border);border-radius:11px;color:var(--ink);padding:11px 16px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer}
+  .cmp-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-bottom:8px}
+  .cmp-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow)}
+  .cmp-k{font-size:13.5px;color:var(--text3);font-weight:600;margin-bottom:12px}
+  .cmp-sel{font-size:28px;font-weight:800;color:var(--ink);letter-spacing:-.5px;line-height:1}
+  .cmp-sel .u{font-size:15px;font-weight:600;color:var(--text2);margin-left:2px}
+  .cmp-avg{font-size:13.5px;color:var(--text2);margin-top:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .cmp-d{font-weight:800;padding:2px 9px;border-radius:7px;font-size:12.5px}
+  .cmp-up{background:rgba(52,211,153,.14);color:var(--green)}
+  .cmp-dn{background:rgba(248,113,113,.14);color:var(--red)}
+  .cmp-flat{background:var(--panel-2);color:var(--text3)}
+
   /* ── 반응형 (태블릿·모바일) ── */
   @media (max-width:1024px){
     body{flex-direction:column}
@@ -226,11 +241,13 @@
     .grid-main{grid-template-columns:1fr;align-items:stretch}
     .top-row{grid-template-columns:1fr 1fr}
     .donut-row{grid-template-columns:1fr}
+    .cmp-grid{grid-template-columns:1fr 1fr 1fr}
     .col-right>.panel:last-child{flex:0 0 auto}
     #barBranch,#barHQ,#areaBranch,#areaHQ{flex:0 0 auto;min-height:240px}
   }
   @media (max-width:560px){
     .top-row{grid-template-columns:1fr}
+    .cmp-grid{grid-template-columns:1fr 1fr}
     .donut-wrap{flex-direction:column;align-items:stretch}
     .donut-chart{width:100%}
     .tb-title{font-size:19px}
@@ -510,7 +527,11 @@
       </div>
     </div>
 
-    <div class="zone ai"><span>AI 이상 감지<span class="zb">전사 이상 신호와 대응</span></span></div>
+    <div class="zone"><span>지점 비교 분석<span class="zb">전 지점 평균 vs 선택 지점</span></span></div>
+    <div class="cmp-bar"><span class="lbl">비교 지점</span><select id="cmpBranch" onchange="renderCompare()"></select></div>
+    <div class="cmp-grid" id="cmpGrid"></div>
+
+    <div class="zone ai" style="margin-top:34px"><span>AI 이상 감지<span class="zb">전사 이상 신호와 대응</span></span></div>
     <div class="alert">
       <span class="dot2"></span>
       <div><div class="tt">대구 범어점 — 퇴원율 급등 (2주 연속)</div>
@@ -543,10 +564,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=hq2"></script>
-<script src="lib/supabase.js?v=hq2"></script>
-<script src="lib/auth.js?v=hq2"></script>
-<script src="lib/data.js?v=hq2"></script>
+<script src="config.js?v=hq3"></script>
+<script src="lib/supabase.js?v=hq3"></script>
+<script src="lib/auth.js?v=hq3"></script>
+<script src="lib/data.js?v=hq3"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
 /* ── 테마 팔레트 ── */
@@ -649,8 +670,33 @@ function renderHqKPI(){
   setText('hqChurn', s.churnRate+'%');
   setText('hqUnpaid', s.unpaidEok+'억');
 }
+const CMP_KPIS=[
+  {k:'students',label:'재원생',unit:'명',good:'high',dec:0},
+  {k:'occ',label:'좌석 점유율',unit:'%',good:'high',dec:0},
+  {k:'revEok',label:'당월 매출',unit:'억',good:'high',dec:2},
+  {k:'churn',label:'퇴원율',unit:'%',good:'low',dec:1},
+  {k:'unpaid',label:'미납률',unit:'%',good:'low',dec:1},
+];
+function renderCompare(){
+  if(!HQ?.compare?.branches?.length) return;
+  const bs=HQ.compare.branches, sel=document.getElementById('cmpBranch');
+  if(!sel.options.length) sel.innerHTML=bs.map((b,i)=>`<option value="${i}">${b.name}</option>`).join('');
+  const b=bs[+sel.value||0];
+  const avg=(k)=>bs.reduce((a,x)=>a+x[k],0)/bs.length;
+  const fmt=(v,d)=>d?(+v).toFixed(d):Math.round(v).toLocaleString();
+  document.getElementById('cmpGrid').innerHTML=CMP_KPIS.map(K=>{
+    const a=avg(K.k), s=b[K.k], d=s-a;
+    const better=K.good==='high'?d>0:d<0;
+    const cls=Math.abs(d)<1e-9?'cmp-flat':(better?'cmp-up':'cmp-dn');
+    const arrow=d>0?'▲':(d<0?'▼':'→');
+    const dtxt=(d>0?'+':'')+(K.dec?d.toFixed(K.dec):Math.round(d));
+    return `<div class="cmp-card"><div class="cmp-k">${K.label}</div>
+      <div class="cmp-sel">${fmt(s,K.dec)}<span class="u">${K.unit}</span></div>
+      <div class="cmp-avg">평균 ${fmt(a,K.dec)}${K.unit}<span class="cmp-d ${cls}">${arrow} ${dtxt}</span></div></div>`;
+  }).join('');
+}
 function curMode(){return document.getElementById('viewHQ').classList.contains('on')?'hq':'branch';}
-async function ensureHQ(){ if(!HQ) HQ=await DATA.hq(); renderHqKPI(); }
+async function ensureHQ(){ if(!HQ) HQ=await DATA.hq(); renderHqKPI(); renderCompare(); }
 
 function setMode(m){
   document.getElementById('viewBranch').classList.toggle('on',m==='branch');

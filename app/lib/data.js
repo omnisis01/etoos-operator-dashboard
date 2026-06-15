@@ -47,6 +47,14 @@ const MOCK = {
     barBranch: { labels:["강남","수원","강남구","부산","인천","대구"], values:[2.41,1.92,1.84,1.52,1.38,1.21] },
     region: [ {label:"수도권",pct:45,amt:14.2},{label:"영남",pct:26,amt:8.1},{label:"충청",pct:16,amt:4.9},{label:"호남·기타",pct:13,amt:4.0} ],
     reasonsAll: [ {label:"성적 부진",pct:39},{label:"타 학원",pct:33},{label:"번아웃",pct:17},{label:"비용",pct:11} ],
+    compare: { branches: [
+      { name:"강남 직영점", students:228, occ:91, revEok:2.41, churn:2.1, unpaid:2.8 },
+      { name:"수원 영통점", students:196, occ:84, revEok:1.92, churn:2.6, unpaid:3.1 },
+      { name:"강남구 직영점", students:187, occ:82, revEok:1.84, churn:3.3, unpaid:4.0 },
+      { name:"부산 서면점", students:164, occ:76, revEok:1.52, churn:4.4, unpaid:5.2 },
+      { name:"인천 송도점", students:152, occ:74, revEok:1.38, churn:4.8, unpaid:5.8 },
+      { name:"대구 범어점", students:141, occ:68, revEok:1.21, churn:6.2, unpaid:7.4 },
+    ]},
   },
 };
 
@@ -88,7 +96,7 @@ async function dbHq() {
     sb.from("hq_monthly").select("*").order("month"),
     sb.from("hq_region").select("*").order("revenue_eok", { ascending: false }),
     sb.from("churn_reasons").select("reason,pct,rank").eq("scope", "all").order("rank"),
-    sb.from("metrics_snapshot").select("mtd_revenue,branches(name)").order("mtd_revenue", { ascending: false }),
+    sb.from("metrics_snapshot").select("mtd_revenue,total_students,occupancy,churn_rate,unpaid_rate,branches(name)").order("mtd_revenue", { ascending: false }),
   ]);
   const s = sumR.data || {};
   const mon = monR.data || [];
@@ -104,6 +112,8 @@ async function dbHq() {
     region: reg.map(r=>({ label:r.region, amt:Number(r.revenue_eok), pct:Math.round(Number(r.revenue_eok)/total*100) })),
     reasonsAll: (reaR.data||[]).map(r=>({ label:r.reason, pct:Number(r.pct) })),
     barBranch: { labels:br.map(b=>shortName(b.branches?.name)), values:br.map(b=>+(b.mtd_revenue/1e8).toFixed(2)) },
+    compare: { branches: br.map(b=>({ name:b.branches?.name, students:b.total_students, occ:Number(b.occupancy),
+      revEok:+(b.mtd_revenue/1e8).toFixed(2), churn:Number(b.churn_rate), unpaid:Number(b.unpaid_rate) })) },
   };
 }
 
