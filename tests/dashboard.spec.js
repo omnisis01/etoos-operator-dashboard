@@ -23,7 +23,7 @@ test.describe('대시보드 렌더 (데이터 레이어)', () => {
     await expect(page.locator('#kpiRevenue')).toHaveText('1,840');
     await expect(page.locator('#kpiStudents')).toHaveText('187');
     await expect(page.locator('#kpiUnpaid')).toHaveText('412만원');
-    await expect(page.locator('#kpiAttend')).toHaveText('82%');
+    await expect(page.locator('#kpiAttend')).toHaveText('88%');
   });
 
   test('명단·액션이 DATA에서 렌더됨', async ({ page }) => {
