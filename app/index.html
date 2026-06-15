@@ -267,19 +267,19 @@
   </div>
   <nav class="sb-nav">
     <div class="nav-grp">운영 현황</div>
-    <a class="nav-item active"><span class="nav-dot"></span> 대시보드 홈</a>
-    <a class="nav-item"><span class="nav-dot"></span> 재원생 관리</a>
-    <a class="nav-item"><span class="nav-dot"></span> 매출·수납 현황 <span class="nb">7</span></a>
-    <a class="nav-item"><span class="nav-dot"></span> 출결 관리 <span class="nb">5</span></a>
+    <a class="nav-item active" onclick="goNav('home',this)"><span class="nav-dot"></span> 대시보드 홈</a>
+    <a class="nav-item" onclick="goNav('students',this)"><span class="nav-dot"></span> 재원생 관리</a>
+    <a class="nav-item" onclick="goNav('pay',this)"><span class="nav-dot"></span> 매출·수납 현황 <span class="nb">7</span></a>
+    <a class="nav-item" onclick="goNav('attend',this)"><span class="nav-dot"></span> 출결 관리</a>
     <a class="nav-item" href="upload.html"><span class="nav-dot"></span> 데이터 업로드</a>
     <div class="nav-grp">AI 분석</div>
-    <a class="nav-item"><span class="nav-dot"></span> 퇴원 위험 감지 <span class="nb">3</span></a>
-    <a class="nav-item"><span class="nav-dot"></span> 상담 AI 분석</a>
-    <a class="nav-item"><span class="nav-dot"></span> 커뮤니티 모니터</a>
-    <a class="nav-item"><span class="nav-dot"></span> MY247 학습 현황 <span class="nb new">new</span></a>
+    <a class="nav-item" onclick="goNav('risk',this)"><span class="nav-dot"></span> 퇴원 위험 감지 <span class="nb">3</span></a>
+    <a class="nav-item" onclick="goNav('consult',this)"><span class="nav-dot"></span> 상담 AI 분석</a>
+    <a class="nav-item" onclick="goNav('soon',this)"><span class="nav-dot"></span> 커뮤니티 모니터</a>
+    <a class="nav-item" onclick="goNav('soon',this)"><span class="nav-dot"></span> MY247 학습 현황 <span class="nb new">new</span></a>
     <div class="nav-grp">전사 (임원)</div>
-    <a class="nav-item"><span class="nav-dot"></span> 지점 비교 분석</a>
-    <a class="nav-item"><span class="nav-dot"></span> 권역별 현황</a>
+    <a class="nav-item" onclick="goNav('hqcmp',this)"><span class="nav-dot"></span> 지점 비교 분석</a>
+    <a class="nav-item" onclick="goNav('hqregion',this)"><span class="nav-dot"></span> 권역별 현황</a>
   </nav>
   <div class="sb-foot">
     <button class="dl-btn">주간 리포트 다운로드</button>
@@ -398,7 +398,7 @@
     <div class="zone"><span>운영 현황<span class="zb">즉시 확인이 필요한 명단</span></span></div>
     <div class="donut-row">
       <div class="panel list-panel">
-        <div class="panel-hd"><div class="panel-title">AI 퇴원 위험 감지 · 긴급 3 · 주의 7</div><a class="panel-more">전체 →</a></div>
+        <div class="panel-hd"><div class="panel-title">AI 퇴원 위험 감지 <span style="font-size:12px;font-weight:700;color:var(--gold);background:rgba(251,191,36,.14);padding:2px 9px;border-radius:7px;margin-left:4px">예시 · 데이터 연동 예정</span></div><a class="panel-more">전체 →</a></div>
         <div id="riskList"></div>
       </div>
       <div class="panel list-panel">
@@ -551,10 +551,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=hq8"></script>
-<script src="lib/supabase.js?v=hq8"></script>
-<script src="lib/auth.js?v=hq8"></script>
-<script src="lib/data.js?v=hq8"></script>
+<script src="config.js?v=hq9"></script>
+<script src="lib/supabase.js?v=hq9"></script>
+<script src="lib/auth.js?v=hq9"></script>
+<script src="lib/data.js?v=hq9"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
 /* ── 테마 팔레트 ── */
@@ -726,6 +726,22 @@ async function loadBranch(id){
   CHARTS.forEach(c=>{try{c.destroy()}catch(e){}}); CHARTS=[]; built={branch:false,hq:false};
   setMode('branch');
   renderBranchKPI(); buildBranch();
+}
+
+// ── 사이드바 네비게이션 ───────────────────────────────────
+function goNav(key, el){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  if(key==='soon'){ alert('준비 중입니다 — 곧 제공됩니다.'); return; }
+  const toHQ = (key==='hqcmp'||key==='hqregion');
+  setMode(toHQ?'hq':'branch');
+  const target={ home:null, students:'kpiStudents', pay:'payList', attend:'donutNew',
+    risk:'riskList', consult:'barBranch', hqcmp:'cmpGrid', hqregion:'donutRegion' }[key];
+  setTimeout(()=>{
+    if(!target){ window.scrollTo({top:0,behavior:'smooth'}); return; }
+    const e=document.getElementById(target); const panel=e?(e.closest('.panel')||e):null;
+    if(panel) panel.scrollIntoView({behavior:'smooth',block:'center'});
+  }, toHQ?400:120);
 }
 
 // ── 부팅: 인증 → 데이터 로드 → 렌더 ───────────────────────
