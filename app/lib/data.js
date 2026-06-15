@@ -42,19 +42,23 @@ const MOCK = {
     ],
   },
   hq: {
-    snap: { students:9840, occupancy:79, revenueEok:31.2, churnRate:4.1, unpaidEok:2.4 },
+    snap: { students:9840, occupancy:79, revenueEok:31.2, churnRate:4.1, unpaidEok:2.4, withdrawMonth:438, withdrawYtd:3394 },
     daily: { months:MONTHS, revenue:[26,27,29,28,30,31.2], students:[9200,9350,9500,9620,9720,9840] },
-    barBranch: { labels:["강남","수원","강남구","부산","인천","대구"], values:[2.41,1.92,1.84,1.52,1.38,1.21] },
-    region: [ {label:"수도권",pct:45,amt:14.2},{label:"영남",pct:26,amt:8.1},{label:"충청",pct:16,amt:4.9},{label:"호남·기타",pct:13,amt:4.0} ],
+    barWithdraw: { labels:["이천기숙","독학기숙","대치","분당정자"], values:[437,372,191,122] },
+    region: [ {label:"경기/인천",value:1100,pct:42},{label:"서울",value:760,pct:29},{label:"영남",value:430,pct:16},{label:"기타",value:340,pct:13} ],
     reasonsAll: [ {label:"성적 부진",pct:39},{label:"타 학원",pct:33},{label:"번아웃",pct:17},{label:"비용",pct:11} ],
     compare: { branches: [
-      { name:"강남 직영점", students:228, occ:91, revEok:2.41, churn:2.1, unpaid:2.8 },
-      { name:"수원 영통점", students:196, occ:84, revEok:1.92, churn:2.6, unpaid:3.1 },
-      { name:"강남구 직영점", students:187, occ:82, revEok:1.84, churn:3.3, unpaid:4.0 },
-      { name:"부산 서면점", students:164, occ:76, revEok:1.52, churn:4.4, unpaid:5.2 },
-      { name:"인천 송도점", students:152, occ:74, revEok:1.38, churn:4.8, unpaid:5.8 },
-      { name:"대구 범어점", students:141, occ:68, revEok:1.21, churn:6.2, unpaid:7.4 },
+      { name:"대치", ytd:191, month:32, cur:0, rep:32 },
+      { name:"분당정자", ytd:122, month:16, cur:0, rep:16 },
+      { name:"독학기숙학원", ytd:372, month:51, cur:0, rep:51 },
+      { name:"이천기숙학원", ytd:437, month:54, cur:140, rep:297 },
     ]},
+    directTable: [
+      { name:"이천기숙학원", region:"경기/인천", type:"직영기숙", ytd:437, cur:140, rep:297, prev:665, month:54, today:0 },
+      { name:"독학기숙학원", region:"경기/인천", type:"직영기숙", ytd:372, cur:43, rep:329, prev:653, month:51, today:7 },
+      { name:"대치", region:"서울", type:"직영", ytd:191, cur:12, rep:179, prev:182, month:32, today:3 },
+      { name:"분당정자", region:"경기/인천", type:"직영", ytd:122, cur:17, rep:105, prev:186, month:16, today:0 },
+    ],
   },
 };
 
@@ -91,29 +95,39 @@ async function dbBranch(branchId) {
 }
 
 async function dbHq() {
-  const [sumR, monR, regR, reaR, brR] = await Promise.all([
+  const [sumR, monR, reaR, wdR] = await Promise.all([
     sb.from("hq_summary").select("*").eq("id", 1).single(),
     sb.from("hq_monthly").select("*").order("month"),
-    sb.from("hq_region").select("*").order("revenue_eok", { ascending: false }),
     sb.from("churn_reasons").select("reason,pct,rank").eq("scope", "all").order("rank"),
-    sb.from("metrics_snapshot").select("mtd_revenue,total_students,occupancy,churn_rate,unpaid_rate,branches(name)").order("mtd_revenue", { ascending: false }),
+    sb.from("branch_withdrawals").select("ytd_total,month_total,today_total,ytd_current,ytd_repeat,prev_year,branches(name,region,type)"),
   ]);
   const s = sumR.data || {};
   const mon = monR.data || [];
-  const reg = regR.data || [];
-  const total = reg.reduce((a, r) => a + Number(r.revenue_eok), 0) || 1;
-  const br = brR.data || [];
-  const shortName = (n) => (n || "").split(" ")[0];
+  const wd = (wdR.data || []).filter(w => w.branches);
+  // 권역별 금년 퇴원 집계
+  const byReg = {};
+  wd.forEach(w => { const r = w.branches.region || "기타"; byReg[r] = (byReg[r]||0) + (w.ytd_total||0); });
+  const regArr = Object.entries(byReg).sort((a,b)=>b[1]-a[1]);
+  const regTotal = regArr.reduce((a,x)=>a+x[1],0) || 1;
+  const top = regArr.slice(0,3); const etc = regArr.slice(3).reduce((a,x)=>a+x[1],0);
+  const region = top.map(([label,v])=>({label,value:v,pct:Math.round(v/regTotal*100)}));
+  if (etc>0) region.push({label:"기타",value:etc,pct:Math.round(etc/regTotal*100)});
+  // 직영점 (퇴원 바차트 + 테이블)
+  const direct = wd.filter(w => (w.branches.type||"").includes("direct")).sort((a,b)=>b.ytd_total-a.ytd_total);
   return {
     snap: { students:s.total_students, occupancy:Number(s.occupancy), revenueEok:Number(s.mtd_revenue_eok),
-      churnRate:Number(s.churn_rate), unpaidEok:Number(s.unpaid_eok) },
+      churnRate:Number(s.churn_rate), unpaidEok:Number(s.unpaid_eok),
+      withdrawMonth:s.month_withdraw, withdrawYtd:s.ytd_withdraw },
     daily: { months:mon.map(r=>new Date(r.month).getMonth()+1+"월"),
       revenue:mon.map(r=>Number(r.revenue_eok)), students:mon.map(r=>r.students) },
-    region: reg.map(r=>({ label:r.region, amt:Number(r.revenue_eok), pct:Math.round(Number(r.revenue_eok)/total*100) })),
+    region,
     reasonsAll: (reaR.data||[]).map(r=>({ label:r.reason, pct:Number(r.pct) })),
-    barBranch: { labels:br.map(b=>shortName(b.branches?.name)), values:br.map(b=>+(b.mtd_revenue/1e8).toFixed(2)) },
-    compare: { branches: br.map(b=>({ name:b.branches?.name, students:b.total_students, occ:Number(b.occupancy),
-      revEok:+(b.mtd_revenue/1e8).toFixed(2), churn:Number(b.churn_rate), unpaid:Number(b.unpaid_rate) })) },
+    barWithdraw: { labels:direct.map(w=>w.branches.name), values:direct.map(w=>w.ytd_total) },
+    compare: { branches: wd.map(w=>({ name:w.branches.name, ytd:w.ytd_total, month:w.month_total,
+      cur:w.ytd_current, rep:w.ytd_repeat })).sort((a,b)=>b.ytd-a.ytd) },
+    directTable: direct.map(w=>({ name:w.branches.name, region:w.branches.region,
+      type:(w.branches.type||"").includes("boarding")?"직영기숙":"직영",
+      ytd:w.ytd_total, cur:w.ytd_current, rep:w.ytd_repeat, prev:w.prev_year, month:w.month_total, today:w.today_total })),
   };
 }
 

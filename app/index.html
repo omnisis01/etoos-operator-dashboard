@@ -467,8 +467,8 @@
           <div class="mini-stack">
             <div class="mini">
               <div class="mini-ic pink">퇴원</div>
-              <div class="mini-body"><div class="mini-lbl">평균 퇴원율</div><div class="mini-val" id="hqChurn">4.1%</div></div>
-              <span class="badge b-dn">+0.3%p</span>
+              <div class="mini-body"><div class="mini-lbl">금월 퇴원</div><div class="mini-val" id="hqChurn">438명</div></div>
+              <span class="badge b-dn" id="hqChurnSub">금년 3,394</span>
             </div>
             <div class="mini">
               <div class="mini-ic cyan">미납</div>
@@ -488,15 +488,10 @@
 
         <div class="donut-row">
           <div class="panel">
-            <div class="panel-hd"><div class="panel-title">권역별 매출 비중</div><a class="panel-more">5개 권역</a></div>
+            <div class="panel-hd"><div class="panel-title">권역별 퇴원 비중</div><a class="panel-more">금년 누적</a></div>
             <div class="donut-wrap">
               <div id="donutRegion" class="donut-chart"></div>
-              <div class="donut-legend">
-                <div class="dl-item"><span class="ring" style="border-color:#A66BFF"></span> 수도권 <b>14.2억</b></div>
-                <div class="dl-item"><span class="ring" style="border-color:#EC4899"></span> 영남 <b>8.1억</b></div>
-                <div class="dl-item"><span class="ring" style="border-color:#22D3EE"></span> 충청 <b>4.9억</b></div>
-                <div class="dl-item"><span class="ring" style="border-color:#4F7CFF"></span> 호남·기타 <b>4.0억</b></div>
-              </div>
+              <div class="donut-legend" id="donutRegionLegend"></div>
             </div>
           </div>
           <div class="panel">
@@ -521,7 +516,7 @@
           <div class="area-foot"><span class="l">경영 리포트 보기</span><span class="dots">· · ·</span></div>
         </div>
         <div class="panel">
-          <div class="panel-hd"><div class="panel-title">지점별 당월 매출 (억)</div></div>
+          <div class="panel-hd"><div class="panel-title">직영점 금년 퇴원 (명)</div></div>
           <div id="barHQ"></div>
         </div>
       </div>
@@ -543,20 +538,13 @@
         <div class="bd"><b>AI 가추</b> 학부모 환불 문의 증가 동반 · 모평 계절성 + 알림 발송 지연(평균 9일) 복합 · 알림 자동화 시 회수율 +18%p 기대</div></div>
     </div>
 
-    <div class="zone"><span>지점 종합 현황<span class="zb">매출·재원·퇴원·미납 통합</span></span></div>
+    <div class="zone"><span>직영점 퇴원 현황<span class="zb">금년 누적 · 금월 · 금일 (실데이터)</span></span></div>
     <div class="panel">
       <table class="hq-table">
-        <thead><tr><th>지점</th><th>등급</th><th>재원생</th><th>점유율</th><th>당월 매출</th><th>전월비</th><th>퇴원율</th><th>미납률</th><th>AI 요약</th></tr></thead>
-        <tbody>
-          <tr><td class="bnm">강남 직영점</td><td><span class="gp gp-a">A</span></td><td>228명</td><td>91%</td><td>2.41억</td><td class="up">+14%</td><td>2.1%</td><td>2.8%</td><td style="text-align:left;color:var(--text3)">증설 검토 권장 — 대기 12명</td></tr>
-          <tr><td class="bnm">수원 영통점</td><td><span class="gp gp-a">A</span></td><td>196명</td><td>84%</td><td>1.92억</td><td class="up">+11%</td><td>2.6%</td><td>3.1%</td><td style="text-align:left;color:var(--text3)">안정 — 재등록률 전사 1위</td></tr>
-          <tr><td class="bnm">강남구 직영점 ★</td><td><span class="gp gp-a">A</span></td><td>187명</td><td>82%</td><td>1.84억</td><td class="up">+12%</td><td>3.3%</td><td>4.0%</td><td style="text-align:left;color:var(--text3)">개선 추세 — 퇴원율 13%p 개선</td></tr>
-          <tr><td class="bnm">부산 서면점</td><td><span class="gp gp-b">B</span></td><td>164명</td><td>76%</td><td>1.52억</td><td class="up">+4%</td><td>4.4%</td><td>5.2%</td><td style="text-align:left;color:var(--text3)">미납 알림 지연 — 자동화 권장</td></tr>
-          <tr><td class="bnm">인천 송도점</td><td><span class="gp gp-b">B</span></td><td>152명</td><td>74%</td><td>1.38억</td><td class="dn">−2%</td><td>4.8%</td><td>5.8%</td><td style="text-align:left;color:var(--text3)">신규 등록 둔화 — 마케팅 점검</td></tr>
-          <tr><td class="bnm">대구 범어점</td><td><span class="gp gp-c">C</span></td><td>141명</td><td>68%</td><td>1.21억</td><td class="dn">−7%</td><td>6.2%</td><td>7.4%</td><td style="text-align:left;color:var(--red);font-weight:600">경쟁사 영향 — 현장 점검 필요</td></tr>
-        </tbody>
+        <thead><tr><th>지점</th><th>구분</th><th>지역</th><th>금년 누적</th><th>재학생</th><th>N수생</th><th>전년</th><th>금월</th><th>금일</th></tr></thead>
+        <tbody id="hqTableBody"></tbody>
       </table>
-      <div class="ai-note">수도권은 '타 학원 전환' 이탈(38%)이 전사 평균보다 5%p 높음 — 경쟁 밀집 지역 차별화 메시지(DATA 기반 관리) 강화 권장. 주간 성장 리포트(MY247) 발송 지점은 동 사유 이탈이 평균 대비 31% 낮음.</div>
+      <div class="ai-note">금년 누적 퇴원은 기숙형(이천·독학기숙)이 비기숙 직영(대치·분당정자)보다 큽니다. 전년 대비로는 전사 7,765→3,394로 감소 추세. ※ 매출·재원생·미납률 등은 해당 ERP 데이터 적재 시 자동 반영됩니다.</div>
     </div>
   </section>
 
@@ -564,10 +552,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=hq4"></script>
-<script src="lib/supabase.js?v=hq4"></script>
-<script src="lib/auth.js?v=hq4"></script>
-<script src="lib/data.js?v=hq4"></script>
+<script src="config.js?v=hq5"></script>
+<script src="lib/supabase.js?v=hq5"></script>
+<script src="lib/auth.js?v=hq5"></script>
+<script src="lib/data.js?v=hq5"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
 /* ── 테마 팔레트 ── */
@@ -635,7 +623,14 @@ function buildHQ(){
   areaChart('#areaHQ',d.daily.months,d.daily.students,'#A66BFF',null,230);
   donutChart('#donutRegion',d.region.map(r=>r.pct),d.region.map(r=>r.label),RC);
   donutChart('#donutReasonHQ',d.reasonsAll.map(r=>r.pct),d.reasonsAll.map(r=>r.label),RC);
-  barChart('#barHQ',d.barBranch.labels,d.barBranch.values,v=>v+"억",320);
+  barChart('#barHQ',d.barWithdraw.labels,d.barWithdraw.values,v=>v,320);
+  // 권역 범례 (퇴원)
+  const rl=document.getElementById('donutRegionLegend');
+  if(rl) rl.innerHTML=d.region.map((r,i)=>`<div class="dl-item"><span class="ring" style="border-color:${RC[i%RC.length]}"></span> ${r.label} <b>${r.value.toLocaleString()}명</b></div>`).join('');
+  // 직영 퇴원 테이블
+  const tb=document.getElementById('hqTableBody');
+  if(tb) tb.innerHTML=d.directTable.map(t=>
+    `<tr><td class="bnm">${t.name}</td><td>${t.type}</td><td>${t.region}</td><td>${t.ytd.toLocaleString()}</td><td>${t.cur}</td><td>${t.rep}</td><td style="color:var(--text3)">${t.prev.toLocaleString()}</td><td>${t.month}</td><td>${t.today}</td></tr>`).join('');
   built.hq=true;
 }
 
@@ -669,15 +664,15 @@ function renderHqKPI(){
   if(!HQ) return; const s=HQ.snap;
   setText('hqRevenue', s.revenueEok);
   setText('hqStudents', Number(s.students).toLocaleString());
-  setText('hqChurn', s.churnRate+'%');
+  setText('hqChurn', (s.withdrawMonth??0)+'명');
+  setText('hqChurnSub', '금년 '+Number(s.withdrawYtd??0).toLocaleString());
   setText('hqUnpaid', s.unpaidEok+'억');
 }
 const CMP_KPIS=[
-  {k:'students',label:'재원생',unit:'명',good:'high',dec:0},
-  {k:'occ',label:'좌석 점유율',unit:'%',good:'high',dec:0},
-  {k:'revEok',label:'당월 매출',unit:'억',good:'high',dec:2},
-  {k:'churn',label:'퇴원율',unit:'%',good:'low',dec:1},
-  {k:'unpaid',label:'미납률',unit:'%',good:'low',dec:1},
+  {k:'ytd',label:'금년 퇴원',unit:'명',good:'low',dec:0},
+  {k:'month',label:'금월 퇴원',unit:'명',good:'low',dec:0},
+  {k:'cur',label:'재학생 퇴원',unit:'명',good:'low',dec:0},
+  {k:'rep',label:'N수생 퇴원',unit:'명',good:'low',dec:0},
 ];
 function renderCompare(){
   if(!HQ?.compare?.branches?.length) return;

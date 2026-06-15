@@ -32,7 +32,14 @@
       "Bash(gh workflow *)",
       "Bash(gh run *)",
       "Bash(curl -s https://omnisis01.github.io/etoos-operator-dashboard/config.js)",
-      "Bash(perl -pi -e 's/font-size:\\(\\\\d+\\(?:\\\\.\\\\d+\\)?\\)px/\"font-size:\".\\($1<22 ? sprintf\\(\"%g\",$1+1.5\\) : $1\\).\"px\"/ge' app/index.html)"
+      "Bash(perl -pi -e 's/font-size:\\(\\\\d+\\(?:\\\\.\\\\d+\\)?\\)px/\"font-size:\".\\($1<22 ? sprintf\\(\"%g\",$1+1.5\\) : $1\\).\"px\"/ge' app/index.html)",
+      "Bash(cd ~/Downloads && python3 -c \"import sys; mods=['pandas','xlrd','msoffcrypto','openpyxl']; [print\\(m, '있음'\\) if __import__\\('importlib'\\).util.find_spec\\(m\\) else print\\(m,'없음'\\) for m in mods]\" 2>&1)",
+      "Bash(/tmp/xlsenv/bin/pip install *)",
+      "Bash(/tmp/xlsenv/bin/python -c \"import xlrd, msoffcrypto; print\\('ready'\\)\")",
+      "Bash(PGHOST=aws-1-ap-northeast-2.pooler.supabase.com PGPORT=5432 PGUSER=postgres.oquuwouxgiskxgawjyjv PGPASSWORD='!CSwrF-,V2$ia5E' node scripts/migrate.js db/unpaid_data.sql)",
+      "Bash(PGHOST=aws-1-ap-northeast-2.pooler.supabase.com PGPORT=5432 PGUSER=postgres.oquuwouxgiskxgawjyjv PGPASSWORD='!CSwrF-,V2$ia5E' node scripts/ingest-unpaid.js 11111111-0000-0000-0000-000000000003 ~/Downloads/gyjung_1781512157.xls ~/Downloads/gyjung_1781512198.xls ~/Downloads/gyjung_1781512223.xls ~/Downloads/gyjung_1781512236.xls ~/Downloads/gyjung_1781512268.xls)",
+      "Bash(/tmp/xlsenv/bin/python -c \"import psycopg; print\\('psycopg ready'\\)\")",
+      "Bash(PGHOST=aws-1-ap-northeast-2.pooler.supabase.com PGPORT=5432 PGUSER=postgres.oquuwouxgiskxgawjyjv PGPASSWORD='!CSwrF-,V2$ia5E' node scripts/migrate.js db/withdrawals.sql)"
     ]
   }
 }
