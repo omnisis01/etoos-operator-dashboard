@@ -31,7 +31,7 @@ const MOCK = {
     ],
     reasons: [ {label:"성적 부진",pct:42},{label:"타 학원",pct:31},{label:"번아웃",pct:18},{label:"비용",pct:9} ],
     newReturned: { new:37.2, returned:62.8 },
-    weekdayConsult: [12,5,18,9,22,14],
+    consult: { new_enroll:6, phone:5, visit:4, total:9 },
     actions: [
       { priority:"urgent", title:"홍○○ 즉시 상담", time:"09:30" },
       { priority:"urgent", title:"오르비 게시글 대응", time:"10:00" },
@@ -64,13 +64,14 @@ const MOCK = {
 
 // ── DB 조회 (Supabase) ────────────────────────────────────
 async function dbBranch(branchId) {
-  const [snapR, dailyR, riskR, payR, reasonR, actR] = await Promise.all([
+  const [snapR, dailyR, riskR, payR, reasonR, actR, consR] = await Promise.all([
     sb.from("metrics_snapshot").select("*").eq("branch_id", branchId).single(),
     sb.from("daily_metrics").select("*").eq("branch_id", branchId).order("date"),
     sb.from("churn_risks").select("score,level,signals,students(name)").eq("branch_id", branchId).order("score",{ascending:false}),
     sb.from("branch_unpaid").select("student_name,amount,items,earliest_due").eq("branch_id", branchId).order("amount",{ascending:false}).limit(8),
     sb.from("churn_reasons").select("*").eq("scope","branch").eq("branch_id", branchId).order("rank"),
     sb.from("action_items").select("*").eq("branch_id", branchId).order("due_time"),
+    sb.from("branch_consult").select("new_enroll,phone,visit,total").eq("branch_id", branchId).maybeSingle(),
   ]);
   const s = snapR.data || {};
   const d = dailyR.data || [];
@@ -89,7 +90,7 @@ async function dbBranch(branchId) {
     payments: (payR.data||[]).map(r=>({ name:r.student_name, amount:r.amount, items:r.items, due:r.earliest_due })),
     reasons: (reasonR.data||[]).map(r=>({ label:r.reason, pct:Number(r.pct) })),
     newReturned: MOCK.branch.newReturned,   // (집계 뷰 추가 전까지 보조값)
-    weekdayConsult: MOCK.branch.weekdayConsult,
+    consult: consR.data || { new_enroll:0, phone:0, visit:0, total:0 },
     actions: (actR.data||[]).map(r=>({ priority:r.priority, title:r.title, time:(r.due_time||"").slice(0,5) })),
   };
 }

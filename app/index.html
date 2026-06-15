@@ -389,7 +389,7 @@
           <div class="area-foot"><span class="l">전체 명세 보기</span><span class="dots">· · ·</span></div>
         </div>
         <div class="panel">
-          <div class="panel-hd"><div class="panel-title">요일별 신규 상담</div></div>
+          <div class="panel-hd"><div class="panel-title">금일 상담 현황</div><a class="panel-more">상담 →</a></div>
           <div id="barBranch"></div>
         </div>
       </div>
@@ -552,10 +552,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=hq5"></script>
-<script src="lib/supabase.js?v=hq5"></script>
-<script src="lib/auth.js?v=hq5"></script>
-<script src="lib/data.js?v=hq5"></script>
+<script src="config.js?v=hq6"></script>
+<script src="lib/supabase.js?v=hq6"></script>
+<script src="lib/auth.js?v=hq6"></script>
+<script src="lib/data.js?v=hq6"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
 /* ── 테마 팔레트 ── */
@@ -614,7 +614,7 @@ function buildBranch(){
   areaChart('#areaBranch',d.daily.months,d.daily.revenue,'#22D3EE',null,230);
   donutChart('#donutReason',d.reasons.map(r=>r.pct),d.reasons.map(r=>r.label),RC);
   donutChart('#donutNew',[d.newReturned.new,d.newReturned.returned],['신규','재등록'],['#A66BFF','#EC4899']);
-  barChart('#barBranch',['월','화','수','목','금','토'],d.weekdayConsult,null,320);
+  barChart('#barBranch',['신규등록','전화상담','방문상담'],[d.consult.new_enroll,d.consult.phone,d.consult.visit],null,320);
   built.branch=true;
 }
 function buildHQ(){
