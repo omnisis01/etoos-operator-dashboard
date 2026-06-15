@@ -74,6 +74,7 @@
   .tb-left{display:flex;align-items:center;gap:14px}
   .tb-title{font-size:22.5px;font-weight:800;color:var(--ink);letter-spacing:-.3px}
   .tb-date{font-size:14.5px;color:var(--text2);background:var(--panel);padding:5px 13px;border-radius:20px;border:1px solid var(--border)}
+  #branchPicker{font-family:inherit;font-size:14px;font-weight:700;color:var(--ink);background:var(--panel);border:1px solid var(--purple);border-radius:10px;padding:6px 12px;cursor:pointer}
   .mode-toggle{display:flex;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:4px;gap:3px}
   .mode-btn{border:none;background:transparent;font-family:inherit;font-size:15px;font-weight:600;color:var(--text3);padding:8px 18px;border-radius:9px;cursor:pointer;transition:.18s}
   .mode-btn.on{background:var(--grad-btn);color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(124,58,237,.38)}
@@ -298,6 +299,7 @@
     <div class="tb-left">
       <span class="tb-title" id="tbTitle">운영 대시보드</span>
       <span class="tb-date">2026년 6월 13일 (토)</span>
+      <select id="branchPicker" onchange="loadBranch(this.value)" style="display:none"></select>
     </div>
     <div class="mode-toggle">
       <button class="mode-btn on" id="btnBranch" onclick="setMode('branch')">지점 운영</button>
@@ -552,10 +554,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=hq6"></script>
-<script src="lib/supabase.js?v=hq6"></script>
-<script src="lib/auth.js?v=hq6"></script>
-<script src="lib/data.js?v=hq6"></script>
+<script src="config.js?v=hq7"></script>
+<script src="lib/supabase.js?v=hq7"></script>
+<script src="lib/auth.js?v=hq7"></script>
+<script src="lib/data.js?v=hq7"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
 /* ── 테마 팔레트 ── */
@@ -638,14 +640,15 @@ function buildHQ(){
 function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
 function renderBranchKPI(){
   const s=BR.snap;
-  if(s.mtd_revenue>=1e8){ setText('kpiRevenue',(s.mtd_revenue/1e8).toFixed(2)); setText('kpiRevenueUnit','억'); }
+  if(s.mtd_revenue==null){ setText('kpiRevenue','—'); setText('kpiRevenueUnit',''); }
+  else if(s.mtd_revenue>=1e8){ setText('kpiRevenue',(s.mtd_revenue/1e8).toFixed(2)); setText('kpiRevenueUnit','억'); }
   else { setText('kpiRevenue',Math.round(s.mtd_revenue/1e4).toLocaleString()); setText('kpiRevenueUnit','만원'); }
-  setText('kpiStudents',s.total_students);
-  setText('kpiStudentsSub',`N수 ${s.n_repeat} · 재학 ${s.n_current} · 전주 ▲ +3명`);
-  setText('kpiUnpaid',won(s.unpaid_total));
-  setText('kpiUnpaidCnt',s.unpaid_count+'명');
-  setText('payTitle',`미납·결제 관리 · 총 ${won(s.unpaid_total)}`);
-  setText('kpiAttend',s.occupancy+'%');
+  setText('kpiStudents', s.total_students ?? '—');
+  setText('kpiStudentsSub', s.total_students!=null ? `N수 ${s.n_repeat} · 재학 ${s.n_current} · 전주 ▲ +3명` : '재원생 데이터 적재 예정');
+  setText('kpiUnpaid', s.unpaid_total ? won(s.unpaid_total) : '0원');
+  setText('kpiUnpaidCnt', (s.unpaid_count||0)+'명');
+  setText('payTitle',`미납·결제 관리 · 총 ${s.unpaid_total?won(s.unpaid_total):'0원'}`);
+  setText('kpiAttend', s.occupancy!=null ? s.occupancy+'%' : '—');
   const tagCls={urgent:'t-u',watch:'t-w'}, tagTxt={urgent:'긴급',watch:'주의'}, scCls={urgent:'s-r',watch:'s-g'};
   document.getElementById('riskList').innerHTML = BR.risks.map(r=>
     `<div class="row"><span class="nm">${r.name}</span><span class="tag ${tagCls[r.level]}">${tagTxt[r.level]}</span><span class="why">${r.signals.join(' · ')}</span><span class="score ${scCls[r.level]}">${r.score}</span></div>`).join('');
@@ -712,6 +715,14 @@ function toggleTheme(){
   CHARTS.forEach(c=>{try{c.destroy()}catch(e){}});CHARTS=[];built={branch:false,hq:false};
   if(curMode()==='hq'){buildHQ();}else{buildBranch();}
 }
+// 임원: 지점 선택 시 해당 지점 실데이터로 재로드
+async function loadBranch(id){
+  if(!id) return;
+  BR = await DATA.branch(id);
+  CHARTS.forEach(c=>{try{c.destroy()}catch(e){}}); CHARTS=[]; built={branch:false,hq:false};
+  setMode('branch');
+  renderBranchKPI(); buildBranch();
+}
 
 // ── 부팅: 인증 → 데이터 로드 → 렌더 ───────────────────────
 (async function init(){
@@ -723,10 +734,22 @@ function toggleTheme(){
     // 임원만 전사 토글 노출
     if(profile.role!=='exec'){ const b=document.getElementById('btnHQ'); if(b) b.style.display='none'; }
   }
-  BR = await DATA.branch(profile?.branch_id);
+  let branchId = profile?.branch_id;
+  // 임원(지점 미지정): 직영점 선택 드롭다운 노출 + 기본 지점 로드
+  if(profile?.role==='exec' && !window.USE_MOCK){
+    const list = await DATA.branchList();
+    const picker = document.getElementById('branchPicker');
+    if(list.length && picker){
+      picker.innerHTML = list.map(b=>`<option value="${b.id}">${b.name}</option>`).join('');
+      const daechi = list.find(b=>b.name==='대치') || list[0];
+      picker.value = daechi.id; picker.style.display='';
+      branchId = daechi.id;
+    }
+  }
+  BR = await DATA.branch(branchId);
   renderBranchKPI();
   buildBranch();
-  // 임원은 전사 화면으로 시작 (지점 미지정)
+  // 임원은 전사 화면으로 시작
   if(profile?.role==='exec'){ setMode('hq'); }
 })();
 </script>

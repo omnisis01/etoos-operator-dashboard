@@ -64,35 +64,49 @@ const MOCK = {
 
 // ── DB 조회 (Supabase) ────────────────────────────────────
 async function dbBranch(branchId) {
-  const [snapR, dailyR, riskR, payR, reasonR, actR, consR] = await Promise.all([
-    sb.from("metrics_snapshot").select("*").eq("branch_id", branchId).single(),
+  const [snapR, dailyR, riskR, unpaidR, reasonR, actR, consR, salesR, wdR] = await Promise.all([
+    sb.from("metrics_snapshot").select("*").eq("branch_id", branchId).maybeSingle(),
     sb.from("daily_metrics").select("*").eq("branch_id", branchId).order("date"),
     sb.from("churn_risks").select("score,level,signals,students(name)").eq("branch_id", branchId).order("score",{ascending:false}),
-    sb.from("branch_unpaid").select("student_name,amount,items,earliest_due").eq("branch_id", branchId).order("amount",{ascending:false}).limit(8),
+    sb.from("branch_unpaid").select("student_name,amount,items,earliest_due").eq("branch_id", branchId).order("amount",{ascending:false}),
     sb.from("churn_reasons").select("*").eq("scope","branch").eq("branch_id", branchId).order("rank"),
     sb.from("action_items").select("*").eq("branch_id", branchId).order("due_time"),
     sb.from("branch_consult").select("new_enroll,phone,visit,total").eq("branch_id", branchId).maybeSingle(),
+    sb.from("branch_sales").select("net_revenue").eq("branch_id", branchId).order("period",{ascending:false}).limit(1).maybeSingle(),
+    sb.from("branch_withdrawals").select("month_total,ytd_total").eq("branch_id", branchId).maybeSingle(),
   ]);
   const s = snapR.data || {};
   const d = dailyR.data || [];
-  const today = new Date();
-  const daysAgo = (iso) => Math.round((today - new Date(iso)) / 86400000);
+  const unpaid = unpaidR.data || [];
+  const unpaidTotal = unpaid.reduce((a,x)=>a+Number(x.amount||0),0);
+  const sales = salesR.data, wd = wdR.data;
+  const reasons = (reasonR.data||[]).map(r=>({ label:r.reason, pct:Number(r.pct) }));
   return {
-    snap: { total_students:s.total_students, n_repeat:s.n_repeat, n_current:s.n_current,
-      occupancy:s.occupancy, mtd_revenue:s.mtd_revenue, unpaid_total:s.unpaid_total, unpaid_count:s.unpaid_count,
-      attend:{present:s.attend_present,late:s.attend_late,absent:s.attend_absent,long:s.attend_long,onleave:s.attend_onleave},
-      week_enroll:s.week_enroll, week_withdraw:s.week_withdraw, month_enroll:s.month_enroll, month_withdraw:s.month_withdraw,
-      percentile_rank:s.percentile_rank },
-    daily: { months:d.map(r=>new Date(r.date).getMonth()+1+"월"),
+    snap: {
+      total_students: s.total_students ?? null,
+      n_repeat: s.n_repeat ?? null, n_current: s.n_current ?? null,
+      occupancy: s.occupancy ?? null,
+      mtd_revenue: sales ? Number(sales.net_revenue) : (s.mtd_revenue ?? null),
+      unpaid_total: unpaidTotal, unpaid_count: unpaid.length,
+      month_withdraw: wd ? wd.month_total : (s.month_withdraw ?? null),
+      ytd_withdraw: wd ? wd.ytd_total : null,
+      percentile_rank: s.percentile_rank ?? null },
+    daily: d.length ? { months:d.map(r=>new Date(r.date).getMonth()+1+"월"),
       newEnroll:d.map(r=>r.new_enrollments), withdraw:d.map(r=>r.withdrawals),
-      revenue:d.map(r=>Math.round(r.revenue/10000)) },
+      revenue:d.map(r=>Math.round(r.revenue/10000)) } : MOCK.branch.daily,
     risks: (riskR.data||[]).map(r=>({ name:r.students?.name, level:r.level, score:r.score, signals:r.signals||[] })),
-    payments: (payR.data||[]).map(r=>({ name:r.student_name, amount:r.amount, items:r.items, due:r.earliest_due })),
-    reasons: (reasonR.data||[]).map(r=>({ label:r.reason, pct:Number(r.pct) })),
-    newReturned: MOCK.branch.newReturned,   // (집계 뷰 추가 전까지 보조값)
+    payments: unpaid.slice(0,8).map(r=>({ name:r.student_name, amount:r.amount, items:r.items, due:r.earliest_due })),
+    reasons: reasons.length ? reasons : MOCK.branch.reasons,
+    newReturned: MOCK.branch.newReturned,
     consult: consR.data || { new_enroll:0, phone:0, visit:0, total:0 },
     actions: (actR.data||[]).map(r=>({ priority:r.priority, title:r.title, time:(r.due_time||"").slice(0,5) })),
   };
+}
+
+// 임원용 지점 목록 (직영점)
+async function dbBranchList() {
+  const { data } = await sb.from("branches").select("id,name,type").eq("type","direct").order("name");
+  return (data||[]).map(b=>({ id:b.id, name:b.name }));
 }
 
 async function dbHq() {
@@ -143,5 +157,10 @@ const DATA = {
     if (window.USE_MOCK) return MOCK.hq;
     try { return await dbHq(); }
     catch (e) { console.warn("전사 DB 조회 실패 → MOCK 사용", e); return MOCK.hq; }
+  },
+  async branchList() {
+    if (window.USE_MOCK) return [{ id:"mock", name:"강남구 직영점" }];
+    try { return await dbBranchList(); }
+    catch (e) { console.warn("지점 목록 조회 실패", e); return []; }
   },
 };
