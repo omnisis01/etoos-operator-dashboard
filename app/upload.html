@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>데이터 업로드 — 이투스ECI 운영자 대시보드</title>
+<style>
+  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;min-height:100vh;color:#EDEFF8;padding:48px 20px;
+    background:radial-gradient(900px 600px at 15% -5%,rgba(124,58,237,.22),transparent 60%),
+               radial-gradient(800px 600px at 100% 110%,rgba(34,211,238,.10),transparent 55%),#13141F}
+  .wrap{max-width:760px;margin:0 auto}
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+  h1{font-size:24px;font-weight:800;letter-spacing:-.3px}
+  .sub{font-size:14px;color:#6E7392;margin-top:6px}
+  .back{font-size:14px;font-weight:700;color:#A66BFF;text-decoration:none}
+  .card{background:#1C1D2B;border:1px solid #2C2F45;border-radius:20px;padding:28px 30px;box-shadow:0 12px 40px rgba(0,0,0,.4);margin-bottom:22px}
+  .step{font-size:12px;font-weight:800;color:#22D3EE;letter-spacing:1px;margin-bottom:10px}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .btn{border:none;border-radius:12px;padding:13px 22px;font-family:inherit;font-size:14.5px;font-weight:700;cursor:pointer;transition:.15s}
+  .btn.primary{background:linear-gradient(135deg,#A66BFF,#7C3AED);color:#fff;box-shadow:0 8px 22px rgba(124,58,237,.38)}
+  .btn.ghost{background:#23253A;color:#A6ABC8;border:1px solid #2C2F45}
+  .btn:active{transform:translateY(1px)}
+  .drop{margin-top:14px;border:2px dashed #3A3D5A;border-radius:14px;padding:34px;text-align:center;color:#6E7392;font-size:14px;cursor:pointer;transition:.15s}
+  .drop.over{border-color:#A66BFF;background:rgba(166,107,255,.06);color:#EDEFF8}
+  .drop b{color:#A66BFF}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+  th,td{padding:8px 10px;border-bottom:1px solid #24263A;text-align:left;color:#A6ABC8}
+  th{color:#6E7392;font-weight:700}
+  td.v{color:#fff;font-weight:700;text-align:right}
+  .msg{margin-top:16px;font-size:14px;padding:13px 16px;border-radius:12px;display:none}
+  .msg.ok{display:block;background:rgba(52,211,153,.12);color:#34D399;border:1px solid rgba(52,211,153,.3)}
+  .msg.err{display:block;background:rgba(248,113,113,.12);color:#F87171;border:1px solid rgba(248,113,113,.3)}
+  .hint{font-size:13px;color:#6E7392;margin-top:10px;line-height:1.6}
+  select{background:#13141F;border:1px solid #2C2F45;border-radius:10px;color:#EDEFF8;padding:11px 14px;font-family:inherit;font-size:14px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>데이터 업로드</h1>
+        <div class="sub" id="who">ERP에서 내려받은 엑셀을 올리면 대시보드가 갱신됩니다.</div>
+      </div>
+      <a class="back" href="index.html">← 대시보드로</a>
+    </div>
+
+    <div class="card">
+      <div class="step">STEP 1 · 데이터 종류</div>
+      <div class="row">
+        <select id="dataset">
+          <option value="snapshot">월간 운영지표 (재원생·매출·출결 등 KPI)</option>
+        </select>
+        <button class="btn ghost" id="tplBtn">📄 템플릿 다운로드 (현재값 채워서)</button>
+      </div>
+      <div class="hint">템플릿을 받아 ERP 값으로 채운 뒤 올리거나, ERP 엑셀의 열 이름을 템플릿과 동일하게 맞춰 올리세요. 1행=머리글, 2행=값.</div>
+    </div>
+
+    <div class="card">
+      <div class="step">STEP 2 · 파일 업로드</div>
+      <div class="drop" id="drop">엑셀(.xlsx) 또는 CSV 파일을 <b>드래그</b>하거나 클릭해서 선택<input id="file" type="file" accept=".xlsx,.xls,.csv" hidden></div>
+      <div id="preview"></div>
+      <div class="msg" id="msg"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js?v=hq"></script>
+  <script src="lib/supabase.js?v=hq"></script>
+  <script src="lib/auth.js?v=hq"></script>
+  <script>
+  // 머리글(한글) ↔ DB 컬럼 매핑
+  const MAP = {
+    "재원생수":"total_students","N수":"n_repeat","재학생":"n_current","좌석점유율":"occupancy",
+    "당월매출":"mtd_revenue","미납액":"unpaid_total","미납건수":"unpaid_count",
+    "금일등원":"attend_present","금일지각":"attend_late","금일결석":"attend_absent",
+    "장기결석":"attend_long","휴원":"attend_onleave",
+    "주등록":"week_enroll","주퇴원":"week_withdraw","월등록":"month_enroll","월퇴원":"month_withdraw",
+  };
+  const HEADERS = Object.keys(MAP);
+  let profile;
+
+  (async function init(){
+    profile = await requireAuth();
+    if(!profile) return;
+    document.getElementById('who').textContent =
+      `${profile.branch_name || '전사'} · ${profile.name} — 올린 데이터는 이 지점에 반영됩니다.`;
+  })();
+
+  // 템플릿 다운로드 (현재 DB값으로 미리 채움)
+  document.getElementById('tplBtn').onclick = async () => {
+    let cur = {};
+    if(!window.USE_MOCK && profile?.branch_id){
+      const { data } = await sb.from('metrics_snapshot').select('*').eq('branch_id', profile.branch_id).single();
+      cur = data || {};
+    }
+    const row = {}; HEADERS.forEach(h => row[h] = cur[MAP[h]] ?? '');
+    const ws = XLSX.utils.json_to_sheet([row], { header: HEADERS });
+    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, '월간지표');
+    XLSX.writeFile(wb, '월간운영지표_템플릿.xlsx');
+  };
+
+  // 파일 처리
+  const drop = document.getElementById('drop'), fileInput = document.getElementById('file');
+  drop.onclick = () => fileInput.click();
+  drop.ondragover = e => { e.preventDefault(); drop.classList.add('over'); };
+  drop.ondragleave = () => drop.classList.remove('over');
+  drop.ondrop = e => { e.preventDefault(); drop.classList.remove('over'); if(e.dataTransfer.files[0]) handle(e.dataTransfer.files[0]); };
+  fileInput.onchange = e => { if(e.target.files[0]) handle(e.target.files[0]); };
+
+  function showMsg(kind, html){ const m=document.getElementById('msg'); m.className='msg '+kind; m.innerHTML=html; }
+
+  async function handle(file){
+    showMsg('', ''); document.getElementById('preview').innerHTML='';
+    try {
+      const buf = await file.arrayBuffer();
+      const wb = XLSX.read(buf);
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval:'' });
+      if(!rows.length) return showMsg('err','데이터 행이 없습니다.');
+      const r = rows[0];
+
+      // 매핑 + 숫자화
+      const rec = { branch_id: profile.branch_id };
+      let used = 0;
+      for(const h of HEADERS){ if(h in r && r[h] !== ''){ rec[MAP[h]] = Number(String(r[h]).replace(/[, ]/g,'')); used++; } }
+      if(!used) return showMsg('err','템플릿 열 이름과 일치하는 항목이 없습니다. (예: 재원생수, 당월매출 …)');
+
+      // 미리보기
+      const prev = HEADERS.filter(h=>MAP[h] in rec).map(h=>`<tr><th>${h}</th><td class="v">${rec[MAP[h]].toLocaleString()}</td></tr>`).join('');
+      document.getElementById('preview').innerHTML = `<table>${prev}</table>`;
+
+      if(window.USE_MOCK){ return showMsg('ok', `미리보기 완료 (${used}개 항목). 실서버 연결 시 저장됩니다.`); }
+      if(!profile.branch_id){ return showMsg('err','임원 계정은 지점을 지정해 업로드해야 합니다 (지점 원장 계정으로 진행).'); }
+
+      const { error } = await sb.from('metrics_snapshot').upsert(rec, { onConflict:'branch_id' });
+      if(error) return showMsg('err','저장 실패: '+error.message);
+      showMsg('ok', `✅ ${used}개 항목 저장 완료! <a href="index.html" style="color:#fff;text-decoration:underline">대시보드에서 확인 →</a>`);
+    } catch(e){ showMsg('err','파일 처리 오류: '+e.message); }
+  }
+  </script>
+</body>
+</html>
