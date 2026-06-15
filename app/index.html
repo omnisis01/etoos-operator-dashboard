@@ -403,7 +403,7 @@
         <div id="riskList"></div>
       </div>
       <div class="panel list-panel">
-        <div class="panel-hd"><div class="panel-title">미납·결제 관리 · 총 412만원</div><a class="panel-more">수납 →</a></div>
+        <div class="panel-hd"><div class="panel-title" id="payTitle">미납·결제 관리</div><a class="panel-more">수납 →</a></div>
         <div id="payList"></div>
       </div>
     </div>
@@ -564,10 +564,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=hq3"></script>
-<script src="lib/supabase.js?v=hq3"></script>
-<script src="lib/auth.js?v=hq3"></script>
-<script src="lib/data.js?v=hq3"></script>
+<script src="config.js?v=hq4"></script>
+<script src="lib/supabase.js?v=hq4"></script>
+<script src="lib/auth.js?v=hq4"></script>
+<script src="lib/data.js?v=hq4"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
 /* ── 테마 팔레트 ── */
@@ -648,14 +648,16 @@ function renderBranchKPI(){
   setText('kpiStudents',s.total_students);
   setText('kpiStudentsSub',`N수 ${s.n_repeat} · 재학 ${s.n_current} · 전주 ▲ +3명`);
   setText('kpiUnpaid',won(s.unpaid_total));
-  setText('kpiUnpaidCnt',s.unpaid_count+'건');
+  setText('kpiUnpaidCnt',s.unpaid_count+'명');
+  setText('payTitle',`미납·결제 관리 · 총 ${won(s.unpaid_total)}`);
   setText('kpiAttend',s.occupancy+'%');
   const tagCls={urgent:'t-u',watch:'t-w'}, tagTxt={urgent:'긴급',watch:'주의'}, scCls={urgent:'s-r',watch:'s-g'};
   document.getElementById('riskList').innerHTML = BR.risks.map(r=>
     `<div class="row"><span class="nm">${r.name}</span><span class="tag ${tagCls[r.level]}">${tagTxt[r.level]}</span><span class="why">${r.signals.join(' · ')}</span><span class="score ${scCls[r.level]}">${r.score}</span></div>`).join('');
   document.getElementById('payList').innerHTML = BR.payments.map(p=>{
-    const cls=p.days>=14?'t-u':'t-w', sc=p.days>=14?'s-r':'s-g';
-    return `<div class="row"><span class="nm">${p.name}</span><span class="tag ${cls}">${p.days}일</span><span class="why">${p.note}</span><span class="score ${sc}" style="font-size:18.5px;width:62px">${Math.round(p.amount/10000)}만</span></div>`;}).join('');
+    const man=Math.round(p.amount/10000).toLocaleString();
+    const due=p.due?('마감 '+String(p.due).slice(5).replace('-','/')):'';
+    return `<div class="row"><span class="nm">${p.name}</span><span class="tag t-w">${p.items}건</span><span class="why">${due}</span><span class="score s-r" style="font-size:18.5px;width:86px">${man}만</span></div>`;}).join('');
   const pp={urgent:'pp-u',high:'pp-h',followup:'pp-m'}, pt={urgent:'긴급',high:'중요',followup:'팔로업'};
   const groups={urgent:[],high:[],followup:[]}; BR.actions.forEach(a=>groups[a.priority]?.push(a));
   document.getElementById('planBody').innerHTML = Object.keys(groups).filter(k=>groups[k].length).map(k=>

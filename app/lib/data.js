@@ -24,10 +24,10 @@ const MOCK = {
       { name:"최○○", level:"watch",  score:57, signals:["피로 누적","루틴 붕괴 조짐","팔로업 필요"] },
     ],
     payments: [
-      { name:"김○○", days:31, amount:980000, note:"N수 · 2회 발송 · 회수 지연 위험" },
-      { name:"정○○", days:18, amount:850000, note:"재학 · 1회 발송" },
-      { name:"윤○○", days:15, amount:760000, note:"N수 · 1회 발송" },
-      { name:"송○○", days:9,  amount:620000, note:"재학 · 미발송" },
+      { name:"김○○", amount:980000, items:2, due:"2026-06-30" },
+      { name:"정○○", amount:850000, items:3, due:"2026-06-30" },
+      { name:"윤○○", amount:760000, items:1, due:"2026-07-20" },
+      { name:"송○○", amount:620000, items:2, due:"2026-07-20" },
     ],
     reasons: [ {label:"성적 부진",pct:42},{label:"타 학원",pct:31},{label:"번아웃",pct:18},{label:"비용",pct:9} ],
     newReturned: { new:37.2, returned:62.8 },
@@ -64,7 +64,7 @@ async function dbBranch(branchId) {
     sb.from("metrics_snapshot").select("*").eq("branch_id", branchId).single(),
     sb.from("daily_metrics").select("*").eq("branch_id", branchId).order("date"),
     sb.from("churn_risks").select("score,level,signals,students(name)").eq("branch_id", branchId).order("score",{ascending:false}),
-    sb.from("payments").select("amount,due_date,reminders_sent,students(name,type)").eq("branch_id", branchId).eq("status","unpaid").order("due_date"),
+    sb.from("branch_unpaid").select("student_name,amount,items,earliest_due").eq("branch_id", branchId).order("amount",{ascending:false}).limit(8),
     sb.from("churn_reasons").select("*").eq("scope","branch").eq("branch_id", branchId).order("rank"),
     sb.from("action_items").select("*").eq("branch_id", branchId).order("due_time"),
   ]);
@@ -82,7 +82,7 @@ async function dbBranch(branchId) {
       newEnroll:d.map(r=>r.new_enrollments), withdraw:d.map(r=>r.withdrawals),
       revenue:d.map(r=>Math.round(r.revenue/10000)) },
     risks: (riskR.data||[]).map(r=>({ name:r.students?.name, level:r.level, score:r.score, signals:r.signals||[] })),
-    payments: (payR.data||[]).map(r=>({ name:r.students?.name, days:daysAgo(r.due_date), amount:r.amount, note:`${r.students?.type==="repeat"?"N수":"재학"} · ${r.reminders_sent?r.reminders_sent+"회 발송":"미발송"}` })),
+    payments: (payR.data||[]).map(r=>({ name:r.student_name, amount:r.amount, items:r.items, due:r.earliest_due })),
     reasons: (reasonR.data||[]).map(r=>({ label:r.reason, pct:Number(r.pct) })),
     newReturned: MOCK.branch.newReturned,   // (집계 뷰 추가 전까지 보조값)
     weekdayConsult: MOCK.branch.weekdayConsult,
