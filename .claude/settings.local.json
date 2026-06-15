@@ -40,7 +40,8 @@
       "Bash(PGHOST=aws-1-ap-northeast-2.pooler.supabase.com PGPORT=5432 PGUSER=postgres.oquuwouxgiskxgawjyjv PGPASSWORD='!CSwrF-,V2$ia5E' node scripts/ingest-unpaid.js 11111111-0000-0000-0000-000000000003 ~/Downloads/gyjung_1781512157.xls ~/Downloads/gyjung_1781512198.xls ~/Downloads/gyjung_1781512223.xls ~/Downloads/gyjung_1781512236.xls ~/Downloads/gyjung_1781512268.xls)",
       "Bash(/tmp/xlsenv/bin/python -c \"import psycopg; print\\('psycopg ready'\\)\")",
       "Bash(PGHOST=aws-1-ap-northeast-2.pooler.supabase.com PGPORT=5432 PGUSER=postgres.oquuwouxgiskxgawjyjv PGPASSWORD='!CSwrF-,V2$ia5E' node scripts/migrate.js db/withdrawals.sql)",
-      "Bash(PGHOST=aws-1-ap-northeast-2.pooler.supabase.com PGPORT=5432 PGUSER=postgres.oquuwouxgiskxgawjyjv PGPASSWORD='!CSwrF-,V2$ia5E' node scripts/migrate.js db/sales_consult.sql)"
+      "Bash(PGHOST=aws-1-ap-northeast-2.pooler.supabase.com PGPORT=5432 PGUSER=postgres.oquuwouxgiskxgawjyjv PGPASSWORD='!CSwrF-,V2$ia5E' node scripts/migrate.js db/sales_consult.sql)",
+      "Bash(PGHOST=aws-1-ap-northeast-2.pooler.supabase.com PGPORT=5432 PGUSER=postgres.oquuwouxgiskxgawjyjv PGPASSWORD='!CSwrF-,V2$ia5E' node scripts/migrate.js db/churn.sql)"
     ]
   }
 }

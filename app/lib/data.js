@@ -6,6 +6,28 @@
 const MONTHS = ["1월","2월","3월","4월","5월","6월"];
 const COLORS = ["#A66BFF","#EC4899","#22D3EE","#4F7CFF"];
 
+// ── 퇴원 위험 점수 엔진 (가중치 조정 가능) ────────────────
+const CHURN_WEIGHTS = { absence:0.30, study:0.25, grade:0.20, demerit:0.15, unpaid:0.10 };
+function computeRisk(f){
+  const nAbs = Math.min((f.absence_rate||0)*4, 100);                        // 25%+ → 100
+  const nStd = f.study_pct!=null ? Math.max(0,(70-f.study_pct))*(100/70):0; // 달성 70%↓일수록 ↑
+  const nGrd = Math.min((f.grade_delta||0)*30, 100);
+  const nDem = Math.min((f.demerit||0)*10, 100);
+  const nUnp = Math.min((f.unpaid_days||0)/30*100, 100);
+  const W = CHURN_WEIGHTS;
+  const score = Math.round(nAbs*W.absence + nStd*W.study + nGrd*W.grade + nDem*W.demerit + nUnp*W.unpaid);
+  // 단일 지표 극단값 보정: 어느 한 행동 신호가 심각하면 최소 등급 상향
+  const maxN = Math.max(nAbs, nStd, nGrd, nDem);
+  const level = (score>=75 || maxN>=88) ? 'urgent' : ((score>=55 || maxN>=72) ? 'watch' : 'low');
+  const sig = [];
+  if(nAbs>=45) sig.push(`결석·지각 ${f.absence_rate}%`);
+  if(nStd>=45) sig.push(`순공 달성 ${f.study_pct}%`);
+  if(nGrd>=45) sig.push(`성적 ${f.grade_delta}등급 하락`);
+  if(nDem>=45) sig.push(`벌점 ${f.demerit}`);
+  if(nUnp>=45) sig.push(`미납 ${f.unpaid_days}일`);
+  return { name:f.student_name, level, score, signals:sig };
+}
+
 // ── MOCK (현재 대시보드 수치와 동일) ──────────────────────
 const MOCK = {
   branch: {
@@ -64,7 +86,7 @@ const MOCK = {
 
 // ── DB 조회 (Supabase) ────────────────────────────────────
 async function dbBranch(branchId) {
-  const [snapR, dailyR, riskR, unpaidR, reasonR, actR, consR, salesR, wdR, attR] = await Promise.all([
+  const [snapR, dailyR, riskR, unpaidR, reasonR, actR, consR, salesR, wdR, attR, cfR] = await Promise.all([
     sb.from("metrics_snapshot").select("*").eq("branch_id", branchId).maybeSingle(),
     sb.from("daily_metrics").select("*").eq("branch_id", branchId).order("date"),
     sb.from("churn_risks").select("score,level,signals,students(name)").eq("branch_id", branchId).order("score",{ascending:false}),
@@ -75,6 +97,7 @@ async function dbBranch(branchId) {
     sb.from("branch_sales").select("net_revenue").eq("branch_id", branchId).order("period",{ascending:false}).limit(1).maybeSingle(),
     sb.from("branch_withdrawals").select("month_total,ytd_total").eq("branch_id", branchId).maybeSingle(),
     sb.from("branch_attendance").select("present,late,absent,early_leave,out_cnt,left_cnt,total").eq("branch_id", branchId).maybeSingle(),
+    sb.from("churn_factors").select("*").eq("branch_id", branchId),
   ]);
   const s = snapR.data || {};
   const d = dailyR.data || [];
@@ -96,7 +119,10 @@ async function dbBranch(branchId) {
     daily: d.length ? { months:d.map(r=>new Date(r.date).getMonth()+1+"월"),
       newEnroll:d.map(r=>r.new_enrollments), withdraw:d.map(r=>r.withdrawals),
       revenue:d.map(r=>Math.round(r.revenue/10000)) } : MOCK.branch.daily,
-    risks: (riskR.data||[]).map(r=>({ name:r.students?.name, level:r.level, score:r.score, signals:r.signals||[] })),
+    risks: (cfR.data && cfR.data.length)
+      ? cfR.data.map(computeRisk).filter(r=>r.level!=='low').sort((a,b)=>b.score-a.score).slice(0,8)
+      : (riskR.data||[]).map(r=>({ name:r.students?.name, level:r.level, score:r.score, signals:r.signals||[] })),
+    riskReal: !!(cfR.data && cfR.data.length),
     payments: unpaid.slice(0,8).map(r=>({ name:r.student_name, amount:r.amount, items:r.items, due:r.earliest_due })),
     reasons: reasons.length ? reasons : MOCK.branch.reasons,
     newReturned: MOCK.branch.newReturned,

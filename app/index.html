@@ -398,7 +398,7 @@
     <div class="zone"><span>운영 현황<span class="zb">즉시 확인이 필요한 명단</span></span></div>
     <div class="donut-row">
       <div class="panel list-panel">
-        <div class="panel-hd"><div class="panel-title">AI 퇴원 위험 감지 <span style="font-size:12px;font-weight:700;color:var(--gold);background:rgba(251,191,36,.14);padding:2px 9px;border-radius:7px;margin-left:4px">예시 · 데이터 연동 예정</span></div><a class="panel-more">전체 →</a></div>
+        <div class="panel-hd"><div class="panel-title">AI 퇴원 위험 감지 <span id="riskBadge" style="font-size:12px;font-weight:700;color:var(--gold);background:rgba(251,191,36,.14);padding:2px 9px;border-radius:7px;margin-left:4px">예시 · 데이터 연동 예정</span></div><a class="panel-more">전체 →</a></div>
         <div id="riskList"></div>
       </div>
       <div class="panel list-panel">
@@ -551,10 +551,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=hq9"></script>
-<script src="lib/supabase.js?v=hq9"></script>
-<script src="lib/auth.js?v=hq9"></script>
-<script src="lib/data.js?v=hq9"></script>
+<script src="config.js?v=hq11"></script>
+<script src="lib/supabase.js?v=hq11"></script>
+<script src="lib/auth.js?v=hq11"></script>
+<script src="lib/data.js?v=hq11"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
 /* ── 테마 팔레트 ── */
@@ -653,6 +653,7 @@ function renderBranchKPI(){
   setText('kpiUnpaidCnt', (s.unpaid_count||0)+'명');
   setText('payTitle',`미납·결제 관리 · 총 ${s.unpaid_total?won(s.unpaid_total):'0원'}`);
   setText('kpiAttend', s.attend_rate!=null ? s.attend_rate+'%' : '—');
+  const rb=document.getElementById('riskBadge'); if(rb){ if(BR.riskReal){ rb.textContent='실데이터'; rb.style.color='var(--green)'; rb.style.background='rgba(52,211,153,.14)'; } else { rb.textContent='예시 · 데이터 연동 예정'; } }
   const tagCls={urgent:'t-u',watch:'t-w'}, tagTxt={urgent:'긴급',watch:'주의'}, scCls={urgent:'s-r',watch:'s-g'};
   document.getElementById('riskList').innerHTML = BR.risks.map(r=>
     `<div class="row"><span class="nm">${r.name}</span><span class="tag ${tagCls[r.level]}">${tagTxt[r.level]}</span><span class="why">${r.signals.join(' · ')}</span><span class="score ${scCls[r.level]}">${r.score}</span></div>`).join('');
