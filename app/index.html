@@ -118,7 +118,7 @@
   .hero-val{position:relative;z-index:1;display:flex;align-items:baseline;gap:6px;color:#fff}
   .hero-num{font-size:46px;font-weight:800;letter-spacing:-1.5px;line-height:1}
   .hero-unit{font-size:19.5px;font-weight:600;opacity:.92}
-  .hero-foot{font-size:14px;color:rgba(255,255,255,.85);position:relative;z-index:1}
+  .hero-foot{font-size:13px;color:rgba(255,255,255,.85);position:relative;z-index:1}
 
   /* ── 미니 스탯 카드 ── */
   .mini-stack{display:flex;flex-direction:column;gap:20px}
@@ -127,17 +127,17 @@
   .mini-ic.pink{background:rgba(236,72,153,.16);color:var(--pink)}
   .mini-ic.cyan{background:rgba(34,211,238,.14);color:var(--cyan)}
   .mini-body{flex:1;min-width:0}
-  .mini-lbl{font-size:14.5px;color:var(--text3);font-weight:600}
-  .mini-val{font-size:21.5px;font-weight:800;color:var(--ink);letter-spacing:-.5px}
-  .badge{font-size:13.5px;font-weight:700;padding:3px 10px;border-radius:9px;flex-shrink:0}
+  .mini-lbl{font-size:13.5px;color:var(--text3);font-weight:600;white-space:nowrap}
+  .mini-val{font-size:21.5px;font-weight:800;color:var(--ink);letter-spacing:-.5px;white-space:nowrap}
+  .badge{font-size:12px;font-weight:700;padding:2px 8px;border-radius:9px;flex-shrink:0;white-space:nowrap}
   .b-up{background:rgba(52,211,153,.14);color:var(--green)}
   .b-dn{background:rgba(248,113,113,.14);color:var(--red)}
 
   /* ── 도넛 센터 / 범례 ── */
-  .donut-wrap{display:flex;align-items:center;gap:18px}
-  .donut-chart{width:190px;flex:0 0 190px}
+  .donut-wrap{display:flex;align-items:center;gap:14px}
+  .donut-chart{width:150px;flex:0 0 150px}
   .donut-legend{display:flex;flex-direction:column;gap:13px;flex:1;min-width:0}
-  .dl-item{display:flex;align-items:center;gap:9px;font-size:15px;color:var(--text2)}
+  .dl-item{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text2);white-space:nowrap}
   .dl-item .ring{width:14px;height:14px;border-radius:50%;border:3px solid;flex-shrink:0}
   .dl-item b{color:var(--ink);font-weight:700}
 
@@ -328,7 +328,7 @@
           <div class="hero c">
             <div class="hero-lbl">총 재원생</div>
             <div class="hero-val"><span class="hero-num" id="kpiStudents">187</span><span class="hero-unit">명</span></div>
-            <div class="hero-foot" id="kpiStudentsSub">N수 94 · 재학 93 · 전주 ▲ +3명</div>
+            <div class="hero-foot" id="kpiStudentsSub">N수 94 · 재학 93 · 주 ▲+3명</div>
           </div>
           <div class="mini-stack">
             <div class="mini">
@@ -587,7 +587,7 @@ function areaChart(el,cats,data,color,fmt,height){
     grid:{borderColor:PAL().grid,strokeDashArray:4,padding:{left:8,right:8}},
     xaxis:XA(cats,'11px'),yaxis:fmt?YA(fmt):{show:false}});}
 function donutChart(el,data,labels,colors,suffix){const p=PAL();const u=suffix||'%';
-  mk(el,{...BASE(),chart:{...BASE().chart,type:'donut',height:210},
+  mk(el,{...BASE(),chart:{...BASE().chart,type:'donut',height:185},
     series:data,labels:labels,colors:colors,stroke:{width:0},
     plotOptions:{pie:{donut:{size:'72%',labels:{show:true,
       name:{color:p.cLbl,fontSize:'12px'},
@@ -648,7 +648,7 @@ function renderBranchKPI(){
   else if(s.mtd_revenue>=1e8){ setText('kpiRevenue',(s.mtd_revenue/1e8).toFixed(2)); setText('kpiRevenueUnit','억'); }
   else { setText('kpiRevenue',Math.round(s.mtd_revenue/1e4).toLocaleString()); setText('kpiRevenueUnit','만원'); }
   setText('kpiStudents', s.total_students ?? '—');
-  setText('kpiStudentsSub', s.total_students!=null ? `N수 ${s.n_repeat} · 재학 ${s.n_current} · 전주 ▲ +3명` : '재원생 데이터 적재 예정');
+  setText('kpiStudentsSub', s.total_students!=null ? `N수 ${s.n_repeat} · 재학 ${s.n_current} · 주 ▲+3명` : '재원생 데이터 적재 예정');
   setText('kpiUnpaid', s.unpaid_total ? won(s.unpaid_total) : '0원');
   setText('kpiUnpaidCnt', (s.unpaid_count||0)+'명');
   setText('payTitle',`미납·결제 관리 · 총 ${s.unpaid_total?won(s.unpaid_total):'0원'}`);
