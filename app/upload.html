@@ -49,12 +49,13 @@
     <div class="card">
       <div class="step">STEP 1 · 데이터 종류</div>
       <div class="row">
-        <select id="dataset">
-          <option value="snapshot">월간 운영지표 (재원생·매출·출결 등 KPI)</option>
+        <select id="dataset" onchange="onDataset()">
+          <option value="snapshot">월간 운영지표 (재원생·매출·출결 KPI)</option>
+          <option value="churn">퇴원위험 요인 (학생별 — 출결률·순공·성적·벌점)</option>
         </select>
-        <button class="btn ghost" id="tplBtn">📄 템플릿 다운로드 (현재값 채워서)</button>
+        <button class="btn ghost" id="tplBtn">📄 템플릿 다운로드</button>
       </div>
-      <div class="hint">템플릿을 받아 ERP 값으로 채운 뒤 올리거나, ERP 엑셀의 열 이름을 템플릿과 동일하게 맞춰 올리세요. 1행=머리글, 2행=값.</div>
+      <div class="hint" id="dsHint"></div>
     </div>
 
     <div class="card">
@@ -67,76 +68,110 @@
 
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=hq12"></script>
-  <script src="lib/supabase.js?v=hq12"></script>
-  <script src="lib/auth.js?v=hq12"></script>
+  <script src="config.js?v=hq14"></script>
+  <script src="lib/supabase.js?v=hq14"></script>
+  <script src="lib/auth.js?v=hq14"></script>
   <script>
-  // 머리글(한글) ↔ DB 컬럼 매핑
-  const MAP = {
-    "재원생수":"total_students","N수":"n_repeat","재학생":"n_current","좌석점유율":"occupancy",
-    "당월매출":"mtd_revenue","미납액":"unpaid_total","미납건수":"unpaid_count",
-    "금일등원":"attend_present","금일지각":"attend_late","금일결석":"attend_absent",
-    "장기결석":"attend_long","휴원":"attend_onleave",
-    "주등록":"week_enroll","주퇴원":"week_withdraw","월등록":"month_enroll","월퇴원":"month_withdraw",
+  // ── 데이터셋 정의 ─────────────────────────────────────────
+  const DATASETS = {
+    snapshot: {
+      label:'월간 운영지표', table:'metrics_snapshot', mode:'single', conflict:'branch_id',
+      cols:{ "재원생수":"total_students","N수":"n_repeat","재학생":"n_current","좌석점유율":"occupancy",
+        "당월매출":"mtd_revenue","미납액":"unpaid_total","미납건수":"unpaid_count",
+        "금일등원":"attend_present","금일지각":"attend_late","금일결석":"attend_absent",
+        "장기결석":"attend_long","휴원":"attend_onleave",
+        "주등록":"week_enroll","주퇴원":"week_withdraw","월등록":"month_enroll","월퇴원":"month_withdraw" },
+      tpl:'월간운영지표_템플릿.xlsx',
+      hint:'1행=머리글, 2행=값. 템플릿에 현재 DB값이 채워져 나옵니다.'
+    },
+    churn: {
+      label:'퇴원위험 요인', table:'churn_factors', mode:'multi', textCols:['student_name'],
+      cols:{ "학생명":"student_name","결석지각률":"absence_rate","순공달성률":"study_pct","성적하락등급":"grade_delta","벌점":"demerit" },
+      tpl:'퇴원위험요인_템플릿.xlsx',
+      sample:[{학생명:'홍○○',결석지각률:28,순공달성률:25,성적하락등급:2,벌점:7},
+              {학생명:'김○○',결석지각률:18,순공달성률:55,성적하락등급:1,벌점:2}],
+      hint:'학생 1명당 1행. 결석지각률·순공달성률은 %, 성적하락등급은 하락폭(0=변화없음), 벌점은 누적. 미납은 자동 결합됩니다. 위험점수는 시스템이 가중평균으로 계산합니다.'
+    }
   };
-  const HEADERS = Object.keys(MAP);
   let profile;
+  const ds = () => DATASETS[document.getElementById('dataset').value];
 
   (async function init(){
     profile = await requireAuth();
     if(!profile) return;
     document.getElementById('who').textContent =
       `${profile.branch_name || '전사'} · ${profile.name} — 올린 데이터는 이 지점에 반영됩니다.`;
+    onDataset();
   })();
+  function onDataset(){ document.getElementById('dsHint').textContent = ds().hint; document.getElementById('preview').innerHTML=''; showMsg('',''); }
 
-  // 템플릿 다운로드 (현재 DB값으로 미리 채움)
+  // ── 템플릿 다운로드 ───────────────────────────────────────
   document.getElementById('tplBtn').onclick = async () => {
-    let cur = {};
-    if(!window.USE_MOCK && profile?.branch_id){
-      const { data } = await sb.from('metrics_snapshot').select('*').eq('branch_id', profile.branch_id).single();
-      cur = data || {};
-    }
-    const row = {}; HEADERS.forEach(h => row[h] = cur[MAP[h]] ?? '');
-    const ws = XLSX.utils.json_to_sheet([row], { header: HEADERS });
-    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, '월간지표');
-    XLSX.writeFile(wb, '월간운영지표_템플릿.xlsx');
+    const d = ds(); const headers = Object.keys(d.cols);
+    let rows;
+    if(d.mode==='single'){
+      let cur = {};
+      if(!window.USE_MOCK && profile?.branch_id){
+        const { data } = await sb.from(d.table).select('*').eq('branch_id', profile.branch_id).maybeSingle();
+        cur = data || {};
+      }
+      const row = {}; headers.forEach(h => row[h] = cur[d.cols[h]] ?? ''); rows=[row];
+    } else { rows = d.sample || [Object.fromEntries(headers.map(h=>[h,'']))]; }
+    const ws = XLSX.utils.json_to_sheet(rows, { header: headers });
+    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, d.label);
+    XLSX.writeFile(wb, d.tpl);
   };
 
-  // 파일 처리
+  // ── 파일 처리 ─────────────────────────────────────────────
   const drop = document.getElementById('drop'), fileInput = document.getElementById('file');
   drop.onclick = () => fileInput.click();
   drop.ondragover = e => { e.preventDefault(); drop.classList.add('over'); };
   drop.ondragleave = () => drop.classList.remove('over');
   drop.ondrop = e => { e.preventDefault(); drop.classList.remove('over'); if(e.dataTransfer.files[0]) handle(e.dataTransfer.files[0]); };
   fileInput.onchange = e => { if(e.target.files[0]) handle(e.target.files[0]); };
-
-  function showMsg(kind, html){ const m=document.getElementById('msg'); m.className='msg '+kind; m.innerHTML=html; }
+  function showMsg(kind, html){ const m=document.getElementById('msg'); m.className='msg '+(kind||''); m.innerHTML=html; m.style.display=kind?'block':'none'; }
+  const num = (v)=> Number(String(v).replace(/[, ]/g,'')) || 0;
 
   async function handle(file){
     showMsg('', ''); document.getElementById('preview').innerHTML='';
     try {
-      const buf = await file.arrayBuffer();
-      const wb = XLSX.read(buf);
+      const d = ds(); const cols = d.cols; const headers = Object.keys(cols);
+      const wb = XLSX.read(await file.arrayBuffer());
       const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval:'' });
       if(!rows.length) return showMsg('err','데이터 행이 없습니다.');
-      const r = rows[0];
 
-      // 매핑 + 숫자화
-      const rec = { branch_id: profile.branch_id };
-      let used = 0;
-      for(const h of HEADERS){ if(h in r && r[h] !== ''){ rec[MAP[h]] = Number(String(r[h]).replace(/[, ]/g,'')); used++; } }
-      if(!used) return showMsg('err','템플릿 열 이름과 일치하는 항목이 없습니다. (예: 재원생수, 당월매출 …)');
+      // 각 행 → DB 레코드 매핑
+      const recs = [];
+      for(const r of rows){
+        const rec = { branch_id: profile?.branch_id };
+        let used=0;
+        for(const h of headers){
+          if(h in r && r[h] !== ''){
+            rec[cols[h]] = (d.textCols||[]).includes(cols[h]) ? String(r[h]).trim() : num(r[h]); used++;
+          }
+        }
+        if(used) recs.push(rec);
+      }
+      if(!recs.length) return showMsg('err',`열 이름이 템플릿과 일치하지 않습니다. (예: ${headers.slice(0,3).join(', ')} …)`);
 
       // 미리보기
-      const prev = HEADERS.filter(h=>MAP[h] in rec).map(h=>`<tr><th>${h}</th><td class="v">${rec[MAP[h]].toLocaleString()}</td></tr>`).join('');
-      document.getElementById('preview').innerHTML = `<table>${prev}</table>`;
+      const head = `<tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr>`;
+      const body = recs.slice(0,5).map(rec=>`<tr>${headers.map(h=>`<td>${rec[cols[h]]??''}</td>`).join('')}</tr>`).join('');
+      document.getElementById('preview').innerHTML = `<table>${head}${body}</table>` + (recs.length>5?`<div class="hint">외 ${recs.length-5}행</div>`:'');
 
-      if(window.USE_MOCK){ return showMsg('ok', `미리보기 완료 (${used}개 항목). 실서버 연결 시 저장됩니다.`); }
-      if(!profile.branch_id){ return showMsg('err','임원 계정은 지점을 지정해 업로드해야 합니다 (지점 원장 계정으로 진행).'); }
+      if(window.USE_MOCK) return showMsg('ok', `미리보기 완료 (${recs.length}행). 실서버 연결 시 저장됩니다.`);
+      if(!profile.branch_id) return showMsg('err','임원 계정은 지점 원장 계정으로 업로드하세요.');
 
-      const { error } = await sb.from('metrics_snapshot').upsert(rec, { onConflict:'branch_id' });
-      if(error) return showMsg('err','저장 실패: '+error.message);
-      showMsg('ok', `✅ ${used}개 항목 저장 완료! <a href="index.html" style="color:#fff;text-decoration:underline">대시보드에서 확인 →</a>`);
+      if(d.mode==='single'){
+        const { error } = await sb.from(d.table).upsert(recs[0], { onConflict:d.conflict });
+        if(error) return showMsg('err','저장 실패: '+error.message);
+      } else {
+        // 멀티: 지점의 기존 데이터 교체
+        await sb.from(d.table).delete().eq('branch_id', profile.branch_id);
+        const { error } = await sb.from(d.table).insert(recs);
+        if(error) return showMsg('err','저장 실패: '+error.message);
+      }
+      showMsg('ok', `✅ ${recs.length}건 저장 완료! <a href="index.html" style="color:#fff;text-decoration:underline">대시보드에서 확인 →</a>`);
     } catch(e){ showMsg('err','파일 처리 오류: '+e.message); }
   }
   </script>

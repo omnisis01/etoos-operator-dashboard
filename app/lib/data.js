@@ -15,10 +15,11 @@ function computeRisk(f){
   const nDem = Math.min((f.demerit||0)*10, 100);
   const nUnp = Math.min((f.unpaid_days||0)/30*100, 100);
   const W = CHURN_WEIGHTS;
-  const score = Math.round(nAbs*W.absence + nStd*W.study + nGrd*W.grade + nDem*W.demerit + nUnp*W.unpaid);
-  // 단일 지표 극단값 보정: 어느 한 행동 신호가 심각하면 최소 등급 상향
+  const weighted = nAbs*W.absence + nStd*W.study + nGrd*W.grade + nDem*W.demerit + nUnp*W.unpaid;
+  // 가중평균(70%) + 최대 행동지표(30%) 블렌딩 — 단일 지표 극단값도 점수에 반영(점수↔등급 일관)
   const maxN = Math.max(nAbs, nStd, nGrd, nDem);
-  const level = (score>=75 || maxN>=88) ? 'urgent' : ((score>=55 || maxN>=72) ? 'watch' : 'low');
+  const score = Math.round(0.7*weighted + 0.3*maxN);
+  const level = score>=75 ? 'urgent' : (score>=55 ? 'watch' : 'low');
   const sig = [];
   if(nAbs>=45) sig.push(`결석·지각 ${f.absence_rate}%`);
   if(nStd>=45) sig.push(`순공 달성 ${f.study_pct}%`);
