@@ -140,6 +140,19 @@
   .dl-item{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text2);white-space:nowrap}
   .dl-item .ring{width:14px;height:14px;border-radius:50%;border:3px solid;flex-shrink:0}
   .dl-item b{color:var(--ink);font-weight:700}
+  .cmp-wrap{display:flex;gap:26px;align-items:stretch}
+  .cmp-chart{flex:1;min-width:0}
+  .cmp-side{flex:0 0 270px;border-left:1px solid var(--border);padding-left:22px;display:flex;flex-direction:column}
+  .cmp-side-hd{font-size:13px;font-weight:700;color:var(--text3);letter-spacing:.3px;margin-bottom:14px}
+  .cmp-item{display:flex;align-items:baseline;gap:8px;padding:11px 0;border-bottom:1px solid var(--border)}
+  .cmp-item:last-child{border-bottom:none}
+  .cmp-item .rn{font-size:15px;font-weight:700;color:var(--ink);min-width:62px}
+  .cmp-item .gap{font-size:15px;font-weight:800;margin-left:auto}
+  .cmp-item .gap.up{color:var(--pink)} .cmp-item .gap.dn{color:var(--green)} .cmp-item .gap.flat{color:var(--text3)}
+  .cmp-item .desc{font-size:13px;color:var(--text2)}
+  .cmp-note{margin-top:auto;padding-top:14px;font-size:13px;line-height:1.6;color:var(--text2)}
+  .cmp-note b{color:var(--ink)}
+  @media(max-width:980px){.cmp-wrap{flex-direction:column}.cmp-side{flex:1;border-left:none;border-top:1px solid var(--border);padding-left:0;padding-top:18px}}
 
   /* ── 영역 차트 패널 풋 ── */
   .area-foot{margin-top:14px;display:flex;align-items:center;justify-content:space-between;background:var(--panel-2);border-radius:12px;padding:12px 16px}
@@ -407,6 +420,19 @@
       </div>
     </div>
 
+    <!-- 퇴원 사유 비교 -->
+    <div class="zone"><span>퇴원 사유 분석<span class="zb">내 지점 vs 전 지점 평균 — 무엇이 다른가</span></span></div>
+    <div class="panel">
+      <div class="panel-hd"><div class="panel-title">퇴원 사유 비교</div><a class="panel-more" id="reasonCmpLbl">내 지점 vs 전 지점</a></div>
+      <div class="cmp-wrap">
+        <div id="reasonCompare" class="cmp-chart"></div>
+        <div class="cmp-side">
+          <div class="cmp-side-hd">전 지점 대비 특이점</div>
+          <div id="reasonInsight"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- AI 해석 -->
     <div class="zone ai"><span>AI 해석 &amp; 액션<span class="zb">숫자가 말하는 의미와 다음 행동</span></span></div>
     <div class="ins-grid">
@@ -551,10 +577,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=hq14"></script>
-<script src="lib/supabase.js?v=hq14"></script>
-<script src="lib/auth.js?v=hq14"></script>
-<script src="lib/data.js?v=hq14"></script>
+<script src="config.js?v=hq15"></script>
+<script src="lib/supabase.js?v=hq15"></script>
+<script src="lib/auth.js?v=hq15"></script>
+<script src="lib/data.js?v=hq15"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
 /* ── 테마 팔레트 ── */
@@ -600,6 +626,17 @@ function barChart(el,cats,data,fmt,height){
     colors:['#22D3EE'],fill:{type:'gradient',gradient:{shade:'dark',type:'vertical',gradientToColors:['#A66BFF'],stops:[0,100],opacityFrom:1,opacityTo:1}},
     dataLabels:{enabled:false},grid:{borderColor:PAL().grid,strokeDashArray:4},
     xaxis:XA(cats),yaxis:YA(fmt||(v=>v)),tooltip:{theme:PAL().tip}});}
+// 퇴원사유 비교 (내 지점 vs 전 지점) — 가로 그룹 막대
+function reasonCompareChart(el,cats,mine,allv,mineName){
+  mk(el,{...BASE(),chart:{...BASE().chart,type:'bar',height:Math.max(240,cats.length*66)},
+    series:[{name:mineName||'내 지점',data:mine},{name:'전 지점 평균',data:allv}],
+    plotOptions:{bar:{horizontal:true,borderRadius:5,barHeight:'70%',dataLabels:{position:'top'}}},
+    colors:['#22D3EE','#A66BFF'],
+    dataLabels:{enabled:true,formatter:v=>v+'%',offsetX:18,style:{fontSize:'12px',fontWeight:700,colors:[PAL().cVal]}},
+    legend:{show:true,position:'top',horizontalAlign:'left',fontSize:'13px',labels:{colors:PAL().axis},markers:{radius:4}},
+    grid:{borderColor:PAL().grid,strokeDashArray:4},
+    xaxis:{...XA(cats),max:Math.max(...mine,...allv)+12,labels:{show:false}},
+    yaxis:YA(),tooltip:{theme:PAL().tip,y:{formatter:v=>v+'%'}}});}
 
 const RC=['#A66BFF','#EC4899','#22D3EE','#4F7CFF'];   // 도넛 색
 let BR=null, HQ=null;                                  // 로드된 데이터
@@ -621,7 +658,36 @@ function buildBranch(){
     if(lg) lg.innerHTML=aL.map((l,i)=>`<div class="dl-item"><span class="ring" style="border-color:${A6[i]}"></span> ${l} <b>${aV[i]}</b></div>`).join('');
   }
   barChart('#barBranch',['신규등록','전화상담','방문상담'],[d.consult.new_enroll,d.consult.phone,d.consult.visit],null,320);
+  buildReasonCompare(d);
   built.branch=true;
+}
+function curBranchName(){
+  const pk=document.getElementById('branchPicker');
+  if(pk && pk.style.display!=='none' && pk.selectedOptions[0]) return pk.selectedOptions[0].text;
+  const ur=document.querySelector('.urole');
+  if(ur){ const t=ur.textContent.split('·')[0].trim(); if(t && t!=='전사') return t; }
+  return '내 지점';
+}
+function buildReasonCompare(d){
+  const reasons=d.reasons||[], all=d.reasonsAll||[];
+  if(!reasons.length) return;
+  const cats=reasons.map(r=>r.label), mine=reasons.map(r=>r.pct);
+  const allMap=Object.fromEntries(all.map(r=>[r.label,r.pct]));
+  const allv=cats.map(l=>allMap[l]??0);
+  const name=curBranchName();
+  reasonCompareChart('#reasonCompare',cats,mine,allv,name);
+  const lbl=document.getElementById('reasonCmpLbl'); if(lbl) lbl.textContent=name+' vs 전 지점';
+  // 특이점 (전사 대비 격차순)
+  const diffs=cats.map((l,i)=>({label:l,mine:mine[i],all:allv[i],gap:mine[i]-allv[i]}))
+    .sort((a,b)=>Math.abs(b.gap)-Math.abs(a.gap));
+  const cls=g=> g>=2?'up':(g<=-2?'dn':'flat');
+  const fmt=g=> g>=2?`▲ +${g}%p`:(g<=-2?`▼ ${g}%p`:`≈ ${g}%p`);
+  const rows=diffs.map(x=>`<div class="cmp-item"><span class="rn">${x.label}</span><span class="desc">내 ${x.mine}% · 전사 ${x.all}%</span><span class="gap ${cls(x.gap)}">${fmt(x.gap)}</span></div>`).join('');
+  const over=diffs.find(x=>x.gap>=2), under=diffs.find(x=>x.gap<=-2);
+  let note='전 지점 평균과 거의 동일한 분포입니다.';
+  if(over){ note=`<b>${over.label}</b> 사유가 전 지점 대비 <b>+${over.gap}%p</b> 높음 — 이 영역 집중 관리 권장.`;
+    if(under) note+=` <b>${under.label}</b>은 ${Math.abs(under.gap)}%p 낮음.`; }
+  const ins=document.getElementById('reasonInsight'); if(ins) ins.innerHTML=rows+`<div class="cmp-note">${note}</div>`;
 }
 function buildHQ(){
   const d=HQ;

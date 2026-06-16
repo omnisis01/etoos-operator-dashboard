@@ -41,7 +41,8 @@
       "Bash(/tmp/xlsenv/bin/python -c \"import psycopg; print\\('psycopg ready'\\)\")",
       "Bash(PGHOST=aws-1-ap-northeast-2.pooler.supabase.com PGPORT=5432 PGUSER=postgres.oquuwouxgiskxgawjyjv PGPASSWORD='!CSwrF-,V2$ia5E' node scripts/migrate.js db/withdrawals.sql)",
       "Bash(PGHOST=aws-1-ap-northeast-2.pooler.supabase.com PGPORT=5432 PGUSER=postgres.oquuwouxgiskxgawjyjv PGPASSWORD='!CSwrF-,V2$ia5E' node scripts/migrate.js db/sales_consult.sql)",
-      "Bash(PGHOST=aws-1-ap-northeast-2.pooler.supabase.com PGPORT=5432 PGUSER=postgres.oquuwouxgiskxgawjyjv PGPASSWORD='!CSwrF-,V2$ia5E' node scripts/migrate.js db/churn.sql)"
+      "Bash(PGHOST=aws-1-ap-northeast-2.pooler.supabase.com PGPORT=5432 PGUSER=postgres.oquuwouxgiskxgawjyjv PGPASSWORD='!CSwrF-,V2$ia5E' node scripts/migrate.js db/churn.sql)",
+      "Bash(cd \"/Users/omnibook/Downloads/Operating Dashboard\" && grep -rl \"v=hq14\" app/ && sed -i '' 's/v=hq14/v=hq15/g' app/*.html && echo \"bumped:\" && grep -ro \"v=hq15\" app/*.html | sort | uniq -c)"
     ]
   }
 }

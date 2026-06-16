@@ -53,6 +53,7 @@ const MOCK = {
       { name:"송○○", amount:620000, items:2, due:"2026-07-20" },
     ],
     reasons: [ {label:"성적 부진",pct:42},{label:"타 학원",pct:31},{label:"번아웃",pct:18},{label:"비용",pct:9} ],
+    reasonsAll: [ {label:"성적 부진",pct:39},{label:"타 학원",pct:33},{label:"번아웃",pct:17},{label:"비용",pct:11} ],
     newReturned: { new:37.2, returned:62.8 },
     consult: { new_enroll:6, phone:5, visit:4, total:9 },
     actions: [
@@ -87,12 +88,13 @@ const MOCK = {
 
 // ── DB 조회 (Supabase) ────────────────────────────────────
 async function dbBranch(branchId) {
-  const [snapR, dailyR, riskR, unpaidR, reasonR, actR, consR, salesR, wdR, attR, cfR] = await Promise.all([
+  const [snapR, dailyR, riskR, unpaidR, reasonR, reaAllR, actR, consR, salesR, wdR, attR, cfR] = await Promise.all([
     sb.from("metrics_snapshot").select("*").eq("branch_id", branchId).maybeSingle(),
     sb.from("daily_metrics").select("*").eq("branch_id", branchId).order("date"),
     sb.from("churn_risks").select("score,level,signals,students(name)").eq("branch_id", branchId).order("score",{ascending:false}),
     sb.from("branch_unpaid").select("student_name,amount,items,earliest_due").eq("branch_id", branchId).order("amount",{ascending:false}),
     sb.from("churn_reasons").select("*").eq("scope","branch").eq("branch_id", branchId).order("rank"),
+    sb.from("churn_reasons").select("reason,pct,rank").eq("scope","all").order("rank"),
     sb.from("action_items").select("*").eq("branch_id", branchId).order("due_time"),
     sb.from("branch_consult").select("new_enroll,phone,visit,total").eq("branch_id", branchId).maybeSingle(),
     sb.from("branch_sales").select("net_revenue").eq("branch_id", branchId).order("period",{ascending:false}).limit(1).maybeSingle(),
@@ -106,6 +108,7 @@ async function dbBranch(branchId) {
   const unpaidTotal = unpaid.reduce((a,x)=>a+Number(x.amount||0),0);
   const sales = salesR.data, wd = wdR.data, at = attR.data;
   const reasons = (reasonR.data||[]).map(r=>({ label:r.reason, pct:Number(r.pct) }));
+  const reasonsAll = (reaAllR.data||[]).map(r=>({ label:r.reason, pct:Number(r.pct) }));
   const attendRate = at && at.total ? Math.round((at.total - at.absent) / at.total * 100) : null;
   return {
     snap: {
@@ -126,6 +129,7 @@ async function dbBranch(branchId) {
     riskReal: !!(cfR.data && cfR.data.length),
     payments: unpaid.slice(0,8).map(r=>({ name:r.student_name, amount:r.amount, items:r.items, due:r.earliest_due })),
     reasons: reasons.length ? reasons : MOCK.branch.reasons,
+    reasonsAll: reasonsAll.length ? reasonsAll : MOCK.branch.reasonsAll,
     newReturned: MOCK.branch.newReturned,
     consult: consR.data || { new_enroll:0, phone:0, visit:0, total:0 },
     attend: at || null,
