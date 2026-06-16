@@ -42,6 +42,37 @@
   .hub-head{text-align:center;margin:6px 0 20px}
   .hub-head h1{font-size:26px;font-weight:800;color:var(--ink);letter-spacing:-.4px}
   .hub-head p{font-size:14.5px;color:var(--text3);margin-top:6px}
+  /* ── 최상단 우선 처리 띠 ── */
+  .band{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}
+  .pcard{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 22px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .pcard.todo{--ac:var(--purple);--ac-soft:rgba(166,107,255,.10)}
+  .pcard.risk{--ac:var(--red);--ac-soft:rgba(248,113,113,.10);cursor:pointer;transition:.18s}
+  .pcard.risk:hover{transform:translateY(-2px);border-color:var(--red)}
+  .pcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--ac)}
+  .pcard-hd{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .pc-ic{width:30px;height:30px;border-radius:9px;background:var(--ac);color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .pc-tt{font-size:17px;font-weight:800;color:var(--ink)}
+  .pc-tt .m{font-size:12.5px;font-weight:500;color:var(--text3);margin-left:8px}
+  .pc-cnt{margin-left:auto;font-size:13px;font-weight:700;color:var(--ac);background:var(--ac-soft);padding:3px 11px;border-radius:8px}
+  .pc-go{margin-left:auto;font-size:13px;font-weight:700;color:var(--ac)}
+  .pc-body{display:flex;flex-direction:column;gap:2px}
+  .todo-item{display:flex;align-items:center;gap:11px;padding:9px 2px;border-bottom:1px solid var(--border-soft)}
+  .todo-item:last-child{border:none}
+  .ti-tag{font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:7px;flex-shrink:0;min-width:46px;text-align:center}
+  .ti-tag.u{background:rgba(248,113,113,.16);color:var(--red)}
+  .ti-tag.h{background:rgba(251,191,36,.16);color:var(--gold)}
+  .ti-tag.f{background:rgba(166,107,255,.16);color:var(--purple)}
+  .ti-tx{font-size:14.5px;color:var(--ink);font-weight:600}
+  .ti-tm{margin-left:auto;font-size:13px;font-weight:700;color:var(--text3);font-variant-numeric:tabular-nums}
+  .risk-item{display:flex;align-items:center;gap:11px;padding:9px 2px;border-bottom:1px solid var(--border-soft)}
+  .risk-item:last-child{border:none}
+  .ri-nm{font-size:14.5px;font-weight:700;color:var(--ink);min-width:50px}
+  .ri-lv{font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:7px;flex-shrink:0}
+  .ri-lv.u{background:rgba(248,113,113,.16);color:var(--red)}
+  .ri-lv.w{background:rgba(251,191,36,.16);color:var(--gold)}
+  .ri-sg{font-size:13px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ri-sc{margin-left:auto;font-size:18px;font-weight:800;flex-shrink:0}
+  .ri-sc.u{color:var(--red)} .ri-sc.w{color:var(--gold)}
   .quad{position:relative;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:20px}
   /* 십자 라인 */
   .cross-v,.cross-h{position:absolute;background:linear-gradient(var(--ang),transparent,var(--border) 12%,var(--border) 88%,transparent);z-index:1;pointer-events:none}
@@ -131,6 +162,17 @@
 
     <!-- ════ HUB (사분면) ════ -->
     <section id="hub">
+      <!-- 최상단 우선 처리 띠 -->
+      <div class="band">
+        <div class="pcard todo">
+          <div class="pcard-hd"><span class="pc-ic">✓</span><div class="pc-tt">오늘의 할일<span class="m">AI 우선순위 · 키워드</span></div><span class="pc-cnt" id="todoCnt"></span></div>
+          <div class="pc-body" id="todoBody"></div>
+        </div>
+        <div class="pcard risk" onclick="openDetail('ops')">
+          <div class="pcard-hd"><span class="pc-ic">!</span><div class="pc-tt">위험 학생 감지<span class="m">즉시 상담 필요</span></div><span class="pc-go">전체 →</span></div>
+          <div class="pc-body" id="riskBody"></div>
+        </div>
+      </div>
       <div class="hub-head">
         <h1>4대 운영 영역</h1>
         <p>영역을 클릭하면 세부 대시보드로 이동합니다</p>
@@ -227,6 +269,18 @@
     att:{ present:107,late:62,absent:28,early:11,out:15,left:12,
       rateTr:[82,84,83,86,85,88] }
   };
+  // 최상단 우선 처리
+  const TODOS=[
+    ['u','홍○○ 즉시 상담','09:30'],['u','오르비 게시글 대응','10:00'],
+    ['h','미납 7명 알림 발송','11:00'],['h','특별생 12명 연락','13:00'],
+    ['f','최○○ 팔로업 상담','15:00'],['f','주간 보고서 제출','17:00'],
+  ];
+  const RISKS_TOP=[
+    ['홍○○','u','순공 −45% · 상담기피 12일 · 앱 미접속 5일',94],
+    ['김○○','u','모의고사 2회↓ · 결석 3회 · 학부모 문의↑',88],
+    ['박○○','u','부정 게시글 · \'다른 곳\' 감지 · 순공 −32%',81],
+    ['이○○','w','집중도 3주 하락 · 상담 간격 증가',62],
+  ];
   const META={
     ops:{name:'운영 현황',color:'#A66BFF'}, recr:{name:'모집 · 입학/퇴원',color:'#22D3EE'},
     fin:{name:'회계 · 매출/미납/결제',color:'#FBBF24'}, att:{name:'출결 현황',color:'#2DD4BF'}
@@ -311,6 +365,17 @@
   function toggleTheme(){const l=document.body.classList.toggle('light');document.getElementById('themeLbl').textContent=l?'다크 모드':'라이트 모드';
     // 현재 보이는 화면 차트 다시 그림
     if(document.getElementById('detail').style.display==='block'){const k=location.hash.slice(1);if(RENDER[k]){clearCharts();RENDER[k]();}}}
+
+  // 최상단 띠 렌더
+  function buildBand(){
+    const lab={u:'긴급',h:'중요',f:'팔로업'};
+    document.getElementById('todoCnt').textContent='총 '+TODOS.length+'건';
+    document.getElementById('todoBody').innerHTML=TODOS.map(t=>
+      `<div class="todo-item"><span class="ti-tag ${t[0]}">${lab[t[0]]}</span><span class="ti-tx">${t[1]}</span><span class="ti-tm">${t[2]}</span></div>`).join('');
+    document.getElementById('riskBody').innerHTML=RISKS_TOP.map(r=>
+      `<div class="risk-item"><span class="ri-nm">${r[0]}</span><span class="ri-lv ${r[1]}">${r[1]==='u'?'긴급':'주의'}</span><span class="ri-sg">${r[2]}</span><span class="ri-sc ${r[1]}">${r[3]}</span></div>`).join('');
+  }
+  buildBand();
 
   // 딥링크 (#ops 등)로 진입 가능
   const h=location.hash.slice(1);
