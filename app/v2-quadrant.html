@@ -83,8 +83,16 @@
   .pc-tt{font-size:17px;font-weight:800;color:var(--ink)}
   .pc-tt .m{font-size:12.5px;font-weight:500;color:var(--text3);margin-left:8px}
   .pc-cnt{margin-left:auto;font-size:13px;font-weight:700;color:var(--ac);background:var(--ac-soft);padding:3px 11px;border-radius:8px}
-  .pc-go{margin-left:auto;font-size:13px;font-weight:700;color:var(--ac)}
-  .pc-body{display:flex;flex-direction:column;gap:2px}
+  .pc-go{font-size:13px;font-weight:700;color:var(--ac)}
+  .pc-cnt+.pc-toggle,.pc-go+.pc-toggle{margin-left:2px}
+  .pc-toggle{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--panel-2);color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;padding:0;transition:.18s}
+  .pc-toggle:hover{border-color:var(--ac);color:var(--ac)}
+  .pc-cnt{margin-left:auto} .pc-go{margin-left:auto}
+  .chev{width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translate(-1px,-1px);transition:transform .22s}
+  .pcard.collapsed .chev{transform:rotate(-135deg) translate(-2px,-2px)}
+  .pc-body{display:flex;flex-direction:column;gap:2px;overflow:hidden;transition:max-height .26s ease,opacity .2s,margin .2s;max-height:520px}
+  .pcard.collapsed .pc-body{max-height:0;opacity:0;margin:0}
+  .pcard.collapsed .pcard-hd{margin-bottom:0}
   .todo-item{display:flex;align-items:center;gap:11px;padding:9px 2px;border-bottom:1px solid var(--border-soft)}
   .todo-item:last-child{border:none}
   .ti-tag{font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:7px;flex-shrink:0;min-width:46px;text-align:center}
@@ -235,11 +243,11 @@
       <!-- 최상단 우선 처리 띠 -->
       <div class="band">
         <div class="pcard todo">
-          <div class="pcard-hd"><span class="pc-ic">✓</span><div class="pc-tt">오늘의 할일<span class="m">AI 우선순위 · 키워드</span></div><span class="pc-cnt" id="todoCnt"></span></div>
+          <div class="pcard-hd"><span class="pc-ic">✓</span><div class="pc-tt">오늘의 할일<span class="m">AI 우선순위 · 키워드</span></div><span class="pc-cnt" id="todoCnt"></span><button class="pc-toggle" title="접기/펼치기" onclick="toggleCard(event,this)"><span class="chev"></span></button></div>
           <div class="pc-body" id="todoBody"></div>
         </div>
         <div class="pcard risk" onclick="openDetail('ops')">
-          <div class="pcard-hd"><span class="pc-ic">!</span><div class="pc-tt">위험 학생 감지<span class="m">즉시 상담 필요</span></div><span class="pc-go">전체 →</span></div>
+          <div class="pcard-hd"><span class="pc-ic">!</span><div class="pc-tt">위험 학생 감지<span class="m">즉시 상담 필요</span></div><span class="pc-go">전체 →</span><button class="pc-toggle" title="접기/펼치기" onclick="toggleCard(event,this)"><span class="chev"></span></button></div>
           <div class="pc-body" id="riskBody"></div>
         </div>
       </div>
@@ -446,6 +454,9 @@
       document.getElementById('attL').innerHTML=legend(aL.map((l,i)=>[l,aV[i]]),A6,'명');
       areaChart('#c2',MONTHS,d.rateTr,'#2DD4BF',v=>v+'%');}
   };
+
+  // 카드 접기/펼치기 (원형 V 버튼)
+  function toggleCard(ev,btn){ ev.stopPropagation(); btn.closest('.pcard').classList.toggle('collapsed'); }
 
   function toggleTheme(){const l=document.body.classList.toggle('light');document.getElementById('themeLbl').textContent=l?'다크 모드':'라이트 모드';
     // 현재 보이는 화면 차트 다시 그림
