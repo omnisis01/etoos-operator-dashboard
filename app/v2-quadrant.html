@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>이투스ECI — 운영 허브 (2안 · 사분면)</title>
+<style>
+  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css');
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --body-bg:#13141F;--glow1:rgba(124,58,237,.20);--glow2:rgba(34,211,238,.10);
+    --panel:#1C1D2B;--panel-2:#23253A;--border:#2C2F45;--border-soft:#24263A;
+    --text:#EDEFF8;--text2:#A6ABC8;--text3:#6E7392;--ink:#FFFFFF;
+    --purple:#A66BFF;--purple-2:#7C3AED;--pink:#EC4899;--cyan:#22D3EE;
+    --teal:#2DD4BF;--blue:#4F7CFF;--green:#34D399;--red:#F87171;--gold:#FBBF24;
+    --grad-btn:linear-gradient(135deg,#A66BFF,#7C3AED);
+    --shadow:0 10px 34px rgba(0,0,0,.38);--r:16px;--r-lg:22px;
+  }
+  body.light{
+    --body-bg:#ECEEF5;--glow1:rgba(124,58,237,.07);--glow2:rgba(34,211,238,.05);
+    --panel:#FFFFFF;--panel-2:#F2F4F9;--border:#E4E8F1;--border-soft:#EEF1F7;
+    --text:#1B1F2E;--text2:#535A73;--text3:#8A91A8;--ink:#161A28;
+    --shadow:0 8px 26px rgba(30,41,90,.10);
+  }
+  body{font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;color:var(--text);min-height:100vh;
+    background:radial-gradient(900px 600px at 12% -5%,var(--glow1),transparent 60%),
+               radial-gradient(800px 600px at 100% 110%,var(--glow2),transparent 55%),var(--body-bg);
+    -webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+  .wrap{max-width:1280px;margin:0 auto;padding:26px 30px 50px}
+
+  /* ── 상단바 ── */
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+  .brand{font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-.3px}
+  .brand .sub{display:block;font-size:13px;color:var(--text3);font-weight:500;margin-top:2px}
+  .top-r{display:flex;align-items:center;gap:12px}
+  .pill{font-size:13.5px;color:var(--text2);background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:6px 14px}
+  .theme-btn{display:flex;align-items:center;gap:7px;border:1px solid var(--border);background:var(--panel);color:var(--text2);font-family:inherit;font-size:13.5px;font-weight:700;padding:8px 14px;border-radius:10px;cursor:pointer}
+  .theme-btn .ic{width:13px;height:13px;border-radius:50%;background:var(--gold);box-shadow:inset -4px -3px 0 0 var(--panel)}
+  body.light .theme-btn .ic{background:var(--purple-2);box-shadow:none}
+
+  /* ── HUB (사분면) ── */
+  .hub-head{text-align:center;margin:6px 0 20px}
+  .hub-head h1{font-size:26px;font-weight:800;color:var(--ink);letter-spacing:-.4px}
+  .hub-head p{font-size:14.5px;color:var(--text3);margin-top:6px}
+  .quad{position:relative;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:20px}
+  /* 십자 라인 */
+  .cross-v,.cross-h{position:absolute;background:linear-gradient(var(--ang),transparent,var(--border) 12%,var(--border) 88%,transparent);z-index:1;pointer-events:none}
+  .cross-v{--ang:180deg;left:50%;top:0;bottom:0;width:2px;transform:translateX(-50%)}
+  .cross-h{--ang:90deg;top:50%;left:0;right:0;height:2px;transform:translateY(-50%)}
+  .hub-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;
+    width:110px;height:110px;border-radius:50%;background:var(--panel);border:2px solid var(--border);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:var(--shadow)}
+  .hub-center .hc-t{font-size:13px;font-weight:800;color:var(--purple);letter-spacing:.5px}
+  .hub-center .hc-s{font-size:11px;color:var(--text3);margin-top:3px}
+
+  .qd{position:relative;z-index:2;background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);
+    padding:24px 26px;box-shadow:var(--shadow);cursor:pointer;transition:.18s;min-height:240px;overflow:hidden}
+  .qd:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .qd::after{content:'';position:absolute;inset:0;border-radius:var(--r-lg);
+    background:radial-gradient(420px 200px at var(--gx) var(--gy),var(--accent-soft),transparent 70%);opacity:.9;pointer-events:none}
+  .qd.ops   {--accent:var(--purple);--accent-soft:rgba(166,107,255,.12);--gx:0%;--gy:0%}
+  .qd.recr  {--accent:var(--cyan);  --accent-soft:rgba(34,211,238,.12); --gx:100%;--gy:0%}
+  .qd.fin   {--accent:var(--gold);  --accent-soft:rgba(251,191,36,.13); --gx:0%;--gy:100%}
+  .qd.att   {--accent:var(--teal);  --accent-soft:rgba(45,212,191,.13); --gx:100%;--gy:100%}
+  .qd-hd{display:flex;align-items:center;gap:11px;margin-bottom:18px;position:relative;z-index:1}
+  .qd-ic{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+    font-size:18px;font-weight:800;color:#fff;background:var(--accent);flex-shrink:0}
+  .qd-tt{font-size:19px;font-weight:800;color:var(--ink)}
+  .qd-tt .m{display:block;font-size:12.5px;font-weight:500;color:var(--text3);margin-top:2px}
+  .qd-go{margin-left:auto;font-size:13px;font-weight:700;color:var(--accent)}
+  .kpis{display:grid;grid-template-columns:1fr 1fr;gap:13px;position:relative;z-index:1}
+  .kpi{background:var(--panel-2);border:1px solid var(--border-soft);border-radius:13px;padding:13px 15px}
+  .kpi .k{font-size:12.5px;color:var(--text3);font-weight:600}
+  .kpi .v{font-size:23px;font-weight:800;color:var(--ink);margin-top:3px;letter-spacing:-.5px}
+  .kpi .v small{font-size:13px;font-weight:700;color:var(--text2)}
+  .kpi .d{font-size:12px;font-weight:700;margin-top:2px}
+  .d.up{color:var(--green)} .d.dn{color:var(--red)} .d.warn{color:var(--gold)}
+
+  /* ── DETAIL (2depth) ── */
+  .detail{display:none}
+  .dt-head{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+  .back{display:flex;align-items:center;gap:7px;border:1px solid var(--border);background:var(--panel);
+    color:var(--text2);font-family:inherit;font-size:14px;font-weight:700;padding:9px 15px;border-radius:11px;cursor:pointer}
+  .back:hover{color:var(--ink);border-color:var(--purple)}
+  .dt-title{font-size:23px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:10px}
+  .dt-badge{font-size:12.5px;font-weight:700;color:#fff;padding:3px 11px;border-radius:8px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px}
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px 24px;box-shadow:var(--shadow);margin-bottom:22px}
+  .panel-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .panel-title{font-size:17px;font-weight:700;color:var(--ink)}
+  .panel-more{font-size:13.5px;color:var(--text3)}
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px}
+  .stat{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow)}
+  .stat .k{font-size:13.5px;color:var(--text3);font-weight:600}
+  .stat .v{font-size:27px;font-weight:800;color:var(--ink);margin-top:5px;letter-spacing:-.6px}
+  .stat .v small{font-size:14px;color:var(--text2);font-weight:700}
+  .stat .d{font-size:12.5px;font-weight:700;margin-top:3px}
+  .lst .row{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid var(--border-soft);font-size:14.5px}
+  .lst .row:last-child{border:none}
+  .lst .nm{font-weight:700;color:var(--ink);min-width:54px}
+  .lst .tag{font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:7px}
+  .tag.u{background:rgba(248,113,113,.15);color:var(--red)} .tag.w{background:rgba(251,191,36,.15);color:var(--gold)}
+  .lst .ds{color:var(--text2);font-size:13px}
+  .lst .amt{margin-left:auto;font-weight:800;color:var(--ink)}
+  .lst .amt.r{color:var(--red)}
+  .dl-item{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text2);padding:7px 0}
+  .dl-item .ring{width:13px;height:13px;border-radius:50%;border:3px solid;flex-shrink:0}
+  .dl-item b{color:var(--ink);font-weight:700;margin-left:auto}
+  .donut-wrap{display:flex;gap:18px;align-items:center}
+  .donut-wrap .dc{width:170px;flex:0 0 170px}
+  .donut-wrap .dl{flex:1;min-width:0}
+
+  @media(max-width:880px){
+    .quad{grid-template-columns:1fr;grid-template-rows:none}
+    .cross-v,.cross-h,.hub-center{display:none}
+    .grid2,.grid3,.stat-row{grid-template-columns:1fr}
+    .donut-wrap{flex-direction:column}.donut-wrap .dc{width:100%}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">이투스ECI<span class="sub">운영 허브 · 2안 (사분면 · 테스트)</span></div>
+      <div class="top-r">
+        <span class="pill" id="ctx">대치 · 원장 · 2026.06.13</span>
+        <button class="theme-btn" onclick="toggleTheme()"><span class="ic"></span><span id="themeLbl">라이트 모드</span></button>
+      </div>
+    </div>
+
+    <!-- ════ HUB (사분면) ════ -->
+    <section id="hub">
+      <div class="hub-head">
+        <h1>4대 운영 영역</h1>
+        <p>영역을 클릭하면 세부 대시보드로 이동합니다</p>
+      </div>
+      <div class="quad">
+        <div class="cross-v"></div><div class="cross-h"></div>
+        <div class="hub-center"><div class="hc-t">ECI</div><div class="hc-s">운영 허브</div></div>
+
+        <!-- 운영 -->
+        <div class="qd ops" onclick="openDetail('ops')">
+          <div class="qd-hd"><div class="qd-ic">運</div><div class="qd-tt">운영<span class="m">재원·좌석·종합 현황</span></div><span class="qd-go">자세히 →</span></div>
+          <div class="kpis">
+            <div class="kpi"><div class="k">총 재원생</div><div class="v">187<small>명</small></div><div class="d up">전주 ▲ +3</div></div>
+            <div class="kpi"><div class="k">좌석 점유율</div><div class="v">79<small>%</small></div><div class="d up">▲ +2%p</div></div>
+            <div class="kpi"><div class="k">퇴원 위험</div><div class="v">3<small>명</small></div><div class="d warn">긴급 2 · 주의 1</div></div>
+            <div class="kpi"><div class="k">순증(월)</div><div class="v">+15<small>명</small></div><div class="d up">등록20−퇴원5</div></div>
+          </div>
+        </div>
+
+        <!-- 모집 -->
+        <div class="qd recr" onclick="openDetail('recr')">
+          <div class="qd-hd"><div class="qd-ic">募</div><div class="qd-tt">모집<span class="m">입학 · 퇴원</span></div><span class="qd-go">자세히 →</span></div>
+          <div class="kpis">
+            <div class="kpi"><div class="k">신규 등록(월)</div><div class="v">20<small>명</small></div><div class="d up">최고 20건</div></div>
+            <div class="kpi"><div class="k">퇴원(월)</div><div class="v">5<small>명</small></div><div class="d dn">▲ +1</div></div>
+            <div class="kpi"><div class="k">신규 비중</div><div class="v">37<small>%</small></div><div class="d">재등록 63%</div></div>
+            <div class="kpi"><div class="k">1순위 이탈</div><div class="v" style="font-size:18px">성적부진</div><div class="d warn">42%</div></div>
+          </div>
+        </div>
+
+        <!-- 회계 -->
+        <div class="qd fin" onclick="openDetail('fin')">
+          <div class="qd-hd"><div class="qd-ic">會</div><div class="qd-tt">회계<span class="m">매출 · 미납 · 결제</span></div><span class="qd-go">자세히 →</span></div>
+          <div class="kpis">
+            <div class="kpi"><div class="k">당월 매출</div><div class="v">5,217<small>만</small></div><div class="d up">▲ +12%</div></div>
+            <div class="kpi"><div class="k">미납 총액</div><div class="v">412<small>만</small></div><div class="d dn">7명</div></div>
+            <div class="kpi"><div class="k">결제 대기</div><div class="v">4<small>건</small></div><div class="d warn">마감 임박 2</div></div>
+            <div class="kpi"><div class="k">월말 전망</div><div class="v">95<small>%</small></div><div class="d up">목표 달성</div></div>
+          </div>
+        </div>
+
+        <!-- 출결 -->
+        <div class="qd att" onclick="openDetail('att')">
+          <div class="qd-hd"><div class="qd-ic">出</div><div class="qd-tt">출결<span class="m">등원 · 지각 · 결석</span></div><span class="qd-go">자세히 →</span></div>
+          <div class="kpis">
+            <div class="kpi"><div class="k">오늘 등원율</div><div class="v">88<small>%</small></div><div class="d up">▲ +4%</div></div>
+            <div class="kpi"><div class="k">지각</div><div class="v">62<small>명</small></div><div class="d warn">전일 ▲ +5</div></div>
+            <div class="kpi"><div class="k">결석</div><div class="v">28<small>명</small></div><div class="d dn">장기 3</div></div>
+            <div class="kpi"><div class="k">조퇴·외출</div><div class="v">26<small>명</small></div><div class="d">조퇴11·외출15</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ DETAIL (2depth) ════ -->
+    <section id="detail" class="detail">
+      <div class="dt-head">
+        <button class="back" onclick="goHub()">← 허브로</button>
+        <div class="dt-title"><span id="dtIcon" class="dt-badge"></span><span id="dtName"></span></div>
+      </div>
+      <div id="dtBody"></div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.min.js"></script>
+  <script>
+  const MONTHS=['1월','2월','3월','4월','5월','6월'];
+  // ── 차트 헬퍼 ──
+  function PAL(){const l=document.body.classList.contains('light');return{grid:l?'#E4E8F1':'#2C2F45',axis:l?'#8A91A8':'#6E7392',mode:l?'light':'dark',tip:l?'light':'dark',cVal:l?'#161A28':'#FFFFFF',cLbl:l?'#6E7392':'#A6ABC8'};}
+  function BASE(){const p=PAL();return{chart:{background:'transparent',toolbar:{show:false},animations:{enabled:false},fontFamily:'Pretendard Variable,system-ui,sans-serif'},theme:{mode:p.mode},grid:{borderColor:p.grid,strokeDashArray:4},tooltip:{theme:p.tip}};}
+  function XA(c,fs){const p=PAL();return{categories:c,labels:{style:{colors:p.axis,fontSize:fs||'12px'}},axisBorder:{show:false},axisTicks:{show:false}};}
+  function YA(f){const p=PAL();return{labels:{style:{colors:p.axis,fontSize:'12px'},formatter:f}};}
+  let CHARTS=[];
+  function mk(el,opt){const node=document.querySelector(el);if(!node)return;const c=new ApexCharts(node,opt);c.render();CHARTS.push(c);return c;}
+  function clearCharts(){CHARTS.forEach(c=>{try{c.destroy()}catch(e){}});CHARTS=[];}
+  function lineChart(el,cats,reg,quit){const p=PAL();mk(el,{...BASE(),chart:{...BASE().chart,type:'line',height:280},series:quit?[{name:'신규 등록',data:reg},{name:'퇴원',data:quit}]:[{name:'값',data:reg}],stroke:{width:quit?[4,3]:4,curve:'smooth',dashArray:quit?[0,6]:0},colors:quit?['#22D3EE','#A66BFF']:['#22D3EE'],markers:{size:0,hover:{size:6}},legend:{show:!!quit,position:'top',horizontalAlign:'right',labels:{colors:p.axis}},yaxis:YA(),xaxis:XA(cats),grid:{borderColor:p.grid,strokeDashArray:4,padding:{right:20}}});}
+  function areaChart(el,cats,data,color,fmt){const p=PAL();mk(el,{...BASE(),chart:{...BASE().chart,type:'area',height:260},series:[{name:'값',data:data}],stroke:{width:3,curve:'smooth'},colors:[color],fill:{type:'gradient',gradient:{shadeIntensity:1,opacityFrom:.35,opacityTo:.02,stops:[0,100]}},dataLabels:{enabled:false},markers:{size:0},xaxis:XA(cats),yaxis:fmt?YA(fmt):{show:false}});}
+  function barChart(el,cats,data,horizontal,fmt){const p=PAL();mk(el,{...BASE(),chart:{...BASE().chart,type:'bar',height:280},series:[{name:'값',data:data}],plotOptions:{bar:{borderRadius:6,columnWidth:'52%',horizontal:!!horizontal,barHeight:'62%'}},colors:['#22D3EE'],fill:{type:'gradient',gradient:{shade:'dark',type:horizontal?'horizontal':'vertical',gradientToColors:['#A66BFF'],stops:[0,100],opacityFrom:1,opacityTo:1}},dataLabels:{enabled:!!horizontal,formatter:fmt||(v=>v),style:{colors:[p.cVal],fontWeight:700},offsetX:horizontal?14:0},grid:{borderColor:p.grid,strokeDashArray:4},xaxis:horizontal?{...XA(cats),labels:{show:false}}:XA(cats),yaxis:YA(fmt||(v=>v)),tooltip:{theme:p.tip}});}
+  function donutChart(el,data,labels,colors,suffix){const p=PAL();const u=suffix||'%';mk(el,{...BASE(),chart:{...BASE().chart,type:'donut',height:230},series:data,labels:labels,colors:colors,stroke:{width:0},plotOptions:{pie:{donut:{size:'72%',labels:{show:true,name:{color:p.cLbl,fontSize:'12px'},total:{show:true,label:labels[0],color:p.cLbl,fontSize:'12px',formatter:()=>data[0]+u},value:{color:p.cVal,fontSize:'22px',fontWeight:800,formatter:v=>v+u}}}}},legend:{show:false},dataLabels:{enabled:false},tooltip:{theme:p.tip,y:{formatter:v=>v+u}}});}
+  const RC=['#A66BFF','#EC4899','#22D3EE','#4F7CFF'];
+
+  // ── 목 데이터 ──
+  const D={
+    ops:{ students:187,occupancy:79,attend:88,risk:3,
+      newEnroll:[13,15,12,14,16,20], withdraw:[4,3,5,4,6,5], students_tr:[170,174,176,179,183,187],
+      risks:[['홍○○','u','순공 −45% · 상담기피 12일',94],['김○○','u','모의고사 2회↓ · 결석 3회',88],['이○○','w','집중도 3주 하락',62]] },
+    recr:{ newM:20,withdrawM:5,net:15,
+      newEnroll:[13,15,12,14,16,20], withdraw:[4,3,5,4,6,5],
+      reasons:[['성적 부진',42],['타 학원',31],['번아웃',18],['비용',9]],
+      reasonsAll:[['성적 부진',39],['타 학원',33],['번아웃',17],['비용',11]] },
+    fin:{ revenue:5217,unpaidTotal:412,unpaidCnt:7,
+      revTr:[1450,1520,1380,1610,1720,1840],
+      payments:[['김○○','u','마감 06/30',98],['정○○','u','마감 06/30',85],['윤○○','w','마감 07/20',76],['송○○','w','마감 07/20',62]] },
+    att:{ present:107,late:62,absent:28,early:11,out:15,left:12,
+      rateTr:[82,84,83,86,85,88] }
+  };
+  const META={
+    ops:{name:'운영 현황',color:'#A66BFF'}, recr:{name:'모집 · 입학/퇴원',color:'#22D3EE'},
+    fin:{name:'회계 · 매출/미납/결제',color:'#FBBF24'}, att:{name:'출결 현황',color:'#2DD4BF'}
+  };
+
+  function openDetail(key){
+    clearCharts();
+    const m=META[key];
+    document.getElementById('hub').style.display='none';
+    document.getElementById('detail').style.display='block';
+    const ic=document.getElementById('dtIcon'); ic.style.background=m.color; ic.textContent={ops:'運',recr:'募',fin:'會',att:'出'}[key];
+    document.getElementById('dtName').textContent=m.name;
+    document.getElementById('dtBody').innerHTML=TPL[key]();
+    window.scrollTo(0,0);
+    setTimeout(()=>RENDER[key](),30);
+    history.replaceState(null,'','#'+key);
+  }
+  function goHub(){ clearCharts(); document.getElementById('detail').style.display='none'; document.getElementById('hub').style.display='block'; history.replaceState(null,'','#'); }
+
+  const stat=(k,v,u,d,cls)=>`<div class="stat"><div class="k">${k}</div><div class="v">${v}${u?`<small>${u}</small>`:''}</div>${d?`<div class="d ${cls||''}">${d}</div>`:''}</div>`;
+  const TPL={
+    ops:()=>`
+      <div class="stat-row">${stat('총 재원생','187','명','전주 ▲ +3','up')}${stat('좌석 점유율','79','%','▲ +2%p','up')}${stat('순증(월)','+15','명','등록20−퇴원5','up')}${stat('퇴원 위험','3','명','긴급 2 · 주의 1','warn')}</div>
+      <div class="grid2">
+        <div class="panel"><div class="panel-hd"><div class="panel-title">재원생 추이</div></div><div id="c1"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">신규 등록 vs 퇴원</div></div><div id="c2"></div></div>
+      </div>
+      <div class="panel"><div class="panel-hd"><div class="panel-title">AI 퇴원 위험 감지</div><span class="panel-more">데모 · ERP 연동 예정</span></div><div class="lst" id="riskL"></div></div>`,
+    recr:()=>`
+      <div class="stat-row">${stat('신규 등록(월)','20','명','최고 20건','up')}${stat('퇴원(월)','5','명','▲ +1','dn')}${stat('순증','+15','명','','up')}${stat('신규:재등록','37:63','','신규 비중 37%','')}</div>
+      <div class="grid2">
+        <div class="panel"><div class="panel-hd"><div class="panel-title">월별 신규 vs 퇴원</div></div><div id="c1"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">이탈 사유 분석</div><span class="panel-more">최근 3개월</span></div><div class="donut-wrap"><div id="c2" class="dc"></div><div class="dl" id="reaL"></div></div></div>
+      </div>
+      <div class="panel"><div class="panel-hd"><div class="panel-title">퇴원 사유 — 내 지점 vs 전 지점 평균</div></div><div id="c3"></div></div>`,
+    fin:()=>`
+      <div class="stat-row">${stat('당월 매출','5,217','만원','▲ +12%','up')}${stat('미납 총액','412','만원','7명','dn')}${stat('결제 대기','4','건','마감 임박 2','warn')}${stat('월말 전망','95','%','목표 달성','up')}</div>
+      <div class="grid2">
+        <div class="panel"><div class="panel-hd"><div class="panel-title">매출 추이</div></div><div id="c1"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">미납·결제 관리 · 총 412만원</div><span class="panel-more">수납 →</span></div><div class="lst" id="payL"></div></div>
+      </div>`,
+    att:()=>`
+      <div class="stat-row">${stat('오늘 등원율','88','%','▲ +4%','up')}${stat('지각','62','명','전일 ▲ +5','warn')}${stat('결석','28','명','장기 3','dn')}${stat('조퇴·외출','26','명','조퇴11·외출15','')}</div>
+      <div class="grid2">
+        <div class="panel"><div class="panel-hd"><div class="panel-title">금일 출결 현황</div></div><div class="donut-wrap"><div id="c1" class="dc"></div><div class="dl" id="attL"></div></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">등원율 추이</div></div><div id="c2"></div></div>
+      </div>`
+  };
+  const lstRisk=(arr)=>arr.map(r=>`<div class="row"><span class="nm">${r[0]}</span><span class="tag ${r[1]}">${r[1]==='u'?'긴급':'주의'}</span><span class="ds">${r[2]}</span><span class="amt ${r[1]==='u'?'r':''}">${r[3]}</span></div>`).join('');
+  const lstPay=(arr)=>arr.map(r=>`<div class="row"><span class="nm">${r[0]}</span><span class="tag ${r[1]}">${r[1]==='u'?'임박':'예정'}</span><span class="ds">${r[2]}</span><span class="amt r">${r[3]}만</span></div>`).join('');
+  const legend=(arr,colors,u)=>arr.map((x,i)=>`<div class="dl-item"><span class="ring" style="border-color:${colors[i]}"></span> ${x[0]} <b>${x[1]}${u||'%'}</b></div>`).join('');
+
+  const RENDER={
+    ops:()=>{const d=D.ops;
+      areaChart('#c1',MONTHS,d.students_tr,'#A66BFF',v=>v);
+      lineChart('#c2',MONTHS,d.newEnroll,d.withdraw);
+      document.getElementById('riskL').innerHTML=lstRisk(d.risks);},
+    recr:()=>{const d=D.recr;
+      lineChart('#c1',MONTHS,d.newEnroll,d.withdraw);
+      donutChart('#c2',d.reasons.map(r=>r[1]),d.reasons.map(r=>r[0]),RC);
+      document.getElementById('reaL').innerHTML=legend(d.reasons,RC);
+      // 내 지점 vs 전사 비교
+      const cats=d.reasons.map(r=>r[0]), mine=d.reasons.map(r=>r[1]);
+      const allMap=Object.fromEntries(d.reasonsAll); const allv=cats.map(l=>allMap[l]);
+      mk('#c3',{...BASE(),chart:{...BASE().chart,type:'bar',height:260},
+        series:[{name:'내 지점',data:mine},{name:'전 지점 평균',data:allv}],
+        plotOptions:{bar:{horizontal:true,borderRadius:5,barHeight:'68%'}},colors:['#22D3EE','#A66BFF'],
+        dataLabels:{enabled:true,formatter:v=>v+'%',offsetX:16,style:{fontSize:'12px',fontWeight:700,colors:[PAL().cVal]}},
+        legend:{show:true,position:'top',horizontalAlign:'left',labels:{colors:PAL().axis}},
+        xaxis:{...XA(cats),max:Math.max(...mine,...allv)+12,labels:{show:false}},yaxis:YA(),tooltip:{theme:PAL().tip,y:{formatter:v=>v+'%'}}});},
+    fin:()=>{const d=D.fin;
+      areaChart('#c1',MONTHS,d.revTr,'#FBBF24',v=>v+'만');
+      document.getElementById('payL').innerHTML=lstPay(d.payments);},
+    att:()=>{const d=D.att;
+      const A6=['#22D3EE','#FBBF24','#F87171','#A66BFF','#EC4899','#34D399'];
+      const aL=['등원','지각','결석','조퇴','외출','하원'],aV=[d.present,d.late,d.absent,d.early,d.out,d.left];
+      donutChart('#c1',aV,aL,A6,'명');
+      document.getElementById('attL').innerHTML=legend(aL.map((l,i)=>[l,aV[i]]),A6,'명');
+      areaChart('#c2',MONTHS,d.rateTr,'#2DD4BF',v=>v+'%');}
+  };
+
+  function toggleTheme(){const l=document.body.classList.toggle('light');document.getElementById('themeLbl').textContent=l?'다크 모드':'라이트 모드';
+    // 현재 보이는 화면 차트 다시 그림
+    if(document.getElementById('detail').style.display==='block'){const k=location.hash.slice(1);if(RENDER[k]){clearCharts();RENDER[k]();}}}
+
+  // 딥링크 (#ops 등)로 진입 가능
+  const h=location.hash.slice(1);
+  if(META[h]) openDetail(h);
+  </script>
+</body>
+</html>
