@@ -323,7 +323,7 @@
           <div class="hero p">
             <div class="hero-lbl">당월 누적 매출</div>
             <div class="hero-val"><span class="hero-num" id="kpiRevenue">1,840</span><span class="hero-unit" id="kpiRevenueUnit">만원</span></div>
-            <div class="hero-foot">전월 동기 대비 ▲ +12%</div>
+            <div class="hero-foot" id="kpiRevenueFoot">전월 동기 대비 ▲ +12%</div>
           </div>
           <div class="hero c">
             <div class="hero-lbl">총 재원생</div>
@@ -644,9 +644,9 @@ function buildHQ(){
 function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
 function renderBranchKPI(){
   const s=BR.snap;
-  if(s.mtd_revenue==null){ setText('kpiRevenue','—'); setText('kpiRevenueUnit',''); }
-  else if(s.mtd_revenue>=1e8){ setText('kpiRevenue',(s.mtd_revenue/1e8).toFixed(2)); setText('kpiRevenueUnit','억'); }
-  else { setText('kpiRevenue',Math.round(s.mtd_revenue/1e4).toLocaleString()); setText('kpiRevenueUnit','만원'); }
+  if(s.mtd_revenue==null){ setText('kpiRevenue','—'); setText('kpiRevenueUnit',''); setText('kpiRevenueFoot','ERP 연동 예정'); }
+  else if(s.mtd_revenue>=1e8){ setText('kpiRevenue',(s.mtd_revenue/1e8).toFixed(2)); setText('kpiRevenueUnit','억'); setText('kpiRevenueFoot','전월 동기 대비 ▲ +12%'); }
+  else { setText('kpiRevenue',Math.round(s.mtd_revenue/1e4).toLocaleString()); setText('kpiRevenueUnit','만원'); setText('kpiRevenueFoot','전월 동기 대비 ▲ +12%'); }
   setText('kpiStudents', s.total_students ?? '—');
   setText('kpiStudentsSub', s.total_students!=null ? `N수 ${s.n_repeat} · 재학 ${s.n_current} · 주 ▲+3명` : '재원생 데이터 적재 예정');
   setText('kpiUnpaid', s.unpaid_total ? won(s.unpaid_total) : '0원');
