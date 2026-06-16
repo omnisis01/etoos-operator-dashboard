@@ -577,8 +577,8 @@ function lineChart(el,cats,reg,quit,maxLabel){const p=PAL();
     series:[{name:'신규 등록',data:reg},{name:'퇴원',data:quit}],
     stroke:{width:[4,3],curve:'smooth',dashArray:[0,6]},colors:['#22D3EE','#A66BFF'],
     markers:{size:0,hover:{size:6}},legend:{show:false},
-    yaxis:YA(),xaxis:XA(cats),fill:{type:'solid'},
-    annotations:maxLabel?{points:[{x:maxLabel.x,y:maxLabel.y,marker:{size:6,fillColor:'#22D3EE',strokeColor:p.mk},label:{text:maxLabel.text,borderColor:'#A66BFF',style:{background:'#A66BFF',color:'#fff',fontWeight:700,padding:{left:8,right:8,top:4,bottom:4}}}}]}:{}});}
+    yaxis:YA(),xaxis:XA(cats),fill:{type:'solid'},grid:{...BASE().grid,padding:{right:24}},
+    annotations:maxLabel?{points:[{x:maxLabel.x,y:maxLabel.y,marker:{size:6,fillColor:'#22D3EE',strokeColor:p.mk},label:{text:maxLabel.text,textAnchor:'end',offsetX:-2,offsetY:-2,borderColor:'#A66BFF',style:{background:'#A66BFF',color:'#fff',fontWeight:700,padding:{left:8,right:8,top:4,bottom:4}}}}]}:{}});}
 function areaChart(el,cats,data,color,fmt,height){
   mk(el,{...BASE(),chart:{...BASE().chart,type:'area',height:height||200},
     series:[{name:'값',data:data}],stroke:{width:3,curve:'smooth'},colors:[color],
