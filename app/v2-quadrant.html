@@ -72,7 +72,7 @@
   .hub-head h1{font-size:26px;font-weight:800;color:var(--ink);letter-spacing:-.4px}
   .hub-head p{font-size:14.5px;color:var(--text3);margin-top:6px}
   /* ── 최상단 우선 처리 띠 ── */
-  .band{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}
+  .band{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;position:relative}
   .pcard{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 22px;box-shadow:var(--shadow);position:relative;overflow:hidden}
   .pcard.todo{--ac:var(--purple);--ac-soft:rgba(166,107,255,.10)}
   .pcard.risk{--ac:var(--red);--ac-soft:rgba(248,113,113,.10);cursor:pointer;transition:.18s}
@@ -84,15 +84,17 @@
   .pc-tt .m{font-size:12.5px;font-weight:500;color:var(--text3);margin-left:8px}
   .pc-cnt{margin-left:auto;font-size:13px;font-weight:700;color:var(--ac);background:var(--ac-soft);padding:3px 11px;border-radius:8px}
   .pc-go{font-size:13px;font-weight:700;color:var(--ac)}
-  .pc-cnt+.pc-toggle,.pc-go+.pc-toggle{margin-left:2px}
-  .pc-toggle{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--panel-2);color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;padding:0;transition:.18s}
-  .pc-toggle:hover{border-color:var(--ac);color:var(--ac)}
-  .pc-cnt{margin-left:auto} .pc-go{margin-left:auto}
-  .chev{width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translate(-1px,-1px);transition:transform .22s}
-  .pcard.collapsed .chev{transform:rotate(-135deg) translate(-2px,-2px)}
-  .pc-body{display:flex;flex-direction:column;gap:2px;overflow:hidden;transition:max-height .26s ease,opacity .2s,margin .2s;max-height:520px}
-  .pcard.collapsed .pc-body{max-height:0;opacity:0;margin:0}
-  .pcard.collapsed .pcard-hd{margin-bottom:0}
+  .pc-go{margin-left:auto}
+  /* 가운데 단일 토글 버튼 (두 카드 동시 접기/펼치기) */
+  .band-toggle{position:absolute;left:50%;top:30px;transform:translate(-50%,-50%);z-index:5;
+    width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--panel-2);
+    color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:.18s;box-shadow:var(--shadow)}
+  .band-toggle:hover{border-color:var(--purple);color:var(--purple);transform:translate(-50%,-50%) scale(1.08)}
+  .chev{width:10px;height:10px;border-right:2.5px solid currentColor;border-bottom:2.5px solid currentColor;transform:rotate(-135deg) translate(-1px,-1px);transition:transform .22s}
+  .band.collapsed .chev{transform:rotate(45deg) translate(1px,1px)}
+  .pc-body{display:flex;flex-direction:column;gap:2px;overflow:hidden;transition:max-height .28s ease,opacity .2s,margin .2s;max-height:520px}
+  .band.collapsed .pc-body{max-height:0;opacity:0;margin:0}
+  .band.collapsed .pcard-hd{margin-bottom:0}
   .todo-item{display:flex;align-items:center;gap:11px;padding:9px 2px;border-bottom:1px solid var(--border-soft)}
   .todo-item:last-child{border:none}
   .ti-tag{font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:7px;flex-shrink:0;min-width:46px;text-align:center}
@@ -241,15 +243,16 @@
     <!-- ════ HUB (사분면) ════ -->
     <section id="hub">
       <!-- 최상단 우선 처리 띠 -->
-      <div class="band">
+      <div class="band" id="band">
         <div class="pcard todo">
-          <div class="pcard-hd"><span class="pc-ic">✓</span><div class="pc-tt">오늘의 할일<span class="m">AI 우선순위 · 키워드</span></div><span class="pc-cnt" id="todoCnt"></span><button class="pc-toggle" title="접기/펼치기" onclick="toggleCard(event,this)"><span class="chev"></span></button></div>
+          <div class="pcard-hd"><span class="pc-ic">✓</span><div class="pc-tt">오늘의 할일<span class="m">AI 우선순위 · 키워드</span></div><span class="pc-cnt" id="todoCnt"></span></div>
           <div class="pc-body" id="todoBody"></div>
         </div>
         <div class="pcard risk" onclick="openDetail('ops')">
-          <div class="pcard-hd"><span class="pc-ic">!</span><div class="pc-tt">위험 학생 감지<span class="m">즉시 상담 필요</span></div><span class="pc-go">전체 →</span><button class="pc-toggle" title="접기/펼치기" onclick="toggleCard(event,this)"><span class="chev"></span></button></div>
+          <div class="pcard-hd"><span class="pc-ic">!</span><div class="pc-tt">위험 학생 감지<span class="m">즉시 상담 필요</span></div><span class="pc-go">전체 →</span></div>
           <div class="pc-body" id="riskBody"></div>
         </div>
+        <button class="band-toggle" title="우선 처리 접기/펼치기" onclick="toggleBand()"><span class="chev"></span></button>
       </div>
       <div class="hub-head">
         <h1>4대 운영 영역</h1>
@@ -455,8 +458,8 @@
       areaChart('#c2',MONTHS,d.rateTr,'#2DD4BF',v=>v+'%');}
   };
 
-  // 카드 접기/펼치기 (원형 V 버튼)
-  function toggleCard(ev,btn){ ev.stopPropagation(); btn.closest('.pcard').classList.toggle('collapsed'); }
+  // 두 카드 동시 접기/펼치기 (가운데 원형 V 버튼)
+  function toggleBand(ev){ if(ev) ev.stopPropagation(); document.getElementById('band').classList.toggle('collapsed'); }
 
   function toggleTheme(){const l=document.body.classList.toggle('light');document.getElementById('themeLbl').textContent=l?'다크 모드':'라이트 모드';
     // 현재 보이는 화면 차트 다시 그림
