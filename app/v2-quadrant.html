@@ -229,6 +229,36 @@
   .donut-wrap .dc{width:170px;flex:0 0 170px}
   .donut-wrap .dl{flex:1;min-width:0}
 
+  /* ── 오늘의 할일 체크리스트 ── */
+  .ckl-count{margin-left:auto;font-size:16px;font-weight:800;color:var(--purple);background:rgba(166,107,255,.14);padding:6px 14px;border-radius:20px}
+  .ckl-progwrap{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+  .ckl-prog{flex:1;height:12px;background:var(--panel-2);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+  .ckl-prog>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--purple),var(--cyan));transition:width .35s}
+  .ckl-pct{font-size:18px;font-weight:800;color:var(--ink);min-width:50px;text-align:right}
+  .ckl-grp{margin-bottom:18px}
+  .ckl-ghd{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;margin:6px 2px 10px;color:var(--gc)}
+  .ckl-ghd .gdot{width:10px;height:10px;border-radius:50%;background:var(--gc)}
+  .ckl-ghd .gn{font-size:13.5px;font-weight:700;color:var(--text3)}
+  .ckl-item{display:flex;align-items:flex-start;gap:14px;padding:16px 18px;border:1px solid var(--border);border-radius:14px;margin-bottom:11px;background:var(--panel-2);cursor:pointer;transition:.15s}
+  .ckl-item:hover{border-color:var(--purple);transform:translateY(-1px)}
+  .ckl-item.done{background:rgba(52,211,153,.07);border-color:rgba(52,211,153,.35)}
+  .ckl-box{width:26px;height:26px;border-radius:8px;border:2px solid var(--text3);flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:.15s}
+  .ckl-item.done .ckl-box{background:var(--green);border-color:var(--green)}
+  .ckl-box .ic-svg{width:15px;height:15px;color:#fff;opacity:0;transition:opacity .15s}
+  .ckl-item.done .ckl-box .ic-svg{opacity:1}
+  .ckl-main{flex:1;min-width:0}
+  .ckl-main .t{font-size:17.5px;font-weight:700;color:var(--ink)}
+  .ckl-item.done .ckl-main .t{text-decoration:line-through;color:var(--text3)}
+  .ckl-main .d{font-size:14.5px;color:var(--text2);margin-top:4px;line-height:1.5}
+  .ckl-meta{display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex-shrink:0}
+  .ckl-time{font-size:16px;font-weight:800;color:var(--text2);font-variant-numeric:tabular-nums}
+  .ckl-own{font-size:12.5px;font-weight:700;color:#fff;padding:3px 11px;border-radius:20px;background:var(--text3);white-space:nowrap}
+  .ckl-memo-wrap{margin-top:8px}
+  .ckl-memo-lbl{font-size:14.5px;font-weight:700;color:var(--text2);margin-bottom:8px}
+  .ckl-memo{border:1px dashed var(--border);border-radius:12px;padding:14px;min-height:54px;background:var(--panel-2);color:var(--text);font-size:15px;outline:none}
+  .ckl-memo:empty:before{content:attr(data-ph);color:var(--text3)}
+  .ckl-memo:focus{border-color:var(--purple);border-style:solid}
+
   .band{grid-template-columns:1fr 1fr}
   @media(max-width:880px){
     .quad{grid-template-columns:1fr;grid-template-rows:none}
@@ -291,8 +321,8 @@
     <!-- ════ HUB (사분면) ════ -->
     <section id="hub">
       <div class="band" id="band">
-        <div class="pcard todo">
-          <div class="pcard-hd"><span class="pc-ic" data-icon="check"></span><div class="pc-tt">오늘의 할일<span class="m">AI 우선순위 · 키워드</span></div><span class="pc-cnt" id="todoCnt"></span></div>
+        <div class="pcard todo" onclick="openTodo()">
+          <div class="pcard-hd"><span class="pc-ic" data-icon="check"></span><div class="pc-tt">오늘의 할일<span class="m">AI 우선순위 · 키워드</span></div><span class="pc-cnt" id="todoCnt"></span><span class="pc-go" style="margin-left:10px;flex:0">체크리스트 →</span></div>
           <div class="pc-body" id="todoBody"></div>
         </div>
         <div class="pcard risk" onclick="openDetail('retention')">
@@ -369,6 +399,23 @@
         </div>
       </div>
       <div id="dtBody"></div>
+    </section>
+
+    <!-- ════ 오늘의 할일 체크리스트 (2depth) ════ -->
+    <section id="todoboard" class="detail">
+      <div class="dt-head">
+        <button class="back" onclick="goHub()">← 허브로</button>
+        <div class="dt-title"><span class="dt-badge" id="cklIcon" style="background:var(--purple)"></span><span>오늘의 할일 · 체크리스트</span></div>
+        <span class="ckl-count" id="cklCount"></span>
+      </div>
+      <div class="panel">
+        <div class="ckl-progwrap"><div class="ckl-prog"><i id="cklBar"></i></div><span class="ckl-pct" id="cklPct">0%</span></div>
+        <div id="cklBody"></div>
+        <div class="ckl-memo-wrap">
+          <div class="ckl-memo-lbl">오늘 특이사항 메모</div>
+          <div class="ckl-memo" id="cklMemo" contenteditable="true" data-ph="오늘 운영 중 이슈·메모를 적어두세요"></div>
+        </div>
+      </div>
     </section>
   </div>
   </div><!-- /main -->
@@ -448,12 +495,22 @@
     marketing:{name:'마케팅 · 콘텐츠/이슈',color:'#34D399',icon:'mega'}
   };
 
-  // 최상단 우선 처리
-  const TODOS=[
-    ['u','홍○○ 즉시 상담','09:30'],['u','오르비 게시글 대응','10:00'],
-    ['h','미납 7명 알림 발송','11:00'],['h','특별생 12명 연락','13:00'],
-    ['f','최○○ 팔로업 상담','15:00'],['f','주간 보고서 제출','17:00'],
+  // 최상단 우선 처리 — 오늘의 할일 (체크리스트)
+  const TODO_ITEMS=[
+    {id:'t1',pr:'u',title:'홍○○ 즉시 상담',desc:'순공 −45%·상담기피 12일 — 오전 1차 연락',owner:'담임',time:'09:30'},
+    {id:'t2',pr:'u',title:'오르비 부정 게시글 대응',desc:'커뮤니티 모니터링 건, 사실관계 확인 후 대응',owner:'지점장',time:'10:00'},
+    {id:'t3',pr:'h',title:'미납 7명 알림 발송',desc:'결제링크 재발송 + 학부모 안내 문자',owner:'행정',time:'11:00'},
+    {id:'t4',pr:'h',title:'특별생 12명 연락',desc:'특별관리 대상 주간 점검 콜',owner:'담임',time:'13:00'},
+    {id:'t5',pr:'f',title:'최○○ 팔로업 상담',desc:'지난주 상담 후속 — 학습 루틴 점검',owner:'담임',time:'15:00'},
+    {id:'t6',pr:'f',title:'주간 보고서 제출',desc:'출결·몰입·성장 요약 → 학부모 발송',owner:'지점장',time:'17:00'},
   ];
+  const TODOS=TODO_ITEMS.map(t=>[t.pr,t.title,t.time]); // 띠 미리보기용
+  const PR={u:{label:'긴급',color:'#F87171'},h:{label:'중요',color:'#FBBF24'},f:{label:'팔로업',color:'#A66BFF'}};
+  // 완료 상태 저장 (오늘 날짜 기준)
+  const TODO_KEY='eci_v2_todo_2026-06-17';
+  let todoDone=new Set(); let todoMemo='';
+  try{const r=JSON.parse(localStorage.getItem(TODO_KEY)||'{}');todoDone=new Set(r.done||[]);todoMemo=r.memo||'';}catch(e){}
+  function saveTodo(){ try{localStorage.setItem(TODO_KEY,JSON.stringify({done:[...todoDone],memo:todoMemo}));}catch(e){} }
   const RISKS_TOP=[
     ['홍○○','u','순공 −45% · 상담기피 12일 · 앱 미접속 5일',94],
     ['김○○','u','모의고사 2회↓ · 결석 3회 · 학부모 문의↑',88],
@@ -518,6 +575,7 @@
     clearCharts();
     const m=META[key];
     document.getElementById('hub').style.display='none';
+    document.getElementById('todoboard').style.display='none';
     document.getElementById('detail').style.display='block';
     const ic=document.getElementById('dtIcon'); ic.style.background=m.color; ic.innerHTML=icon(m.icon);
     document.getElementById('dtName').textContent=m.name;
@@ -528,7 +586,7 @@
     if(!fromNav) syncNav(key);
     document.querySelectorAll('#dtNav .dtn').forEach(b=>b.classList.toggle('on', b.dataset.k===key));
   }
-  function goHub(){ clearCharts(); document.getElementById('detail').style.display='none'; document.getElementById('hub').style.display='block'; history.replaceState(null,'','#'); syncNav('hub'); }
+  function goHub(){ clearCharts(); document.getElementById('detail').style.display='none'; document.getElementById('todoboard').style.display='none'; document.getElementById('hub').style.display='block'; history.replaceState(null,'','#'); syncNav('hub'); }
   function syncNav(key){
     document.querySelectorAll('#sbNav .nav-item, #sbNav .nav-grp.clk').forEach(n=>n.classList.remove('active'));
     if(key==='hub'){ const h=document.querySelector('#sbNav .nav-item.home'); if(h) h.classList.add('active'); return; }
@@ -545,13 +603,48 @@
   // 두 카드 동시 접기/펼치기
   function toggleBand(ev){ if(ev) ev.stopPropagation(); document.getElementById('band').classList.toggle('collapsed'); }
 
+  // ── 오늘의 할일 체크리스트 ──
+  function openTodo(){
+    clearCharts();
+    document.getElementById('hub').style.display='none';
+    document.getElementById('detail').style.display='none';
+    document.getElementById('todoboard').style.display='block';
+    document.getElementById('cklIcon').innerHTML=icon('check');
+    document.getElementById('cklMemo').textContent=todoMemo;
+    renderTodo(); window.scrollTo(0,0);
+    document.querySelectorAll('#sbNav .nav-item, #sbNav .nav-grp.clk').forEach(n=>n.classList.remove('active'));
+  }
+  function renderTodo(){
+    const total=TODO_ITEMS.length, done=TODO_ITEMS.filter(t=>todoDone.has(t.id)).length;
+    const pct=Math.round(done/total*100);
+    document.getElementById('cklCount').textContent=done+' / '+total+' 완료';
+    document.getElementById('cklBar').style.width=pct+'%';
+    document.getElementById('cklPct').textContent=pct+'%';
+    let html='';
+    ['u','h','f'].forEach(pr=>{
+      const items=TODO_ITEMS.filter(t=>t.pr===pr); if(!items.length) return;
+      const m=PR[pr], dn=items.filter(t=>todoDone.has(t.id)).length;
+      html+=`<div class="ckl-grp"><div class="ckl-ghd" style="--gc:${m.color}"><span class="gdot"></span>${m.label}<span class="gn">${dn}/${items.length}</span></div>`;
+      items.forEach(t=>{ const on=todoDone.has(t.id);
+        html+=`<div class="ckl-item ${on?'done':''}" onclick="toggleTodo('${t.id}')">
+          <span class="ckl-box">${icon('check')}</span>
+          <span class="ckl-main"><div class="t">${t.title}</div><div class="d">${t.desc}</div></span>
+          <span class="ckl-meta"><span class="ckl-time">${t.time}</span><span class="ckl-own" style="background:${m.color}">${t.owner}</span></span>
+        </div>`; });
+      html+='</div>';
+    });
+    document.getElementById('cklBody').innerHTML=html;
+  }
+  function toggleTodo(id){ if(todoDone.has(id)) todoDone.delete(id); else todoDone.add(id); saveTodo(); renderTodo(); buildBand(); }
+
   function toggleTheme(){const l=document.body.classList.toggle('light');document.getElementById('themeLbl').textContent=l?'다크 모드':'라이트 모드';
     if(document.getElementById('detail').style.display==='block'){const k=location.hash.slice(1);if(RENDER[k]){clearCharts();RENDER[k]();}}}
 
   // 최상단 띠 렌더
   function buildBand(){
     const lab={u:'긴급',h:'중요',f:'팔로업'};
-    document.getElementById('todoCnt').textContent='총 '+TODOS.length+'건';
+    const done=TODO_ITEMS.filter(t=>todoDone.has(t.id)).length;
+    document.getElementById('todoCnt').textContent=done+' / '+TODO_ITEMS.length+' 완료';
     document.getElementById('todoBody').innerHTML=TODOS.map(t=>
       `<div class="todo-item"><span class="ti-tag ${t[0]}">${lab[t[0]]}</span><span class="ti-tx">${t[1]}</span><span class="ti-tm">${t[2]}</span></div>`).join('');
     document.getElementById('riskBody').innerHTML=RISKS_TOP.map(r=>
@@ -560,6 +653,7 @@
 
   fillIcons();
   buildBand();
+  (function(){const m=document.getElementById('cklMemo');if(m)m.addEventListener('blur',function(){todoMemo=m.textContent.trim();saveTodo();});})();
   if(window.innerWidth<=1000) document.body.classList.add('nav-collapsed');
   const h=location.hash.slice(1);
   if(META[h]) openDetail(h);
