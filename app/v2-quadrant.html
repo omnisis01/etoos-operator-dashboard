@@ -114,10 +114,13 @@
   .pcard-hd{display:flex;align-items:center;gap:10px;margin-bottom:14px}
   .pc-ic{width:30px;height:30px;border-radius:9px;background:var(--ac);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .pc-ic .ic-svg{width:17px;height:17px}
-  .pc-tt{font-size:20px;font-weight:800;color:var(--ink)}
+  .pc-tt{font-size:20px;font-weight:800;color:var(--ink);min-width:0;white-space:nowrap}
   .pc-tt .m{font-size:14px;font-weight:600;color:var(--text2);margin-left:8px}
-  .pc-cnt{margin-left:auto;font-size:14.5px;font-weight:700;color:var(--ac);background:var(--ac-soft);padding:4px 12px;border-radius:8px}
-  .pc-go{font-size:14.5px;font-weight:700;color:var(--ac);margin-left:auto}
+  .pc-cnt{margin-left:auto;font-size:14px;font-weight:700;color:var(--ac);background:var(--ac-soft);padding:4px 11px;border-radius:8px;white-space:nowrap;flex-shrink:0}
+  .pc-go{font-size:14.5px;font-weight:700;color:var(--ac);margin-left:auto;white-space:nowrap;flex-shrink:0}
+  .pc-open{flex-shrink:0;white-space:nowrap;border:none;border-radius:9px;background:var(--ac);color:#fff;font-family:inherit;
+    font-size:13px;font-weight:800;padding:7px 13px;cursor:pointer;transition:.15s;box-shadow:0 3px 10px rgba(166,107,255,.4)}
+  .pc-open:hover{filter:brightness(1.12);transform:translateY(-1px)}
   /* 두 카드 아래 가운데 토글 (눈에 띄게) */
   .band-toggle{position:absolute;left:50%;bottom:-23px;top:auto;transform:translateX(-50%);z-index:6;
     width:46px;height:46px;border-radius:50%;border:3px solid var(--body-bg);background:var(--grad-btn);
@@ -322,7 +325,7 @@
     <section id="hub">
       <div class="band" id="band">
         <div class="pcard todo" onclick="openTodo()">
-          <div class="pcard-hd"><span class="pc-ic" data-icon="check"></span><div class="pc-tt">오늘의 할일<span class="m">AI 우선순위 · 키워드</span></div><span class="pc-cnt" id="todoCnt"></span><span class="pc-go" style="margin-left:10px;flex:0">체크리스트 →</span></div>
+          <div class="pcard-hd"><span class="pc-ic" data-icon="check"></span><div class="pc-tt">오늘의 할일<span class="m">AI 우선순위 · 키워드</span></div><span class="pc-cnt" id="todoCnt"></span><button class="pc-open" onclick="event.stopPropagation();openTodo()">체크리스트 →</button></div>
           <div class="pc-body" id="todoBody"></div>
         </div>
         <div class="pcard risk" onclick="openDetail('retention')">
