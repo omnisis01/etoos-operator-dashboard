@@ -33,28 +33,56 @@
   .ic-svg{width:22px;height:22px;display:block}
 
   /* ── SIDEBAR ── */
-  .sidebar{width:var(--sidebar);background:var(--sidebar-bg);min-height:100vh;flex-shrink:0;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;border-right:1px solid var(--border-soft)}
-  .sb-logo{padding:24px 22px 18px}
-  .sb-logo .brand2{font-size:21px;font-weight:800;color:var(--ink);letter-spacing:-.3px}
-  .sb-logo .sub2{font-size:13px;color:var(--text3);margin-top:3px}
-  .sb-nav{padding:6px 13px;flex:1;overflow-y:auto}
-  .nav-grp{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--gc,var(--purple));letter-spacing:.5px;padding:16px 12px 7px}
-  .nav-grp .ic-svg{width:15px;height:15px}
-  .nav-item{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:11px;color:var(--text2);font-size:14.5px;font-weight:500;cursor:pointer;margin-bottom:2px;text-decoration:none;transition:.18s;position:relative}
+  .sidebar{width:var(--sidebar);background:var(--sidebar-bg);min-height:100vh;flex-shrink:0;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;border-right:1px solid var(--border-soft);transition:width .26s cubic-bezier(.4,0,.2,1)}
+  .sb-logo{padding:22px 18px 16px;display:flex;align-items:center;gap:8px}
+  .brand-wrap{flex:1;min-width:0;overflow:hidden;white-space:nowrap}
+  .sb-logo .brand2{font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-.3px}
+  .sb-logo .sub2{font-size:12.5px;color:var(--text3);margin-top:3px}
+  .sb-toggle{width:32px;height:32px;border-radius:9px;border:1px solid var(--border);background:var(--panel-2);color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:.18s;padding:0}
+  .sb-toggle:hover{color:var(--ink);border-color:var(--purple)}
+  .sb-toggle .ic-svg{width:16px;height:16px;transition:transform .26s}
+  body.nav-collapsed .sb-toggle .ic-svg{transform:rotate(180deg)}
+  .sb-nav{padding:6px 13px;flex:1;overflow-y:auto;overflow-x:hidden}
+  .nav-grp{display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:700;color:var(--gc,var(--purple));letter-spacing:.5px;padding:15px 12px 7px;white-space:nowrap}
+  .nav-grp.clk{cursor:pointer;border-radius:11px;transition:.16s}
+  .nav-grp.clk:hover{background:var(--nav-hover)}
+  .g-ic{display:flex;flex-shrink:0}
+  .g-ic .ic-svg,.ni-ic .ic-svg{width:18px;height:18px}
+  .ni-ic{display:flex;flex-shrink:0;color:var(--text2)}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:11px;color:var(--text2);font-size:14.5px;font-weight:500;cursor:pointer;margin-bottom:2px;text-decoration:none;transition:.18s;position:relative;white-space:nowrap}
   .nav-item:hover{background:var(--nav-hover);color:var(--ink)}
   .nav-item.active{background:linear-gradient(90deg,rgba(166,107,255,.20),rgba(166,107,255,.03));color:var(--ink);font-weight:700}
   .nav-item.active::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:3px;background:var(--purple)}
-  .nav-dot{width:7px;height:7px;border-radius:2px;background:currentColor;flex-shrink:0;opacity:.5}
+  .nav-dot{width:7px;height:7px;border-radius:2px;background:currentColor;flex-shrink:0;opacity:.5;margin-left:6px}
   .nav-item.active .nav-dot{opacity:1;background:var(--purple)}
   .nb{margin-left:auto;background:rgba(236,72,153,.18);color:var(--pink);font-size:11.5px;font-weight:700;padding:1px 8px;border-radius:9px}
   .sb-foot{padding:14px 16px;border-top:1px solid var(--border-soft)}
   .dl-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;border:none;border-radius:12px;background:var(--grad-btn);color:#fff;font-family:inherit;font-size:14.5px;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(124,58,237,.4)}
+  .dl-ic{display:none} .dl-ic .ic-svg{width:17px;height:17px}
   .user-row{display:flex;align-items:center;gap:11px;padding:12px 4px 2px}
   .avatar{width:36px;height:36px;border-radius:50%;background:var(--grad-purple);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;font-weight:700;flex-shrink:0}
   .uname{font-size:14.5px;color:var(--ink);font-weight:600}
   .urole{font-size:12.5px;color:var(--text3)}
 
-  .main{margin-left:var(--sidebar);flex:1;min-width:0}
+  /* ── 접힌 사이드바 (아이콘 레일) ── */
+  body.nav-collapsed{--sidebar:78px}
+  body.nav-collapsed .brand-wrap,
+  body.nav-collapsed .lbl,
+  body.nav-collapsed .glbl,
+  body.nav-collapsed .nb{display:none}
+  body.nav-collapsed .nav-item.sub{display:none}
+  body.nav-collapsed .sb-logo{justify-content:center;padding:22px 0 16px}
+  body.nav-collapsed .sb-nav{padding:6px 12px}
+  body.nav-collapsed .nav-item,
+  body.nav-collapsed .nav-grp{justify-content:center;gap:0;padding-left:0;padding-right:0;margin-bottom:6px}
+  body.nav-collapsed .nav-item.active::before{display:none}
+  body.nav-collapsed .nav-item.active,
+  body.nav-collapsed .nav-grp.clk.active{background:var(--nav-hover);box-shadow:inset 0 0 0 1px var(--border)}
+  body.nav-collapsed .dl-btn{padding:11px 0}
+  body.nav-collapsed .dl-ic{display:flex}
+  body.nav-collapsed .user-row{justify-content:center;padding:12px 0 2px}
+
+  .main{margin-left:var(--sidebar);flex:1;min-width:0;transition:margin-left .26s cubic-bezier(.4,0,.2,1)}
   .wrap{max-width:1320px;margin:0 auto;padding:26px 34px 50px}
 
   /* ── 상단바 ── */
@@ -90,8 +118,8 @@
     width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--panel-2);
     color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:.18s;box-shadow:var(--shadow)}
   .band-toggle:hover{border-color:var(--purple);color:var(--purple);transform:translate(-50%,-50%) scale(1.08)}
-  .chev{width:10px;height:10px;border-right:2.5px solid currentColor;border-bottom:2.5px solid currentColor;transform:rotate(-135deg) translate(-1px,-1px);transition:transform .22s}
-  .band.collapsed .chev{transform:rotate(45deg) translate(1px,1px)}
+  .band-toggle .ic-svg{width:18px;height:18px;transition:transform .24s}
+  .band.collapsed .band-toggle .ic-svg{transform:rotate(180deg)}
   .pc-body{display:flex;flex-direction:column;gap:2px;overflow:hidden;transition:max-height .28s ease,opacity .2s,margin .2s;max-height:520px}
   .band.collapsed .pc-body{max-height:0;opacity:0;margin:0}
   .band.collapsed .pcard-hd{margin-bottom:0}
@@ -197,10 +225,6 @@
   .donut-wrap .dl{flex:1;min-width:0}
 
   .band{grid-template-columns:1fr 1fr}
-  @media(max-width:1100px){
-    .sidebar{width:74px}.sb-logo .sub2,.sb-nav,.dl-btn,.uname,.urole{display:none}
-    .sb-logo .brand2{font-size:15px}.main{margin-left:74px}.user-row{padding:8px 0;justify-content:center}
-  }
   @media(max-width:880px){
     .quad{grid-template-columns:1fr;grid-template-rows:none}
     .cross-v,.cross-h,.hub-center{display:none}
@@ -211,37 +235,40 @@
 </head>
 <body>
   <!-- ═══ SIDEBAR ═══ -->
-  <aside class="sidebar">
-    <div class="sb-logo"><div class="brand2">이투스ECI</div><div class="sub2">운영OS 허브 · 2안</div></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <div class="brand-wrap"><div class="brand2">이투스ECI</div><div class="sub2">운영OS 허브 · 2안</div></div>
+      <button class="sb-toggle" onclick="toggleSidebar()" title="메뉴 접기/펴기" data-icon="chevronL"></button>
+    </div>
     <nav class="sb-nav" id="sbNav">
-      <a class="nav-item active" data-k="hub" onclick="navTo('hub',this)"><span class="nav-dot"></span> 운영 허브</a>
+      <a class="nav-item home active" data-k="hub" onclick="navTo('hub',this)" title="운영 허브"><span class="ni-ic" data-icon="home"></span><span class="lbl">운영 허브</span></a>
 
-      <div class="nav-grp" style="--gc:var(--pink)"><span data-icon="target"></span> 모집</div>
-      <a class="nav-item" data-k="recruit" onclick="navTo('recruit',this)"><span class="nav-dot"></span> 경쟁사 이슈</a>
-      <a class="nav-item" data-k="recruit" onclick="navTo('recruit',this)"><span class="nav-dot"></span> 학교군 분석</a>
-      <a class="nav-item" data-k="recruit" onclick="navTo('recruit',this)"><span class="nav-dot"></span> 학령인구·기회</a>
+      <div class="nav-grp clk" data-k="recruit" style="--gc:var(--pink)" onclick="navTo('recruit')" title="모집"><span class="g-ic" data-icon="target"></span><span class="glbl">모집</span></div>
+      <a class="nav-item sub" data-k="recruit" onclick="navTo('recruit',this)"><span class="nav-dot"></span><span class="lbl">경쟁사 이슈</span></a>
+      <a class="nav-item sub" data-k="recruit" onclick="navTo('recruit',this)"><span class="nav-dot"></span><span class="lbl">학교군 분석</span></a>
+      <a class="nav-item sub" data-k="recruit" onclick="navTo('recruit',this)"><span class="nav-dot"></span><span class="lbl">학령인구·기회</span></a>
 
-      <div class="nav-grp" style="--gc:var(--cyan)"><span data-icon="bars"></span> 운영</div>
-      <a class="nav-item" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span> 매출 현황</a>
-      <a class="nav-item" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span> 재원·신규</a>
-      <a class="nav-item" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span> 미납 관리 <span class="nb">7</span></a>
+      <div class="nav-grp clk" data-k="operation" style="--gc:var(--cyan)" onclick="navTo('operation')" title="운영"><span class="g-ic" data-icon="bars"></span><span class="glbl">운영</span></div>
+      <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">매출 현황</span></a>
+      <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">재원·신규</span></a>
+      <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">미납 관리</span><span class="nb">7</span></a>
 
-      <div class="nav-grp" style="--gc:var(--gold)"><span data-icon="shield"></span> 리텐션</div>
-      <a class="nav-item" data-k="retention" onclick="navTo('retention',this)"><span class="nav-dot"></span> 퇴원위험 학생 <span class="nb">11</span></a>
-      <a class="nav-item" data-k="retention" onclick="navTo('retention',this)"><span class="nav-dot"></span> 퇴원사유 분석</a>
-      <a class="nav-item" data-k="retention" onclick="navTo('retention',this)"><span class="nav-dot"></span> 상담 현황</a>
+      <div class="nav-grp clk" data-k="retention" style="--gc:var(--gold)" onclick="navTo('retention')" title="리텐션"><span class="g-ic" data-icon="shield"></span><span class="glbl">리텐션</span></div>
+      <a class="nav-item sub" data-k="retention" onclick="navTo('retention',this)"><span class="nav-dot"></span><span class="lbl">퇴원위험 학생</span><span class="nb">11</span></a>
+      <a class="nav-item sub" data-k="retention" onclick="navTo('retention',this)"><span class="nav-dot"></span><span class="lbl">퇴원사유 분석</span></a>
+      <a class="nav-item sub" data-k="retention" onclick="navTo('retention',this)"><span class="nav-dot"></span><span class="lbl">상담 현황</span></a>
 
-      <div class="nav-grp" style="--gc:var(--green)"><span data-icon="mega"></span> 마케팅</div>
-      <a class="nav-item" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span> 콘텐츠 캘린더</a>
-      <a class="nav-item" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span> 경쟁사 이슈</a>
+      <div class="nav-grp clk" data-k="marketing" style="--gc:var(--green)" onclick="navTo('marketing')" title="마케팅"><span class="g-ic" data-icon="mega"></span><span class="glbl">마케팅</span></div>
+      <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">콘텐츠 캘린더</span></a>
+      <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">경쟁사 이슈</span></a>
 
-      <div class="nav-grp" style="--gc:var(--text3)">기타</div>
-      <a class="nav-item" href="upload.html"><span class="nav-dot"></span> 데이터 업로드</a>
-      <a class="nav-item" href="index.html"><span class="nav-dot"></span> 1안 보기</a>
+      <div class="nav-grp" style="--gc:var(--text3)"><span class="g-ic" data-icon="dots"></span><span class="glbl">기타</span></div>
+      <a class="nav-item sub2link" href="upload.html" title="데이터 업로드"><span class="ni-ic" data-icon="report"></span><span class="lbl">데이터 업로드</span></a>
+      <a class="nav-item sub2link" href="index.html" title="1안 보기"><span class="ni-ic" data-icon="home"></span><span class="lbl">1안 보기</span></a>
     </nav>
     <div class="sb-foot">
-      <button class="dl-btn">주간 리포트</button>
-      <div class="user-row"><div class="avatar">이</div><div><div class="uname">이○○ 원장</div><div class="urole">대치 · 원장</div></div></div>
+      <button class="dl-btn"><span class="dl-ic" data-icon="report"></span><span class="lbl">주간 리포트</span></button>
+      <div class="user-row"><div class="avatar">이</div><div class="lbl"><div class="uname">이○○ 원장</div><div class="urole">대치 · 원장</div></div></div>
     </div>
   </aside>
 
@@ -267,7 +294,7 @@
           <div class="pcard-hd"><span class="pc-ic" data-icon="alert"></span><div class="pc-tt">위험 학생 감지<span class="m">즉시 상담 필요</span></div><span class="pc-go">전체 →</span></div>
           <div class="pc-body" id="riskBody"></div>
         </div>
-        <button class="band-toggle" title="우선 처리 접기/펼치기" onclick="toggleBand()"><span class="chev"></span></button>
+        <button class="band-toggle" title="우선 처리 접기/펼치기" onclick="toggleBand()" data-icon="chevron"></button>
       </div>
 
       <div class="hub-head">
@@ -283,7 +310,7 @@
           <div class="qd-hd"><div class="qd-ic" data-icon="target"></div><div class="qd-tt">모집<span class="m">경쟁 인텔리전스</span></div><span class="qd-go">자세히 →</span></div>
           <div class="kpis">
             <div class="kpi"><div class="k">경쟁사 이슈</div><div class="v">3<small>건</small></div><div class="d dn">전주 ▲ +1</div></div>
-            <div class="kpi"><div class="k">핵심 학교군</div><div class="v">12<small>개교</small></div><div class="d">조회 상위</div></div>
+            <div class="kpi"><div class="k">핵심 학교군</div><div class="v">12<small>개교</small></div><div class="d">문의 유입 상위</div></div>
             <div class="kpi"><div class="k">학령인구</div><div class="v">-4.8<small>%</small></div><div class="d dn">전년 대비</div></div>
             <div class="kpi"><div class="k">모집기회 지수</div><div class="v">82<small>점</small></div><div class="d up">상위 18%</div></div>
           </div>
@@ -351,7 +378,12 @@
     shield:'<path d="M12 2.5 L20 5.5 V11 C20 16.2 16.4 20 12 21.6 C7.6 20 4 16.2 4 11 V5.5 Z"/><path d="M9 12 l2 2 l4.2 -4.2"/>',
     mega:'<path d="M4 9.5 v5 h3 l9 4.2 V5.3 L7 9.5 Z"/><path d="M19 10 a3.4 3.4 0 0 1 0 4.4"/><line x1="7" y1="14.5" x2="7" y2="19"/>',
     check:'<path d="M4 12.5 l5 5 L20 6"/>',
-    alert:'<line x1="12" y1="4" x2="12" y2="14"/><circle cx="12" cy="18.5" r="1.2" fill="currentColor" stroke="none"/>'
+    alert:'<line x1="12" y1="4" x2="12" y2="14"/><circle cx="12" cy="18.5" r="1.2" fill="currentColor" stroke="none"/>',
+    chevron:'<polyline points="6 15 12 9 18 15"/>',
+    chevronL:'<polyline points="14.5 6 8.5 12 14.5 18"/>',
+    home:'<path d="M4 11 L12 4 L20 11"/><path d="M6 9.8 V20 H18 V9.8"/>',
+    dots:'<circle cx="5" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.3" fill="currentColor" stroke="none"/>',
+    report:'<rect x="5" y="3.5" width="14" height="17" rx="2.5"/><line x1="8.5" y1="8" x2="15.5" y2="8"/><line x1="8.5" y1="12" x2="15.5" y2="12"/><line x1="8.5" y1="16" x2="13" y2="16"/>'
   };
   function icon(name){return `<svg class="ic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]||''}</svg>`;}
   function fillIcons(scope){(scope||document).querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=icon(el.dataset.icon);});}
@@ -431,7 +463,7 @@
 
   const TPL={
     recruit:()=>`
-      <div class="stat-row">${stat('경쟁사 주간 이슈','3','건','전주 ▲ +1','dn')}${stat('핵심 학교군','12','개교','조회 상위','')}${stat('학령인구 증감','-4.8','%','전년 대비','dn')}${stat('모집기회 지수','82','','상위 18%','up')}</div>
+      <div class="stat-row">${stat('경쟁사 주간 이슈','3','건','전주 ▲ +1','dn')}${stat('핵심 학교군','12','개교','문의 유입 상위','')}${stat('학령인구 증감','-4.8','%','전년 대비','dn')}${stat('모집기회 지수','82','','상위 18%','up')}</div>
       <div class="grid2">
         <div class="panel"><div class="panel-hd"><div class="panel-title">권역별 모집기회 지수</div><span class="panel-more">최근 6개월</span></div><div id="c1"></div></div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">AI 권장 액션</div></div>${actList(D.recruit.acts)}</div>
@@ -493,16 +525,17 @@
   }
   function goHub(){ clearCharts(); document.getElementById('detail').style.display='none'; document.getElementById('hub').style.display='block'; history.replaceState(null,'','#'); syncNav('hub'); }
   function syncNav(key){
-    document.querySelectorAll('#sbNav .nav-item').forEach(n=>n.classList.remove('active'));
-    const first=document.querySelector(`#sbNav .nav-item[data-k="${key}"]`);
-    if(first) first.classList.add('active');
+    document.querySelectorAll('#sbNav .nav-item, #sbNav .nav-grp.clk').forEach(n=>n.classList.remove('active'));
+    if(key==='hub'){ const h=document.querySelector('#sbNav .nav-item.home'); if(h) h.classList.add('active'); return; }
+    const g=document.querySelector(`#sbNav .nav-grp.clk[data-k="${key}"]`); if(g) g.classList.add('active');
+    const it=document.querySelector(`#sbNav .nav-item[data-k="${key}"]`); if(it) it.classList.add('active');
   }
   function navTo(key,el){
-    document.querySelectorAll('#sbNav .nav-item').forEach(n=>n.classList.remove('active'));
-    if(el) el.classList.add('active');
-    if(key==='hub'){ clearCharts(); document.getElementById('detail').style.display='none'; document.getElementById('hub').style.display='block'; history.replaceState(null,'','#'); }
-    else openDetail(key,true);
+    if(key==='hub'){ goHub(); return; }
+    openDetail(key,true); syncNav(key);
   }
+  // 사이드바 열고/닫기 (아이콘 레일)
+  function toggleSidebar(){ document.body.classList.toggle('nav-collapsed'); }
 
   // 두 카드 동시 접기/펼치기
   function toggleBand(ev){ if(ev) ev.stopPropagation(); document.getElementById('band').classList.toggle('collapsed'); }
@@ -522,6 +555,7 @@
 
   fillIcons();
   buildBand();
+  if(window.innerWidth<=1000) document.body.classList.add('nav-collapsed');
   const h=location.hash.slice(1);
   if(META[h]) openDetail(h);
   </script>
