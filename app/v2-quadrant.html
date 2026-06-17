@@ -154,6 +154,14 @@
   .back:hover{color:var(--ink);border-color:var(--purple)}
   .dt-title{font-size:23px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:10px}
   .dt-badge{font-size:12.5px;font-weight:700;color:#fff;padding:3px 11px;border-radius:8px}
+  /* 우측 상단 영역 바로 이동 (동그라미 4개) */
+  .dt-nav{margin-left:auto;display:flex;gap:10px;align-items:center}
+  .dtn{width:40px;height:40px;border-radius:50%;border:2px solid var(--dc);background:transparent;color:var(--dc);
+    font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:.16s;flex-shrink:0;padding:0}
+  .dtn.ops{--dc:var(--purple)} .dtn.recr{--dc:var(--cyan)} .dtn.fin{--dc:var(--gold)} .dtn.att{--dc:var(--teal)}
+  .dtn:hover{background:var(--dc);color:#fff;transform:translateY(-2px)}
+  .dtn.on{background:var(--dc);color:#fff;box-shadow:0 4px 14px color-mix(in srgb,var(--dc) 45%,transparent)}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
   .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px}
   .panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px 24px;box-shadow:var(--shadow);margin-bottom:22px}
@@ -313,6 +321,12 @@
       <div class="dt-head">
         <button class="back" onclick="goHub()">← 허브로</button>
         <div class="dt-title"><span id="dtIcon" class="dt-badge"></span><span id="dtName"></span></div>
+        <div class="dt-nav" id="dtNav" title="영역 바로 이동">
+          <button class="dtn ops"  data-k="ops"  onclick="openDetail('ops')"  title="운영">運</button>
+          <button class="dtn recr" data-k="recr" onclick="openDetail('recr')" title="모집">募</button>
+          <button class="dtn fin"  data-k="fin"  onclick="openDetail('fin')"  title="회계">會</button>
+          <button class="dtn att"  data-k="att"  onclick="openDetail('att')"  title="출결">出</button>
+        </div>
       </div>
       <div id="dtBody"></div>
     </section>
@@ -380,6 +394,8 @@
     setTimeout(()=>RENDER[key](),30);
     history.replaceState(null,'','#'+key);
     if(!fromNav) syncNav(key);
+    // 우측 상단 동그라미 네비 활성화
+    document.querySelectorAll('#dtNav .dtn').forEach(b=>b.classList.toggle('on', b.dataset.k===key));
   }
   function goHub(){ clearCharts(); document.getElementById('detail').style.display='none'; document.getElementById('hub').style.display='block'; history.replaceState(null,'','#'); syncNav('hub'); }
   // 사이드바 활성화 동기화 (해당 섹션 첫 항목)
