@@ -6,26 +6,33 @@
 const MONTHS = ["1월","2월","3월","4월","5월","6월"];
 const COLORS = ["#A66BFF","#EC4899","#22D3EE","#4F7CFF"];
 
-// ── 퇴원 위험 점수 엔진 (가중치 조정 가능) ────────────────
-const CHURN_WEIGHTS = { absence:0.30, study:0.25, grade:0.20, demerit:0.15, unpaid:0.10 };
+// ── 퇴원 위험 점수 엔진 (6대 팩터 · 이탈의도 중심 가중치) ──
+//  분류: 의사·정서(커뮤니티/부정어) · 행동(순공/출결) · 성과·재무(성적/미납)
+//  산식: 0.7×가중합 + 0.3×최고팩터(단일 강신호 surfacing) + 3개↑ 동시발화 가산
+const CHURN_WEIGHTS = { community:0.24, negword:0.20, study:0.18, attend:0.14, grade:0.12, unpaid:0.12 };
 function computeRisk(f){
-  const nAbs = Math.min((f.absence_rate||0)*4, 100);                        // 25%+ → 100
-  const nStd = f.study_pct!=null ? Math.max(0,(70-f.study_pct))*(100/70):0; // 달성 70%↓일수록 ↑
-  const nGrd = Math.min((f.grade_delta||0)*30, 100);
-  const nDem = Math.min((f.demerit||0)*10, 100);
-  const nUnp = Math.min((f.unpaid_days||0)/30*100, 100);
+  // 정규화 0~100
+  const nComm = Math.min(f.community_neg||0, 100);                            // 커뮤니티 부정글 강도(0~100)
+  const nNeg  = Math.min(f.neg_score||0, 100);                               // 상담 부정어 강도(0~100)
+  const nStd  = f.study_pct!=null ? Math.min(Math.max(0,(70-f.study_pct))*(100/70),100):0; // 순공 달성 70%↓
+  const nAtt  = Math.min((f.absence_rate||0)*4, 100);                        // 지각·결석·조퇴율 25%+ → 100
+  const nGrd  = Math.min((f.grade_delta||0)*30, 100);                        // 성적 2등급↓ → 60
+  const nUnp  = Math.min((f.unpaid_days||0)/30*100, 100);                    // 미납 30일+ → 100
   const W = CHURN_WEIGHTS;
-  const weighted = nAbs*W.absence + nStd*W.study + nGrd*W.grade + nDem*W.demerit + nUnp*W.unpaid;
-  // 가중평균(70%) + 최대 행동지표(30%) 블렌딩 — 단일 지표 극단값도 점수에 반영(점수↔등급 일관)
-  const maxN = Math.max(nAbs, nStd, nGrd, nDem);
-  const score = Math.round(0.7*weighted + 0.3*maxN);
+  const weighted = nComm*W.community + nNeg*W.negword + nStd*W.study + nAtt*W.attend + nGrd*W.grade + nUnp*W.unpaid;
+  const maxN = Math.max(nComm, nNeg, nStd, nAtt, nGrd, nUnp);                 // 의사 신호 한 건도 등급 튀게
+  let score = Math.round(0.7*weighted + 0.3*maxN);
+  const active = [nComm,nNeg,nStd,nAtt,nGrd,nUnp].filter(n=>n>=45).length;    // 동시 발화(여러 분류) 가산
+  if(active>=3) score = Math.min(score+5, 100);
+  if(nComm>=70 || nNeg>=70) score = Math.max(score, 62);                     // 강한 이탈의도 신호 단독이라도 최소 '주의'
   const level = score>=75 ? 'urgent' : (score>=55 ? 'watch' : 'low');
-  const sig = [];
-  if(nAbs>=45) sig.push(`결석·지각 ${f.absence_rate}%`);
-  if(nStd>=45) sig.push(`순공 달성 ${f.study_pct}%`);
-  if(nGrd>=45) sig.push(`성적 ${f.grade_delta}등급 하락`);
-  if(nDem>=45) sig.push(`벌점 ${f.demerit}`);
-  if(nUnp>=45) sig.push(`미납 ${f.unpaid_days}일`);
+  const sig = [];                                                            // 이탈의도 신호 우선 노출
+  if(nComm>=45) sig.push('커뮤니티 부정글 감지');
+  if(nNeg>=45)  sig.push('상담 부정어 다수');
+  if(nStd>=45)  sig.push(`순공 달성 ${f.study_pct}%`);
+  if(nAtt>=45)  sig.push(`지각·결석 ${f.absence_rate}%`);
+  if(nGrd>=45)  sig.push(`성적 ${f.grade_delta}등급 하락`);
+  if(nUnp>=45)  sig.push(`미납 ${f.unpaid_days}일`);
   return { name:f.student_name, level, score, signals:sig };
 }
 

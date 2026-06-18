@@ -51,7 +51,7 @@
       <div class="row">
         <select id="dataset" onchange="onDataset()">
           <option value="snapshot">월간 운영지표 (재원생·매출·출결 KPI)</option>
-          <option value="churn">퇴원위험 요인 (학생별 — 출결률·순공·성적·벌점)</option>
+          <option value="churn">퇴원위험 요인 (학생별 — 출결·순공·성적·미납·부정어·커뮤니티)</option>
         </select>
         <button class="btn ghost" id="tplBtn">📄 템플릿 다운로드</button>
       </div>
@@ -86,11 +86,11 @@
     },
     churn: {
       label:'퇴원위험 요인', table:'churn_factors', mode:'multi', textCols:['student_name'],
-      cols:{ "학생명":"student_name","결석지각률":"absence_rate","순공달성률":"study_pct","성적하락등급":"grade_delta","벌점":"demerit" },
+      cols:{ "학생명":"student_name","결석지각률":"absence_rate","순공달성률":"study_pct","성적하락등급":"grade_delta","미납일수":"unpaid_days","상담부정어":"neg_score","커뮤니티부정":"community_neg" },
       tpl:'퇴원위험요인_템플릿.xlsx',
-      sample:[{학생명:'홍○○',결석지각률:28,순공달성률:25,성적하락등급:2,벌점:7},
-              {학생명:'김○○',결석지각률:18,순공달성률:55,성적하락등급:1,벌점:2}],
-      hint:'학생 1명당 1행. 결석지각률·순공달성률은 %, 성적하락등급은 하락폭(0=변화없음), 벌점은 누적. 미납은 자동 결합됩니다. 위험점수는 시스템이 가중평균으로 계산합니다.'
+      sample:[{학생명:'홍○○',결석지각률:28,순공달성률:25,성적하락등급:2,미납일수:31,상담부정어:60,커뮤니티부정:80},
+              {학생명:'김○○',결석지각률:18,순공달성률:55,성적하락등급:1,미납일수:0,상담부정어:20,커뮤니티부정:0}],
+      hint:'학생 1명당 1행. 결석지각률·순공달성률은 %, 성적하락등급은 하락폭(0=변화없음), 미납일수는 일, 상담부정어·커뮤니티부정은 0~100 강도 점수. 위험점수는 6대 팩터 가중치(이탈의도 중심)로 자동 계산됩니다.'
     }
   };
   let profile;
