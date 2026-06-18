@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>이투스ECI — 운영OS 허브 (2안 · 사분면)</title>
+<title>이투스ECI — 운영OS 허브 (2안 · 이전 4축 · 비교용)</title>
 <style>
   @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css');
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -165,8 +165,8 @@
   .qd::after{content:'';position:absolute;inset:0;border-radius:var(--r-lg);
     background:radial-gradient(420px 200px at var(--gx) var(--gy),var(--accent-soft),transparent 70%);opacity:.9;pointer-events:none}
   .qd.recruit  {--accent:var(--pink);--accent-soft:rgba(236,72,153,.12);--gx:0%;--gy:0%}
-  .qd.sales{--accent:var(--gold);--accent-soft:rgba(251,191,36,.13);--gx:100%;--gy:0%}
-  .qd.operation{--accent:var(--cyan);--accent-soft:rgba(34,211,238,.12);--gx:0%;--gy:100%}
+  .qd.operation{--accent:var(--cyan);--accent-soft:rgba(34,211,238,.12);--gx:100%;--gy:0%}
+  .qd.retention{--accent:var(--gold);--accent-soft:rgba(251,191,36,.13);--gx:0%;--gy:100%}
   .qd.marketing{--accent:var(--green);--accent-soft:rgba(52,211,153,.13);--gx:100%;--gy:100%}
   .qd-hd{display:flex;align-items:center;gap:11px;margin-bottom:18px;position:relative;z-index:1}
   .qd-ic{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;color:#fff;background:var(--accent);flex-shrink:0}
@@ -196,7 +196,7 @@
   .dtn{width:42px;height:42px;border-radius:50%;border:2px solid var(--dc);background:transparent;color:var(--dc);
     font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.16s;flex-shrink:0;padding:0}
   .dtn .ic-svg{width:20px;height:20px}
-  .dtn.recruit{--dc:var(--pink)} .dtn.operation{--dc:var(--cyan)} .dtn.sales{--dc:var(--gold)} .dtn.marketing{--dc:var(--green)}
+  .dtn.recruit{--dc:var(--pink)} .dtn.operation{--dc:var(--cyan)} .dtn.retention{--dc:var(--gold)} .dtn.marketing{--dc:var(--green)}
   .dtn:hover{background:var(--dc);color:#fff;transform:translateY(-2px)}
   .dtn.on{background:var(--dc);color:#fff;box-shadow:0 4px 14px color-mix(in srgb,var(--dc) 45%,transparent)}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
@@ -276,34 +276,32 @@
   <aside class="sidebar" id="sidebar">
     <button class="sb-toggle" onclick="toggleSidebar()" title="메뉴 접기/펴기" data-icon="chevronL"></button>
     <div class="sb-logo">
-      <div class="brand-wrap"><div class="brand2">이투스ECI</div><div class="sub2">운영OS 허브 · 2안</div></div>
+      <div class="brand-wrap"><div class="brand2">이투스ECI</div><div class="sub2">2안 · 이전 4축 (비교용)</div></div>
     </div>
     <nav class="sb-nav" id="sbNav">
       <a class="nav-item home active" data-k="hub" onclick="navTo('hub',this)" title="운영 허브"><span class="ni-ic" data-icon="home"></span><span class="lbl">운영 허브</span></a>
 
-      <div class="nav-grp clk" data-k="recruit" style="--gc:var(--pink)" onclick="navTo('recruit')" title="모집"><span class="g-ic" data-icon="people"></span><span class="glbl">모집</span></div>
-      <a class="nav-item sub" data-k="recruit" onclick="navTo('recruit',this)"><span class="nav-dot"></span><span class="lbl">재원생 현황</span></a>
-      <a class="nav-item sub" data-k="recruit" onclick="navTo('recruit',this)"><span class="nav-dot"></span><span class="lbl">신규 등록</span></a>
-      <a class="nav-item sub" data-k="recruit" onclick="navTo('recruit',this)"><span class="nav-dot"></span><span class="lbl">예비생 현황</span></a>
+      <div class="nav-grp clk" data-k="recruit" style="--gc:var(--pink)" onclick="navTo('recruit')" title="모집"><span class="g-ic" data-icon="target"></span><span class="glbl">모집</span></div>
+      <a class="nav-item sub" data-k="recruit" onclick="navTo('recruit',this)"><span class="nav-dot"></span><span class="lbl">경쟁사 이슈</span></a>
+      <a class="nav-item sub" data-k="recruit" onclick="navTo('recruit',this)"><span class="nav-dot"></span><span class="lbl">학교군 분석</span></a>
+      <a class="nav-item sub" data-k="recruit" onclick="navTo('recruit',this)"><span class="nav-dot"></span><span class="lbl">학령인구·기회</span></a>
 
-      <div class="nav-grp clk" data-k="sales" style="--gc:var(--gold)" onclick="navTo('sales')" title="매출"><span class="g-ic" data-icon="won"></span><span class="glbl">매출</span></div>
-      <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">미수금</span><span class="nb">7</span></a>
-      <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">매출·로열티</span></a>
-      <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">콘텐츠 활용</span></a>
+      <div class="nav-grp clk" data-k="operation" style="--gc:var(--cyan)" onclick="navTo('operation')" title="운영"><span class="g-ic" data-icon="bars"></span><span class="glbl">운영</span></div>
+      <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">매출 현황</span></a>
+      <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">재원·신규</span></a>
+      <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">미납 관리</span><span class="nb">7</span></a>
 
-      <div class="nav-grp clk" data-k="operation" style="--gc:var(--cyan)" onclick="navTo('operation')" title="운영"><span class="g-ic" data-icon="ops"></span><span class="glbl">운영</span></div>
-      <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">상담 대기</span><span class="nb">8</span></a>
-      <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">고위험 학생</span><span class="nb">11</span></a>
-      <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">퇴원·재등록률</span></a>
-      <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">순공·상담 현황</span></a>
+      <div class="nav-grp clk" data-k="retention" style="--gc:var(--gold)" onclick="navTo('retention')" title="리텐션"><span class="g-ic" data-icon="shield"></span><span class="glbl">리텐션</span></div>
+      <a class="nav-item sub" data-k="retention" onclick="navTo('retention',this)"><span class="nav-dot"></span><span class="lbl">퇴원위험 학생</span><span class="nb">11</span></a>
+      <a class="nav-item sub" data-k="retention" onclick="navTo('retention',this)"><span class="nav-dot"></span><span class="lbl">퇴원사유 분석</span></a>
+      <a class="nav-item sub" data-k="retention" onclick="navTo('retention',this)"><span class="nav-dot"></span><span class="lbl">상담 현황</span></a>
 
       <div class="nav-grp clk" data-k="marketing" style="--gc:var(--green)" onclick="navTo('marketing')" title="마케팅"><span class="g-ic" data-icon="mega"></span><span class="glbl">마케팅</span></div>
-      <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">블로그·경쟁사</span></a>
-      <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">학교·N수 현황</span></a>
-      <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">우수사례 공유</span></a>
+      <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">콘텐츠 캘린더</span></a>
+      <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">경쟁사 이슈</span></a>
 
       <div class="nav-grp" style="--gc:var(--text3)"><span class="g-ic" data-icon="dots"></span><span class="glbl">기타</span></div>
-      <a class="nav-item sub2link" href="v2-quadrant-prev.html" title="이전 4축 보기 (비교용)"><span class="ni-ic" data-icon="chevron"></span><span class="lbl">이전 4축 (비교)</span></a>
+      <a class="nav-item sub2link" href="v2-quadrant.html" title="최신 4축 보기"><span class="ni-ic" data-icon="chevron"></span><span class="lbl">최신 4축 보기</span></a>
       <a class="nav-item sub2link" href="upload.html" title="데이터 업로드"><span class="ni-ic" data-icon="report"></span><span class="lbl">데이터 업로드</span></a>
       <a class="nav-item sub2link" href="index.html" title="1안 보기"><span class="ni-ic" data-icon="home"></span><span class="lbl">1안 보기</span></a>
     </nav>
@@ -331,8 +329,8 @@
           <div class="pcard-hd"><span class="pc-ic" data-icon="check"></span><div class="pc-tt">오늘의 할일<span class="m">AI 우선순위 · 키워드</span></div><span class="pc-cnt" id="todoCnt"></span><button class="pc-open" onclick="event.stopPropagation();openTodo()">체크리스트 →</button></div>
           <div class="pc-body" id="todoBody"></div>
         </div>
-        <div class="pcard risk">
-          <div class="pcard-hd"><span class="pc-ic" data-icon="bell"></span><div class="pc-tt">즉시 확인 필요<span class="m">오늘 처리 우선</span></div><span class="pc-cnt" id="immCnt"></span></div>
+        <div class="pcard risk" onclick="openDetail('retention')">
+          <div class="pcard-hd"><span class="pc-ic" data-icon="alert"></span><div class="pc-tt">위험 학생 감지<span class="m">즉시 상담 필요</span></div><span class="pc-go">전체 →</span></div>
           <div class="pc-body" id="riskBody"></div>
         </div>
         <button class="band-toggle" title="우선 처리 접기/펼치기" onclick="toggleBand()" data-icon="chevron"></button>
@@ -348,45 +346,45 @@
 
         <!-- 모집 -->
         <div class="qd recruit" onclick="openDetail('recruit')">
-          <div class="qd-hd"><div class="qd-ic" data-icon="people"></div><div class="qd-tt">모집<span class="m">등록 현황</span></div><span class="qd-go">자세히 →</span></div>
+          <div class="qd-hd"><div class="qd-ic" data-icon="target"></div><div class="qd-tt">모집<span class="m">경쟁 인텔리전스</span></div><span class="qd-go">자세히 →</span></div>
           <div class="kpis">
-            <div class="kpi"><div class="k">재원생</div><div class="v">191<small>명</small></div><div class="d up">전월 +9</div></div>
-            <div class="kpi"><div class="k">좌석 점유율</div><div class="v">79<small>%</small></div><div class="d up">▲ +2%p</div></div>
-            <div class="kpi"><div class="k">신규 등록</div><div class="v">20<small>명</small></div><div class="d">당월</div></div>
-            <div class="kpi"><div class="k">예비생</div><div class="v">14<small>명</small></div><div class="d up">전환율 62%</div></div>
-          </div>
-        </div>
-
-        <!-- 매출 -->
-        <div class="qd sales" onclick="openDetail('sales')">
-          <div class="qd-hd"><div class="qd-ic" data-icon="won"></div><div class="qd-tt">매출<span class="m">수익 · 미수금</span></div><span class="qd-go">자세히 →</span></div>
-          <div class="kpis">
-            <div class="kpi"><div class="k">미수금</div><div class="v">412<small>만</small></div><div class="d dn">⚑ 7명</div></div>
-            <div class="kpi"><div class="k">당월 매출</div><div class="v">3,820<small>만</small></div><div class="d up">▲ +12%</div></div>
-            <div class="kpi"><div class="k">로열티</div><div class="v">382<small>만</small></div><div class="d">매출 10%</div></div>
-            <div class="kpi"><div class="k">콘텐츠 활용</div><div class="v">68<small>%</small></div><div class="d up">▲ +5%p</div></div>
+            <div class="kpi"><div class="k">경쟁사 이슈</div><div class="v">3<small>건</small></div><div class="d dn">전주 ▲ +1</div></div>
+            <div class="kpi"><div class="k">핵심 학교군</div><div class="v">12<small>개교</small></div><div class="d">문의 유입 상위</div></div>
+            <div class="kpi"><div class="k">학령인구</div><div class="v">-4.8<small>%</small></div><div class="d dn">전년 대비</div></div>
+            <div class="kpi"><div class="k">모집기회 지수</div><div class="v">82<small>점</small></div><div class="d up">상위 18%</div></div>
           </div>
         </div>
 
         <!-- 운영 -->
         <div class="qd operation" onclick="openDetail('operation')">
-          <div class="qd-hd"><div class="qd-ic" data-icon="ops"></div><div class="qd-tt">운영<span class="m">학생 관리</span></div><span class="qd-go">자세히 →</span></div>
+          <div class="qd-hd"><div class="qd-ic" data-icon="bars"></div><div class="qd-tt">운영<span class="m">매출 · 재원</span></div><span class="qd-go">자세히 →</span></div>
           <div class="kpis">
-            <div class="kpi"><div class="k">상담 대기</div><div class="v">8<small>명</small></div><div class="d warn">⚑ 14일초과 3</div></div>
-            <div class="kpi"><div class="k">고위험 학생</div><div class="v">11<small>명</small></div><div class="d dn">⚑ 오늘 케어</div></div>
-            <div class="kpi"><div class="k">당월 퇴원율</div><div class="v">3.2<small>%</small></div><div class="d">재등록 81%</div></div>
-            <div class="kpi"><div class="k">순공 인당</div><div class="v">42<small>h</small></div><div class="d up">활용 168명</div></div>
+            <div class="kpi"><div class="k">월 매출</div><div class="v">3.8<small>억</small></div><div class="d up">목표 101%</div></div>
+            <div class="kpi"><div class="k">재원생</div><div class="v">191<small>명</small></div><div class="d up">전월 +9</div></div>
+            <div class="kpi"><div class="k">미납</div><div class="v">2.4<small>천만</small></div><div class="d dn">▲ +0.3천만</div></div>
+            <div class="kpi"><div class="k">신규·퇴원</div><div class="v">32·3</div><div class="d up">순증 +29</div></div>
+          </div>
+        </div>
+
+        <!-- 리텐션 -->
+        <div class="qd retention" onclick="openDetail('retention')">
+          <div class="qd-hd"><div class="qd-ic" data-icon="shield"></div><div class="qd-tt">리텐션<span class="m">퇴원 관리</span></div><span class="qd-go">자세히 →</span></div>
+          <div class="kpis">
+            <div class="kpi"><div class="k">고위험 학생</div><div class="v">11<small>명</small></div><div class="d dn">오늘 케어</div></div>
+            <div class="kpi"><div class="k">상담 미실시</div><div class="v">17<small>건</small></div><div class="d warn">주간 누적</div></div>
+            <div class="kpi"><div class="k">주요 퇴원사유</div><div class="v" style="font-size:18px">성적부진</div><div class="d warn">39%</div></div>
+            <div class="kpi"><div class="k">케어 완료율</div><div class="v">68<small>%</small></div><div class="d">목표 80%</div></div>
           </div>
         </div>
 
         <!-- 마케팅 -->
         <div class="qd marketing" onclick="openDetail('marketing')">
-          <div class="qd-hd"><div class="qd-ic" data-icon="mega"></div><div class="qd-tt">마케팅<span class="m">경쟁 · 콘텐츠</span></div><span class="qd-go">자세히 →</span></div>
+          <div class="qd-hd"><div class="qd-ic" data-icon="mega"></div><div class="qd-tt">마케팅<span class="m">콘텐츠 · 이슈감지</span></div><span class="qd-go">자세히 →</span></div>
           <div class="kpis">
-            <div class="kpi"><div class="k">블로그 자사</div><div class="v">5<small>건</small></div><div class="d">점유율 38%</div></div>
+            <div class="kpi"><div class="k">전사 공통</div><div class="v">5<small>건</small></div><div class="d">캠페인 공통</div></div>
+            <div class="kpi"><div class="k">권역 콘텐츠</div><div class="v">3<small>건</small></div><div class="d">강남권 특화</div></div>
+            <div class="kpi"><div class="k">지점 콘텐츠</div><div class="v">4<small>건</small></div><div class="d">대치 맞춤</div></div>
             <div class="kpi"><div class="k">경쟁사 이슈</div><div class="v">2<small>건</small></div><div class="d dn">즉시 대응</div></div>
-            <div class="kpi"><div class="k">학교·N수</div><div class="v">12<small>개교</small></div><div class="d">관리 대상</div></div>
-            <div class="kpi"><div class="k">우수사례</div><div class="v">4<small>건</small></div><div class="d up">신규</div></div>
           </div>
         </div>
       </div>
@@ -398,9 +396,9 @@
         <button class="back" onclick="goHub()">← 허브로</button>
         <div class="dt-title"><span id="dtIcon" class="dt-badge"></span><span id="dtName"></span></div>
         <div class="dt-nav" id="dtNav" title="영역 바로 이동">
-          <button class="dtn recruit"   data-k="recruit"   data-icon="people" onclick="openDetail('recruit')"   title="모집"></button>
-          <button class="dtn sales"     data-k="sales"     data-icon="won"    onclick="openDetail('sales')"     title="매출"></button>
-          <button class="dtn operation" data-k="operation" data-icon="ops"    onclick="openDetail('operation')" title="운영"></button>
+          <button class="dtn recruit"   data-k="recruit"   data-icon="target" onclick="openDetail('recruit')"   title="모집"></button>
+          <button class="dtn operation" data-k="operation" data-icon="bars"   onclick="openDetail('operation')" title="운영"></button>
+          <button class="dtn retention" data-k="retention" data-icon="shield" onclick="openDetail('retention')" title="리텐션"></button>
           <button class="dtn marketing" data-k="marketing" data-icon="mega"   onclick="openDetail('marketing')" title="마케팅"></button>
         </div>
       </div>
@@ -431,11 +429,10 @@
   const MONTHS=['1월','2월','3월','4월','5월','6월'];
   // ── 아이콘 (SVG, 이모지 X) ──
   const ICONS={
-    people:'<path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/>',
-    ops:'<rect x="5.5" y="4.5" width="13" height="16" rx="2.5"/><rect x="9" y="2.6" width="6" height="3.4" rx="1.2"/><path d="M8.6 12.2 l2.2 2.2 l4.4-4.4"/>',
-    won:'<circle cx="12" cy="12" r="9"/><text x="12" y="16.5" text-anchor="middle" font-size="12" font-weight="800" fill="currentColor" stroke="none">₩</text>',
+    target:'<path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/>',
+    bars:'<circle cx="12" cy="12" r="9"/><text x="12" y="16.5" text-anchor="middle" font-size="12" font-weight="800" fill="currentColor" stroke="none">₩</text>',
+    shield:'<circle cx="12" cy="4.5" r="2.2"/><path d="m10.4 6.1-3.8 3.8"/><circle cx="4.5" cy="12" r="2.2"/><path d="M7 12h10"/><circle cx="19.5" cy="12" r="2.2"/><path d="m13.6 17.9 3.8-3.8"/><circle cx="12" cy="19.5" r="2.2"/>',
     mega:'<path d="M4 9.5 v5 h3 l9 4.2 V5.3 L7 9.5 Z"/><path d="M19 10 a3.4 3.4 0 0 1 0 4.4"/><line x1="7" y1="14.5" x2="7" y2="19"/>',
-    bell:'<path d="M6 9a6 6 0 1 1 12 0c0 4.5 1.8 5.6 2.2 6H3.8C4.2 14.6 6 13.5 6 9"/><path d="M10 19a2 2 0 0 0 4 0"/>',
     check:'<path d="M4 12.5 l5 5 L20 6"/>',
     alert:'<line x1="12" y1="4" x2="12" y2="14"/><circle cx="12" cy="18.5" r="1.2" fill="currentColor" stroke="none"/>',
     chevron:'<polyline points="6 15 12 9 18 15"/>',
@@ -463,59 +460,43 @@
 
   // ── 목 데이터 ──
   const D={
-    recruit:{ studentsTr:[170,174,176,179,183,191], convTr:[48,52,55,58,60,62],
-      rows:[['재원생 현황','191명 (N수 94·재학 97)','좌석점유율 79%','—','low'],
-            ['신규 등록','당월 20명','전월 대비 +9명','▲','low'],
-            ['예비생 현황','14명','상담 전환율 62%','▲ +4%p','low']],
-      acts:[['예비생 전환 집중','상담 전환율 62%→70% 목표, 미전환 예비생 1:1 팔로업','지점장 · 이번 주'],
-            ['신규 유입 채널 분석','월 신규 20명 유입 경로별 기여도 점검·예산 재배분','지점장 · 이번 주'],
-            ['좌석 점유 최적화','점유율 79% — 권역평균 대비 좌석 운영 효율 점검','운영실 · 상시']] },
-    operation:{ churnTr:[3.6,3.4,3.1,3.5,3.3,3.2], studyTr:[36,38,37,40,41,42],
-      waitRows:[['김OO','마지막 상담 06/03','경과 14일','초과','high'],
-                ['이OO','마지막 상담 06/09','경과 8일','주기 도래','mid'],
-                ['박OO','마지막 상담 06/10','경과 7일','주기 도래','mid']],
-      riskRows:[['홍OO','30일 미상담 · 콘텐츠 소비 급감','즉시','high'],
-                ['정OO','출석 급감 · 순공 −32%','즉시','high'],
-                ['최OO','성적 2계단↓ · 분위기 이탈','오늘','mid']],
-      rows:[['상담 대기','8명','7일주기 5 · 14일초과 3','즉시','high'],
-            ['고위험 학생','11명','30일 미상담·콘텐츠/출석 급감','즉시','high'],
-            ['퇴원율/재등록률','3.2% / 81%','누적 퇴원율 9.4%','주의','mid'],
-            ['재원기간','평균 312일','전년 대비 +18일','양호','low'],
-            ['순공시간','인당 42h','활용 168명·총 7,050h','양호','low'],
-            ['상담 현황','당월 142건','미상담 17명·평균 9일','주의','mid']],
-      acts:[['오늘 상담 대기 8명 처리','14일 초과 3명 우선, 7일 주기 5명 예약 → 상담기록 즉시 입력','담임 전원 · 오늘'],
-            ['고위험 11명 케어','30일 미상담·급감 신호 학생 1차 연락→상담 예약','담임 · 오늘'],
-            ['순공·상담 연계','순공 급감=고위험 트리거, 자동 상담 우선순위 정렬','운영OS · 상시']] },
-    sales:{ revTr:[2.9,3.1,3.0,3.4,3.6,3.82], royaltyTr:[290,310,300,340,360,382],
-      unpaidRows:[['김OO','98만','마감 06/30','임박','high'],
-                  ['정OO','85만','마감 06/30','임박','high'],
-                  ['윤OO','76만','마감 07/20','예정','mid'],
-                  ['송OO','62만','마감 07/20','예정','mid']],
-      rows:[['미수금','412만원','해당 학생 7명','즉시','high'],
-            ['당월 매출','3,820만원','당해년도 누적 2.1억','양호','low'],
-            ['로열티','382만원','매출 대비 10%','—','low'],
-            ['콘텐츠 활용','재원 68%','당월 소비 540건','양호','low']],
-      acts:[['미수금 412만 회수','학생 7명 납부 안내 연락 → 결제링크 재발송','행정 · 48시간'],
-            ['월말 로열티 시뮬','당월 매출 페이스 기준 예상 로열티 ~400만 점검','지점장 · 월말'],
-            ['콘텐츠 급감 연동','소비 급감 학생을 운영 고위험으로 자동 태깅','운영OS · 상시']] },
-    marketing:{ blog:[['자사',5],['경쟁A',4],['경쟁B',3],['경쟁C',2]],
-      issueRows:[['경쟁A 홈피','신규 장학 이벤트 게시','06/14','확인','mid'],
-                 ['경쟁B 홈피','설명회 일정 공지','06/12','확인','mid'],
-                 ['경쟁A 블로그','후기 콘텐츠 다수 게시','06/10','모니터','low']],
-      rows:[['블로그 게시','자사 5건','자사 점유율 38%','권장','low'],
-            ['경쟁사 홈페이지','특이사항 2건','최신 06/14','확인','mid'],
-            ['경쟁사 현황','좌석 등 비교','지점 등록 기준','—','low'],
-            ['학교·N수 현황','12개교','N수 추정 상위','—','low'],
-            ['우수사례 공유','신규 4건','누적 28건','신규','low']],
-      acts:[['블로그 점유율 확대','자사 점유율 38%→50% 목표, 주1회 정기 게시','데스크 · 주간'],
-            ['경쟁사 이슈 대응','장학·설명회 이슈 2건 비교우위 메시지 즉시 대응','마케팅 · 즉시'],
-            ['우수사례 활용','전 지점 우수사례 28건 중 대치 상권 적용 건 선별','지점장 · 이번 주']] }
+    recruit:{ opp:[58,62,67,72,77,82],
+      rows:[['경쟁사','대치권 경쟁 브랜드 설명회 2건','이번 주 전환 방어 필요','긴급','high'],
+            ['학교군','휘문·중동·단대부고 문의 비중↑','맞춤 메시지 운영 적합','우선','mid'],
+            ['학령인구','강남권 일반 수험군 감소 지속','세분 타깃팅 필요','우선','mid'],
+            ['모집기회','N수생 설명회 전환 가능성↑','전환형 집중 집행','기회','low']],
+      acts:[['경쟁사 대응 메시지 집중','경쟁 설명회와 겹치는 3일간 \'관리형 재수+데이터 피드백\' 메시지 집행','본사 마케팅+지점 · 오늘~3일'],
+            ['학교군별 소재 분리','상위 12개 고교를 3개 군으로 묶어 관심포인트별 소재 운영','지점 · 이번 주'],
+            ['목표군 타깃 정교화','고3 상위/N수/의대재도전 중심으로 광고 세팅 세분화','마케팅 실무 · 이번 달']] },
+    operation:{ revTr:[2.9,3.1,3.0,3.4,3.6,3.8], newEnroll:[13,15,12,14,16,20], withdraw:[4,3,5,4,6,5],
+      rows:[['매출','3.8억','목표 페이스 유지','양호','low'],['재원생','191명','순증 흐름 지속','양호','low'],
+            ['미납','2.4천만','장기화 시 퇴원 연동','주의','high'],['신규/퇴원','32 / 3','당월 운영 안정','양호','low']],
+      acts:[['미납 장기 건 우선 회수','7일+ 미납 18건을 학부모 안내→담임 확인→결제링크 재발송으로 자동화','행정+담임 · 48시간'],
+            ['신규 등록 기여 채널 분석','유입 경로별 등록 기여도 확인 후 고효율 채널에 예산 재배분','지점장 · 이번 주'],
+            ['퇴원 추이·상담 병합 확인','순증 꺾임 방지 위해 리텐션 화면과 연계 동시 점검','원장+담임 · 상시']] },
+    retention:{ reasons:[['성적 부진',39],['타 학원',33],['안맞음',17],['비용',11]],
+      advisors:[['담임A',18],['담임B',14],['담임C',11],['담임D',7]],
+      riskRows:[['김OO','출결↓·학습시간↓·미납','상담 미실시 8일','즉시','high'],
+                ['박OO','출결↓·성적 불안','상담 예약','오늘','mid'],
+                ['정OO','학습시간↓·퇴원문의','학부모 상담 대기','즉시','high'],
+                ['최OO','미납·분위기 이탈','담임 확인 완료','우선','mid']],
+      acts:[['오늘 연락 대상 11명 케어','오전 1차 연락→오후 담임 상담 예약→미응답 시 학부모 연락 프로세스','담임 전원 · 오늘'],
+            ['퇴원사유 비교 고도화','전월/전분기/작년동기 대비 사유 차이 제공으로 구조적 문제 파악','기획/개발 · 과제'],
+            ['미납→리텐션 자동 태깅','미납 학생을 자동으로 리텐션 주의군에 연결','운영실 · 상시']] },
+    marketing:{ content:[['전사',5],['권역',3],['지점',4],['경쟁사',2]],
+      rows:[['전사','설명회 모집 공통 템플릿','전 지점 동일 메시지 유지','사용 가능','low'],
+            ['권역','강남권 시험 종료형 콘텐츠','권역 일정 맞춤 운영','권장','low'],
+            ['지점','대치 사례형 후기 소재','상권 맞춤 신뢰 확보','권장','low'],
+            ['경쟁사','타사 장학·설명회 이슈 2건','비교우위 메시지 즉시 대응','긴급','high']],
+      acts:[['전사/권역/지점 콘텐츠 분리','재가공 없이 쓸 콘텐츠와 수정 필요 콘텐츠를 한눈에 구분','본사 마케팅 · 상시'],
+            ['경쟁사 이슈 자동 감지','크롤링으로 경쟁사 설명회·장학 수집, 상권 영향 큰 이슈만 선별','개발+분석 · 과제'],
+            ['\'지금 써야 할\' 콘텐츠 상단 배치','반응 높을 소재를 상단 배치해 실제 집행율 향상','운영OS 기획 · 즉시']] }
   };
   const META={
-    recruit:{name:'모집 · 등록 현황',color:'#EC4899',icon:'people'},
-    operation:{name:'운영 · 학생 관리',color:'#22D3EE',icon:'ops'},
-    sales:{name:'매출 · 수익',color:'#FBBF24',icon:'won'},
-    marketing:{name:'마케팅 · 경쟁/콘텐츠',color:'#34D399',icon:'mega'}
+    recruit:{name:'모집 · 경쟁 인텔리전스',color:'#EC4899',icon:'target'},
+    operation:{name:'운영 · 매출/재원',color:'#22D3EE',icon:'bars'},
+    retention:{name:'리텐션 · 퇴원 관리',color:'#FBBF24',icon:'shield'},
+    marketing:{name:'마케팅 · 콘텐츠/이슈',color:'#34D399',icon:'mega'}
   };
 
   // 최상단 우선 처리 — 오늘의 할일 (체크리스트)
@@ -534,10 +515,11 @@
   let todoDone=new Set(); let todoMemo='';
   try{const r=JSON.parse(localStorage.getItem(TODO_KEY)||'{}');todoDone=new Set(r.done||[]);todoMemo=r.memo||'';}catch(e){}
   function saveTodo(){ try{localStorage.setItem(TODO_KEY,JSON.stringify({done:[...todoDone],memo:todoMemo}));}catch(e){} }
-  const IMMEDIATE=[
-    {k:'operation',lv:'u',label:'상담 대기',v:'8명',sub:'7일 주기 5 · 14일 초과 3'},
-    {k:'operation',lv:'u',label:'고위험 학생',v:'11명',sub:'30일 미상담 · 콘텐츠/출석 급감'},
-    {k:'sales',lv:'w',label:'미수금',v:'412만',sub:'해당 학생 7명 · 납부 안내 필요'},
+  const RISKS_TOP=[
+    ['홍○○','u','순공 −45% · 상담기피 12일 · 앱 미접속 5일',94],
+    ['김○○','u','모의고사 2회↓ · 결석 3회 · 학부모 문의↑',88],
+    ['박○○','u','부정 게시글 · \'다른 곳\' 감지 · 순공 −32%',81],
+    ['이○○','w','집중도 3주 하락 · 상담 간격 증가',62],
   ];
 
   // ── 세부 템플릿 ──
@@ -547,58 +529,50 @@
 
   const TPL={
     recruit:()=>`
-      <div class="stat-row">${stat('재원생','191','명','N수 94 · 재학 97','')}${stat('좌석 점유율','79','%','▲ +2%p','up')}${stat('신규 등록','20','명','전월 +9','up')}${stat('예비생','14','명','상담 전환율 62%','up')}</div>
+      <div class="stat-row">${stat('경쟁사 주간 이슈','3','건','전주 ▲ +1','dn')}${stat('핵심 학교군','12','개교','문의 유입 상위','')}${stat('학령인구 증감','-4.8','%','전년 대비','dn')}${stat('모집기회 지수','82','','상위 18%','up')}</div>
       <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">재원생 추이</div><span class="panel-more">최근 6개월</span></div><div id="c1"></div></div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">상담 전환율 추이</div><span class="panel-more">예비생 → 등록</span></div><div id="c2"></div></div>
-      </div>
-      <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">등록 현황 요약</div></div>${tbl(['지표','기본 수치','부가','상태'],D.recruit.rows)}</div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">권역별 모집기회 지수</div><span class="panel-more">최근 6개월</span></div><div id="c1"></div></div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">AI 권장 액션</div></div>${actList(D.recruit.acts)}</div>
-      </div>`,
+      </div>
+      <div class="panel"><div class="panel-hd"><div class="panel-title">모집 인텔리전스 요약</div></div>${tbl(['구분','핵심 내용','의미','우선순위'],D.recruit.rows)}</div>`,
     operation:()=>`
-      <div class="stat-row">${stat('상담 대기','8','명','⚑ 14일초과 3','warn')}${stat('고위험 학생','11','명','⚑ 오늘 케어','dn')}${stat('당월 퇴원율','3.2','%','재등록 81%','')}${stat('순공 인당','42','h','활용 168명','up')}</div>
-      <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">퇴원율 추이</div><span class="panel-more">최근 6개월</span></div><div id="c1"></div></div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">인당 순공시간 추이</div><span class="panel-more">시간/월</span></div><div id="c2"></div></div>
-      </div>
-      <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">상담 대기 명단</div><span class="panel-more">→ 상담기록 입력</span></div>${tbl(['학생','마지막 상담','경과','상태'],D.operation.waitRows)}</div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">고위험 학생 명단</div><span class="panel-more">즉시 케어</span></div>${tbl(['학생','위험 신호','우선도'],D.operation.riskRows)}</div>
-      </div>
-      <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">운영 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.operation.rows)}</div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">AI 권장 액션</div></div>${actList(D.operation.acts)}</div>
-      </div>`,
-    sales:()=>`
-      <div class="stat-row">${stat('미수금','412','만원','⚑ 7명','dn')}${stat('당월 매출','3,820','만원','▲ +12%','up')}${stat('로열티','382','만원','매출 10%','')}${stat('콘텐츠 활용','68','%','재원 대비','up')}</div>
+      <div class="stat-row">${stat('이번 달 매출','3.8','억','목표 101%','up')}${stat('재원생','191','명','전월 +9','up')}${stat('미납 잔액','2.4','천만','▲ +0.3천만','dn')}${stat('신규/퇴원','32 / 3','','순증 +29','up')}</div>
       <div class="grid2">
         <div class="panel"><div class="panel-hd"><div class="panel-title">월별 매출 추이</div><span class="panel-more">억원</span></div><div id="c1"></div></div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">로열티 추이</div><span class="panel-more">만원/월</span></div><div id="c2"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">신규 등록 vs 퇴원</div></div><div id="c2"></div></div>
       </div>
       <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">미수금 학생 명단</div><span class="panel-more">→ 납부 안내 연락</span></div>${tbl(['학생','미납액','마감','상태'],D.sales.unpaidRows)}</div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">AI 권장 액션</div></div>${actList(D.sales.acts)}</div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">운영 상태 요약</div></div>${tbl(['항목','현재','해석','상태'],D.operation.rows)}</div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">AI 권장 액션</div></div>${actList(D.operation.acts)}</div>
+      </div>`,
+    retention:()=>`
+      <div class="stat-row">${stat('고위험 학생','11','명','오늘 즉시 케어','dn')}${stat('상담 미실시','17','건','주간 누적','warn')}${stat('미납 연계 위험','5','명','고위험 중복','dn')}${stat('케어 완료율','68','%','목표 80%','')}</div>
+      <div class="grid2">
+        <div class="panel"><div class="panel-hd"><div class="panel-title">퇴원 사유 비중</div><span class="panel-more">최근 3개월</span></div><div class="donut-wrap"><div id="c1" class="dc"></div><div class="dl" id="c1leg"></div></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">담임별 상담 현황</div><span class="panel-more">이번 주</span></div><div id="c2"></div></div>
       </div>
-      <div class="panel"><div class="panel-hd"><div class="panel-title">매출 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.sales.rows)}</div>`,
+      <div class="grid2">
+        <div class="panel"><div class="panel-hd"><div class="panel-title">고위험 학생 명단</div></div>${tbl(['학생','위험 신호','상담 상태','우선도'],D.retention.riskRows)}</div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">AI 권장 액션</div></div>${actList(D.retention.acts)}</div>
+      </div>`,
     marketing:()=>`
-      <div class="stat-row">${stat('블로그 자사','5','건','점유율 38%','')}${stat('경쟁사 이슈','2','건','즉시 대응','dn')}${stat('학교·N수','12','개교','관리 대상','')}${stat('우수사례','4','건','신규','up')}</div>
+      <div class="stat-row">${stat('전사 공통 콘텐츠','5','건','캠페인 공통','')}${stat('권역 콘텐츠','3','건','강남권 특화','')}${stat('지점 콘텐츠','4','건','대치 맞춤','')}${stat('경쟁사 이슈','2','건','즉시 대응','dn')}</div>
       <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">블로그 게시 점유율</div><span class="panel-more">자사 vs 경쟁</span></div><div id="c1"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">단위별 콘텐츠 보유량</div><span class="panel-more">전사·권역·지점·경쟁</span></div><div id="c1"></div></div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">AI 권장 액션</div></div>${actList(D.marketing.acts)}</div>
       </div>
-      <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">경쟁사 특이사항</div><span class="panel-more">본사 취합 · 읽기 전용</span></div>${tbl(['경쟁사','특이사항','게시일','상태'],D.marketing.issueRows)}</div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">마케팅 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.marketing.rows)}</div>
-      </div>`
+      <div class="panel"><div class="panel-hd"><div class="panel-title">콘텐츠 · 이슈 요약</div></div>${tbl(['구분','콘텐츠/이슈','활용 포인트','상태'],D.marketing.rows)}</div>`
   };
   const legend=(arr,colors,u)=>arr.map((x,i)=>`<div class="dl-item"><span class="ring" style="border-color:${colors[i]}"></span> ${x[0]} <b>${x[1]}${u||'%'}</b></div>`).join('');
 
   const RENDER={
-    recruit:()=>{ areaChart('#c1',MONTHS,D.recruit.studentsTr,'#EC4899',v=>v+'명'); lineChart('#c2',MONTHS,D.recruit.convTr,null,v=>v+'%'); },
-    operation:()=>{ areaChart('#c1',MONTHS,D.operation.churnTr,'#22D3EE',v=>v+'%'); areaChart('#c2',MONTHS,D.operation.studyTr,'#A66BFF',v=>v+'h'); },
-    sales:()=>{ areaChart('#c1',MONTHS,D.sales.revTr,'#FBBF24',v=>v+'억'); areaChart('#c2',MONTHS,D.sales.royaltyTr,'#34D399',v=>v+'만'); },
-    marketing:()=>{ const d=D.marketing; barChart('#c1',d.blog.map(c=>c[0]),d.blog.map(c=>c[1]),'#34D399',v=>v+'건'); }
+    recruit:()=>{ lineChart('#c1',MONTHS,D.recruit.opp,null,v=>v); },
+    operation:()=>{ areaChart('#c1',MONTHS,D.operation.revTr,'#22D3EE',v=>v+'억'); lineChart('#c2',MONTHS,D.operation.newEnroll,D.operation.withdraw); },
+    retention:()=>{ const d=D.retention;
+      donutChart('#c1',d.reasons.map(r=>r[1]),d.reasons.map(r=>r[0]),RC);
+      document.getElementById('c1leg').innerHTML=legend(d.reasons,RC);
+      barChart('#c2',d.advisors.map(a=>a[0]),d.advisors.map(a=>a[1]),'#22D3EE',v=>v+'건'); },
+    marketing:()=>{ const d=D.marketing; barChart('#c1',d.content.map(c=>c[0]),d.content.map(c=>c[1]),'#34D399',v=>v+'건'); }
   };
 
   function openDetail(key,fromNav){
@@ -677,9 +651,8 @@
     document.getElementById('todoCnt').textContent=done+' / '+TODO_ITEMS.length+' 완료';
     document.getElementById('todoBody').innerHTML=TODOS.map(t=>
       `<div class="todo-item"><span class="ti-tag ${t[0]}">${lab[t[0]]}</span><span class="ti-tx">${t[1]}</span><span class="ti-tm">${t[2]}</span></div>`).join('');
-    const ic=document.getElementById('immCnt'); if(ic) ic.textContent='미처리 '+IMMEDIATE.length+'건';
-    document.getElementById('riskBody').innerHTML=IMMEDIATE.map(r=>
-      `<div class="risk-item" style="cursor:pointer" onclick="openDetail('${r.k}')"><span class="ri-nm">${r.label}</span><span class="ri-lv ${r.lv}">${r.lv==='u'?'긴급':'주의'}</span><span class="ri-sg">${r.sub}</span><span class="ri-sc ${r.lv}">${r.v}</span></div>`).join('');
+    document.getElementById('riskBody').innerHTML=RISKS_TOP.map(r=>
+      `<div class="risk-item"><span class="ri-nm">${r[0]}</span><span class="ri-lv ${r[1]}">${r[1]==='u'?'긴급':'주의'}</span><span class="ri-sg">${r[2]}</span><span class="ri-sc ${r[1]}">${r[3]}</span></div>`).join('');
   }
 
   fillIcons();
