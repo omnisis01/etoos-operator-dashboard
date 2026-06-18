@@ -165,8 +165,8 @@
   .qd::after{content:'';position:absolute;inset:0;border-radius:var(--r-lg);
     background:radial-gradient(420px 200px at var(--gx) var(--gy),var(--accent-soft),transparent 70%);opacity:.9;pointer-events:none}
   .qd.recruit  {--accent:var(--pink);--accent-soft:rgba(236,72,153,.12);--gx:0%;--gy:0%}
-  .qd.operation{--accent:var(--cyan);--accent-soft:rgba(34,211,238,.12);--gx:100%;--gy:0%}
-  .qd.sales{--accent:var(--gold);--accent-soft:rgba(251,191,36,.13);--gx:0%;--gy:100%}
+  .qd.sales{--accent:var(--gold);--accent-soft:rgba(251,191,36,.13);--gx:100%;--gy:0%}
+  .qd.operation{--accent:var(--cyan);--accent-soft:rgba(34,211,238,.12);--gx:0%;--gy:100%}
   .qd.marketing{--accent:var(--green);--accent-soft:rgba(52,211,153,.13);--gx:100%;--gy:100%}
   .qd-hd{display:flex;align-items:center;gap:11px;margin-bottom:18px;position:relative;z-index:1}
   .qd-ic{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;color:#fff;background:var(--accent);flex-shrink:0}
@@ -286,16 +286,16 @@
       <a class="nav-item sub" data-k="recruit" onclick="navTo('recruit',this)"><span class="nav-dot"></span><span class="lbl">신규 등록</span></a>
       <a class="nav-item sub" data-k="recruit" onclick="navTo('recruit',this)"><span class="nav-dot"></span><span class="lbl">예비생 현황</span></a>
 
+      <div class="nav-grp clk" data-k="sales" style="--gc:var(--gold)" onclick="navTo('sales')" title="매출"><span class="g-ic" data-icon="won"></span><span class="glbl">매출</span></div>
+      <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">미수금</span><span class="nb">7</span></a>
+      <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">매출·로열티</span></a>
+      <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">콘텐츠 활용</span></a>
+
       <div class="nav-grp clk" data-k="operation" style="--gc:var(--cyan)" onclick="navTo('operation')" title="운영"><span class="g-ic" data-icon="ops"></span><span class="glbl">운영</span></div>
       <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">상담 대기</span><span class="nb">8</span></a>
       <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">고위험 학생</span><span class="nb">11</span></a>
       <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">퇴원·재등록률</span></a>
       <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">순공·상담 현황</span></a>
-
-      <div class="nav-grp clk" data-k="sales" style="--gc:var(--gold)" onclick="navTo('sales')" title="매출"><span class="g-ic" data-icon="won"></span><span class="glbl">매출</span></div>
-      <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">미수금</span><span class="nb">7</span></a>
-      <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">매출·로열티</span></a>
-      <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">콘텐츠 활용</span></a>
 
       <div class="nav-grp clk" data-k="marketing" style="--gc:var(--green)" onclick="navTo('marketing')" title="마케팅"><span class="g-ic" data-icon="mega"></span><span class="glbl">마케팅</span></div>
       <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">블로그·경쟁사</span></a>
@@ -356,17 +356,6 @@
           </div>
         </div>
 
-        <!-- 운영 -->
-        <div class="qd operation" onclick="openDetail('operation')">
-          <div class="qd-hd"><div class="qd-ic" data-icon="ops"></div><div class="qd-tt">운영<span class="m">학생 관리</span></div><span class="qd-go">자세히 →</span></div>
-          <div class="kpis">
-            <div class="kpi"><div class="k">상담 대기</div><div class="v">8<small>명</small></div><div class="d warn">⚑ 14일초과 3</div></div>
-            <div class="kpi"><div class="k">고위험 학생</div><div class="v">11<small>명</small></div><div class="d dn">⚑ 오늘 케어</div></div>
-            <div class="kpi"><div class="k">당월 퇴원율</div><div class="v">3.2<small>%</small></div><div class="d">재등록 81%</div></div>
-            <div class="kpi"><div class="k">순공 인당</div><div class="v">42<small>h</small></div><div class="d up">활용 168명</div></div>
-          </div>
-        </div>
-
         <!-- 매출 -->
         <div class="qd sales" onclick="openDetail('sales')">
           <div class="qd-hd"><div class="qd-ic" data-icon="won"></div><div class="qd-tt">매출<span class="m">수익 · 미수금</span></div><span class="qd-go">자세히 →</span></div>
@@ -375,6 +364,17 @@
             <div class="kpi"><div class="k">당월 매출</div><div class="v">3,820<small>만</small></div><div class="d up">▲ +12%</div></div>
             <div class="kpi"><div class="k">로열티</div><div class="v">382<small>만</small></div><div class="d">매출 10%</div></div>
             <div class="kpi"><div class="k">콘텐츠 활용</div><div class="v">68<small>%</small></div><div class="d up">▲ +5%p</div></div>
+          </div>
+        </div>
+
+        <!-- 운영 -->
+        <div class="qd operation" onclick="openDetail('operation')">
+          <div class="qd-hd"><div class="qd-ic" data-icon="ops"></div><div class="qd-tt">운영<span class="m">학생 관리</span></div><span class="qd-go">자세히 →</span></div>
+          <div class="kpis">
+            <div class="kpi"><div class="k">상담 대기</div><div class="v">8<small>명</small></div><div class="d warn">⚑ 14일초과 3</div></div>
+            <div class="kpi"><div class="k">고위험 학생</div><div class="v">11<small>명</small></div><div class="d dn">⚑ 오늘 케어</div></div>
+            <div class="kpi"><div class="k">당월 퇴원율</div><div class="v">3.2<small>%</small></div><div class="d">재등록 81%</div></div>
+            <div class="kpi"><div class="k">순공 인당</div><div class="v">42<small>h</small></div><div class="d up">활용 168명</div></div>
           </div>
         </div>
 
@@ -398,8 +398,8 @@
         <div class="dt-title"><span id="dtIcon" class="dt-badge"></span><span id="dtName"></span></div>
         <div class="dt-nav" id="dtNav" title="영역 바로 이동">
           <button class="dtn recruit"   data-k="recruit"   data-icon="people" onclick="openDetail('recruit')"   title="모집"></button>
-          <button class="dtn operation" data-k="operation" data-icon="ops"    onclick="openDetail('operation')" title="운영"></button>
           <button class="dtn sales"     data-k="sales"     data-icon="won"    onclick="openDetail('sales')"     title="매출"></button>
+          <button class="dtn operation" data-k="operation" data-icon="ops"    onclick="openDetail('operation')" title="운영"></button>
           <button class="dtn marketing" data-k="marketing" data-icon="mega"   onclick="openDetail('marketing')" title="마케팅"></button>
         </div>
       </div>
