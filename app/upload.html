@@ -52,7 +52,7 @@
         <select id="dataset" onchange="onDataset()">
           <option value="snapshot">월간 운영지표 (재원생·매출·출결 KPI)</option>
           <option value="churn">퇴원위험 요인 (학생별 — 출결·순공·성적·미납·부정어·커뮤니티)</option>
-          <option value="outcome">퇴원 확정 (라벨 — 실제 퇴원 학생 기록)</option>
+          <option value="outcome">퇴원 확정 (실제 퇴원 학생 기록)</option>
         </select>
         <button class="btn ghost" id="tplBtn">📄 템플릿 다운로드</button>
       </div>
@@ -95,9 +95,9 @@
       hint:'학생 1명당 1행. 결석지각률·순공달성률은 %, 성적하락등급은 하락폭(0=변화없음), 미납일수는 일, 상담부정어·커뮤니티부정은 0~100 강도 점수. 위험점수는 6대 팩터 가중치(이탈의도 중심)로 자동 계산됩니다.'
     },
     outcome: {
-      label:'퇴원 확정 (라벨)', mode:'outcome', textCols:['student_name','withdraw_date'],
+      label:'퇴원 확정', mode:'outcome', textCols:['student_name','withdraw_date'],
       cols:{ "학생명":"student_name","퇴원일":"withdraw_date" },
-      tpl:'퇴원확정_라벨_템플릿.xlsx',
+      tpl:'퇴원확정_템플릿.xlsx',
       sample:[{학생명:'홍○○',퇴원일:'2026-06-18'}],
       hint:'실제 퇴원한 학생을 기록하면, 그 시점의 6개 위험요인 값과 위험점수가 함께 보관됩니다. 나중에 "어떤 신호가 실제 퇴원을 앞섰는지" 분석·보정하는 기준 자료가 됩니다. ※ 해당 학생이 먼저 \'퇴원위험 요인\'에 등록돼 있어야 값이 잡힙니다.'
     }
@@ -179,7 +179,7 @@
           if(r.ok) okN++; else fails.push(`${rec.student_name}(${r.error})`);
         }
         return showMsg(fails.length?'err':'ok',
-          `퇴원 라벨 ${okN}건 저장 완료${fails.length?` · 실패 ${fails.length}건: ${fails.join(', ')}`:''}`);
+          `퇴원 기록 ${okN}건 저장 완료${fails.length?` · 실패 ${fails.length}건: ${fails.join(', ')}`:''}`);
       }
 
       if(d.mode==='single'){

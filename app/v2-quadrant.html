@@ -289,7 +289,7 @@
       <div class="nav-grp clk" data-k="sales" style="--gc:var(--gold)" onclick="navTo('sales')" title="매출"><span class="g-ic" data-icon="won"></span><span class="glbl">매출</span></div>
       <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">미수금</span><span class="nb">7</span></a>
       <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">매출·로열티</span></a>
-      <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">콘텐츠 활용</span></a>
+      <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">콘텐츠 판매</span></a>
 
       <div class="nav-grp clk" data-k="operation" style="--gc:var(--cyan)" onclick="navTo('operation')" title="운영"><span class="g-ic" data-icon="ops"></span><span class="glbl">운영</span></div>
       <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">상담 대기</span><span class="nb">8</span></a>
@@ -364,7 +364,7 @@
             <div class="kpi"><div class="k">미수금</div><div class="v">412<small>만</small></div><div class="d dn">⚑ 7명</div></div>
             <div class="kpi"><div class="k">당월 매출</div><div class="v">3,820<small>만</small></div><div class="d up">▲ +12%</div></div>
             <div class="kpi"><div class="k">로열티</div><div class="v">382<small>만</small></div><div class="d">매출 10%</div></div>
-            <div class="kpi"><div class="k">콘텐츠 활용</div><div class="v">68<small>%</small></div><div class="d up">▲ +5%p</div></div>
+            <div class="kpi"><div class="k">콘텐츠 판매</div><div class="v">540<small>건</small></div><div class="d up">전월 ▲ +9</div></div>
           </div>
         </div>
 
@@ -474,7 +474,7 @@
       waitRows:[['김OO','마지막 상담 06/03','경과 14일','초과','high'],
                 ['이OO','마지막 상담 06/09','경과 8일','주기 도래','mid'],
                 ['박OO','마지막 상담 06/10','경과 7일','주기 도래','mid']],
-      riskRows:[['홍OO','30일 미상담 · 콘텐츠 소비 급감','즉시','high'],
+      riskRows:[['홍OO','30일 미상담 · 콘텐츠 구매 급감','즉시','high'],
                 ['정OO','출석 급감 · 순공 −32%','즉시','high'],
                 ['최OO','성적 2계단↓ · 분위기 이탈','오늘','mid']],
       rows:[['상담 대기','8명','7일주기 5 · 14일초과 3','즉시','high'],
@@ -494,10 +494,10 @@
       rows:[['미수금','412만원','해당 학생 7명','즉시','high'],
             ['당월 매출','3,820만원','당해년도 누적 2.1억','양호','low'],
             ['로열티','382만원','매출 대비 10%','—','low'],
-            ['콘텐츠 활용','재원 68%','당월 소비 540건','양호','low']],
+            ['콘텐츠 판매','당월 540건','구매 학생 재원 68%','양호','low']],
       acts:[['미수금 412만 회수','학생 7명 납부 안내 연락 → 결제링크 재발송','행정 · 48시간'],
             ['월말 로열티 시뮬','당월 매출 페이스 기준 예상 로열티 ~400만 점검','지점장 · 월말'],
-            ['콘텐츠 급감 연동','소비 급감 학생을 운영 고위험으로 자동 태깅','운영OS · 상시']] },
+            ['콘텐츠 구매 급감 연동','구매 급감 학생을 운영 고위험으로 자동 연결','운영 · 상시']] },
     marketing:{ blog:[['자사',5],['경쟁A',4],['경쟁B',3],['경쟁C',2]],
       issueRows:[['경쟁A 홈피','신규 장학 이벤트 게시','06/14','확인','mid'],
                  ['경쟁B 홈피','설명회 일정 공지','06/12','확인','mid'],
@@ -571,7 +571,7 @@
         <div class="panel"><div class="panel-hd"><div class="panel-title">AI 권장 액션</div></div>${actList(D.operation.acts)}</div>
       </div>`,
     sales:()=>`
-      <div class="stat-row">${stat('미수금','412','만원','⚑ 7명','dn')}${stat('당월 매출','3,820','만원','▲ +12%','up')}${stat('로열티','382','만원','매출 10%','')}${stat('콘텐츠 활용','68','%','재원 대비','up')}</div>
+      <div class="stat-row">${stat('미수금','412','만원','⚑ 7명','dn')}${stat('당월 매출','3,820','만원','▲ +12%','up')}${stat('로열티','382','만원','매출 10%','')}${stat('콘텐츠 판매','540','건','구매 재원 68%','up')}</div>
       <div class="grid2">
         <div class="panel"><div class="panel-hd"><div class="panel-title">월별 매출 추이</div><span class="panel-more">억원</span></div><div id="c1"></div></div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">로열티 추이</div><span class="panel-more">만원/월</span></div><div id="c2"></div></div>
