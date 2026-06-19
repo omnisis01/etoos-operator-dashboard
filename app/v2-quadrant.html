@@ -296,7 +296,7 @@
 
       <div class="nav-grp clk" data-k="sales" style="--gc:var(--gold)" onclick="navTo('sales')" title="매출"><span class="g-ic" data-icon="won"></span><span class="glbl">매출</span></div>
       <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">미수금</span><span class="nb" id="nbUnpaid">7</span></a>
-      <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">매출·로열티</span></a>
+      <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">매출 · 미수금 회수</span></a>
       <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">콘텐츠 판매</span></a>
 
       <div class="nav-grp clk" data-k="operation" style="--gc:var(--cyan)" onclick="navTo('operation')" title="운영"><span class="g-ic" data-icon="ops"></span><span class="glbl">운영</span></div>
@@ -370,7 +370,7 @@
           <div class="kpis">
             <div class="kpi"><div class="k">미수금</div><div class="v" id="rvUnpaid">412<small>만</small></div><div class="d dn" id="rvUnpaidD">⚑ 7명</div></div>
             <div class="kpi"><div class="k">당월 매출</div><div class="v" id="rvRevenue">3,820<small>만</small></div><div class="d up">▲ +12%</div></div>
-            <div class="kpi"><div class="k">로열티</div><div class="v" id="rvRoyalty">184<small>만</small></div><div class="d">매출의 10%</div></div>
+            <div class="kpi soon"><div class="k">미수금 회수율</div><div class="v">64<small>%</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
             <div class="kpi soon"><div class="k">콘텐츠 판매</div><div class="v">540<small>건</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
           </div>
         </div>
@@ -562,17 +562,24 @@
       acts:[['오늘 상담 대기 8명 처리','14일 초과 3명 우선, 7일 주기 5명 예약 → 상담기록 즉시 입력','담임 전원 · 오늘'],
             ['고위험 11명 케어','30일 미상담·급감 신호 학생 1차 연락→상담 예약','담임 · 오늘'],
             ['순공·상담 연계','순공 급감=고위험 트리거, 자동 상담 우선순위 정렬','운영OS · 상시']] },
-    sales:{ revTr:[2.9,3.1,3.0,3.4,3.6,3.82], royaltyTr:[290,310,300,340,360,382],
+    sales:{
       unpaidRows:[['김OO','98만','마감 06/30','임박','high'],
                   ['정OO','85만','마감 06/30','임박','high'],
                   ['윤OO','76만','마감 07/20','예정','mid'],
                   ['송OO','62만','마감 07/20','예정','mid']],
+      // 당월 일별 수강료 매출 (더미) — 막대(일매출) + 전년 동월 꺾은선
+      tuitionDays:['1','3','5','7','9','11','13','15','17','19'],
+      tuitionThis:[120,95,140,110,160,90,135,150,180,205],
+      tuitionPrev:[110,100,120,105,140,95,125,130,150,170],
+      // 콘텐츠 판매 (더미, 마켓ECI 연동 예정) — [콘텐츠, 당월 판매량, 매출(만), 전년 동월]
+      contentRows:[['한수 모의고사',182,164,150],['이감 모의고사',141,127,138],['상상 모의고사',96,86,90],['바탕 모의고사',74,67,61],['대성 모의고사',47,42,55]],
+      contentTrThis:[380,410,395,440,470,540], contentTrPrev:[350,360,372,400,430,498],
       rows:[['미수금','412만원','해당 학생 7명','즉시','high'],
             ['당월 매출','3,820만원','당해년도 누적 2.1억','양호','low'],
-            ['로열티','382만원','매출 대비 10%','—','low'],
+            ['미수금 회수','당월 268만','회수율 64% · 잔여 412만','주의','mid'],
             ['콘텐츠 판매','당월 540건','구매 학생 재원 68%','양호','low']],
       acts:[['미수금 412만 회수','학생 7명 납부 안내 연락 → 결제링크 재발송','행정 · 48시간'],
-            ['월말 로열티 시뮬','당월 매출 페이스 기준 예상 로열티 ~400만 점검','지점장 · 월말'],
+            ['일별 수강료 페이스 점검','당월 일매출 추세 vs 전년 — 목표 대비 진척 확인','지점장 · 주간'],
             ['콘텐츠 구매 급감 연동','구매 급감 학생을 운영 고위험으로 자동 연결','운영 · 상시']] },
     marketing:{ blog:[['자사',5],['경쟁A',4],['경쟁B',3],['경쟁C',2]],
       issueRows:[['경쟁A 홈피','신규 장학 이벤트 게시','06/14','확인','mid'],
@@ -627,6 +634,8 @@
   const inflowChTable=(rows)=>`<table class="ctable"><thead><tr><th>채널</th><th>이번 주</th><th>전년 동주</th><th>증감</th></tr></thead><tbody>${rows.map(r=>{const d=r[1]-r[2];return `<tr><td>${r[0]}</td><td>${r[1]}건</td><td style="opacity:.55">${r[2]}건</td><td class="risk ${r[3]}">${d>=0?'▲ +'+d:'▼ '+d}</td></tr>`;}).join('')}</tbody></table>`;
   // 좌석 타입별 잔여석 (입도선매=등원 예정생 선점, 회색)
   const seatTable=(rows)=>`<table class="ctable"><thead><tr><th>타입</th><th>총 좌석</th><th>잔여</th><th>입도선매(예정생)</th><th>실잔여</th></tr></thead><tbody>${rows.map(r=>{const[t,tot,rem,pre]=r;const real=rem-pre;return `<tr><td>${t}</td><td>${tot}석</td><td>${rem}석</td><td style="color:var(--text3)">${pre}석</td><td class="risk ${real<=5?'high':real<=10?'mid':'low'}">${real}석</td></tr>`;}).join('')}</tbody></table>`;
+  // 콘텐츠별 판매 표 (마켓ECI 연동 예정)
+  const contentTable=(rows)=>`<table class="ctable"><thead><tr><th>콘텐츠</th><th>당월 판매</th><th>매출</th><th>전년 동월</th></tr></thead><tbody>${rows.map(r=>{const[n,q,rev,prev]=r;const d=q-prev;return `<tr><td>${n}</td><td>${q}건</td><td>${rev}만</td><td class="risk ${d>=0?'low':'mid'}"><span style="opacity:.55">${prev}건</span> · ${d>=0?'▲ +'+d:'▼ '+d}</td></tr>`;}).join('')}</tbody></table>`;
   const tbl=(head,rows)=>`<table class="ctable"><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>{const rc=r[r.length-1];const cells=r.slice(0,-1);return `<tr>${cells.map((c,i)=>i===cells.length-1?`<td class="risk ${rc}">${c}</td>`:`<td>${c}</td>`).join('')}</tr>`;}).join('')}</tbody></table>`;
   const actList=(arr)=>`<div class="acts">${arr.map((a,i)=>`<div class="act"><div class="n">${i+1}</div><div><div class="b">${a[0]}</div><div class="p">${a[1]}</div><div class="mt">${a[2]}</div></div></div>`).join('')}</div>`;
 
@@ -658,11 +667,15 @@
       </div>
       <div class="panel"><div class="panel-hd"><div class="panel-title">운영 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.operation.rows)}</div>`,
     sales:()=>`
-      <div class="stat-row">${stat('미수금',RV.unpaid,'만원','⚑ '+RV.unpaidCnt+'명','dn')}${stat('당월 매출',RV.revenue,'만원','▲ +12%','up')}${stat('로열티',RV.royalty,'만원','매출의 10%','')}${statS('콘텐츠 판매','540','건')}</div>
+      <div class="stat-row">${stat('미수금',RV.unpaid,'만원','⚑ '+RV.unpaidCnt+'명','dn')}${stat('당월 매출',RV.revenue,'만원','▲ +12%','up')}${statS('미수금 회수율','64','%')}${statS('콘텐츠 판매','540','건')}</div>
       ${actPanel(D.sales.acts)}
       <div class="grid2">
         <div class="panel"><div class="panel-hd"><div class="panel-title">월별 매출 추이</div><span class="panel-more">올해 막대 · 전년 꺾은선</span></div><div id="c1"></div></div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">로열티 추이</div><span class="panel-more">올해 막대 · 전년 꺾은선</span></div><div id="c2"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">당월 일별 수강료 매출</div><span class="panel-more">올해 막대 · 전년 꺾은선${soonMore}</span></div><div id="cTuition"></div></div>
+      </div>
+      <div class="grid2">
+        <div class="panel"><div class="panel-hd"><div class="panel-title">콘텐츠 판매 추이</div><span class="panel-more">올해 막대 · 전년 꺾은선${soonMore}</span></div><div id="cContent"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">콘텐츠별 판매</div><span class="panel-more">마켓ECI${soonMore}</span></div>${contentTable(D.sales.contentRows)}</div>
       </div>
       <div class="panel"><div class="panel-hd"><div class="panel-title">미수금 학생 명단</div><span class="panel-more">→ 납부 안내 연락</span></div>${tbl(['학생','미납액','마감','상태'],D.sales.unpaidRows)}</div>
       <div class="panel"><div class="panel-hd"><div class="panel-title">매출 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.sales.rows)}</div>`,
@@ -680,7 +693,7 @@
   const RENDER={
     recruit:()=>{ comboChart('#cInflow',D.recruit.inflowWeeks,D.recruit.inflowThis,D.recruit.inflowPrev,'#EC4899',v=>v+'건'); comboChart('#c1',RD.months,RD.newEnroll,RD.newEnrollPrev,'#EC4899',v=>v+'명'); soonChart('#c2','등록 전환율 — 데이터 적재 후 표시'); },
     operation:()=>{ comboChart('#c1',RD.months,RD.withdraw,RD.withdrawPrev,'#22D3EE',v=>v+'명'); soonChart('#c2','인당 순공시간 — 데이터 적재 후 표시'); },
-    sales:()=>{ comboChart('#c1',RD.months,RD.revenue,RD.revenuePrev,'#FBBF24',v=>v+'만'); comboChart('#c2',RD.months,RD.revenue.map(r=>Math.round(r*0.1)),RD.revenuePrev.map(r=>Math.round(r*0.1)),'#34D399',v=>v+'만'); },
+    sales:()=>{ comboChart('#c1',RD.months,RD.revenue,RD.revenuePrev,'#FBBF24',v=>v+'만'); comboChart('#cTuition',D.sales.tuitionDays,D.sales.tuitionThis,D.sales.tuitionPrev,'#FBBF24',v=>v+'만'); comboChart('#cContent',RD.months,D.sales.contentTrThis,D.sales.contentTrPrev,'#A66BFF',v=>v+'건'); },
     marketing:()=>{ soonChart('#c1','블로그 게시 점유율 — 데이터 적재 후 표시'); }
   };
 
