@@ -181,6 +181,9 @@
   .kpi .v small{font-size:18px;font-weight:700;color:var(--text2);letter-spacing:0}
   .kpi .d{font-size:14.5px;font-weight:700;margin-top:8px;text-align:left}
   .d.up{color:var(--green)} .d.dn{color:var(--red)} .d.warn{color:var(--gold)}
+  /* 데이터 소스 미연동(예정) 표기 */
+  .kpi.soon .v{opacity:.5} .kpi.soon .k{opacity:.75}
+  .soon-tag{display:inline-block;font-size:12px;font-weight:700;color:var(--text3);border:1px dashed var(--border);border-radius:6px;padding:1px 8px;letter-spacing:0}
 
   /* ── DETAIL (2depth) ── */
   .detail{display:none}
@@ -350,8 +353,8 @@
           <div class="kpis">
             <div class="kpi"><div class="k">재원생</div><div class="v" id="rvStudents">191<small>명</small></div><div class="d up" id="rvStudentsD">전월 +9</div></div>
             <div class="kpi"><div class="k">좌석 점유율</div><div class="v" id="rvOccupancy">79<small>%</small></div><div class="d up">▲ +2%p</div></div>
-            <div class="kpi"><div class="k">신규 등록</div><div class="v">20<small>명</small></div><div class="d">당월</div></div>
-            <div class="kpi"><div class="k">예비생</div><div class="v">14<small>명</small></div><div class="d up">전환율 62%</div></div>
+            <div class="kpi soon"><div class="k">신규 등록</div><div class="v">20<small>명</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
+            <div class="kpi soon"><div class="k">예비생</div><div class="v">14<small>명</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
           </div>
         </div>
 
@@ -361,8 +364,8 @@
           <div class="kpis">
             <div class="kpi"><div class="k">미수금</div><div class="v" id="rvUnpaid">412<small>만</small></div><div class="d dn" id="rvUnpaidD">⚑ 7명</div></div>
             <div class="kpi"><div class="k">당월 매출</div><div class="v" id="rvRevenue">3,820<small>만</small></div><div class="d up">▲ +12%</div></div>
-            <div class="kpi"><div class="k">로열티</div><div class="v">382<small>만</small></div><div class="d">매출 10%</div></div>
-            <div class="kpi"><div class="k">콘텐츠 판매</div><div class="v">540<small>건</small></div><div class="d up">전월 ▲ +9</div></div>
+            <div class="kpi soon"><div class="k">로열티</div><div class="v">382<small>만</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
+            <div class="kpi soon"><div class="k">콘텐츠 판매</div><div class="v">540<small>건</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
           </div>
         </div>
 
@@ -370,10 +373,10 @@
         <div class="qd operation" onclick="openDetail('operation')">
           <div class="qd-hd"><div class="qd-ic" data-icon="ops"></div><div class="qd-tt">운영<span class="m">학생 관리</span></div><span class="qd-go">자세히 →</span></div>
           <div class="kpis">
-            <div class="kpi"><div class="k">상담 대기</div><div class="v">8<small>명</small></div><div class="d warn">⚑ 14일초과 3</div></div>
+            <div class="kpi soon"><div class="k">상담 대기</div><div class="v">8<small>명</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
             <div class="kpi"><div class="k">고위험 학생</div><div class="v" id="rvHighrisk">11<small>명</small></div><div class="d dn">⚑ 오늘 케어</div></div>
-            <div class="kpi"><div class="k">당월 퇴원율</div><div class="v">3.2<small>%</small></div><div class="d">재등록 81%</div></div>
-            <div class="kpi"><div class="k">순공 인당</div><div class="v">42<small>h</small></div><div class="d up">활용 168명</div></div>
+            <div class="kpi soon"><div class="k">당월 퇴원율</div><div class="v">3.2<small>%</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
+            <div class="kpi soon"><div class="k">순공 인당</div><div class="v">42<small>h</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
           </div>
         </div>
 
@@ -381,10 +384,10 @@
         <div class="qd marketing" onclick="openDetail('marketing')">
           <div class="qd-hd"><div class="qd-ic" data-icon="mega"></div><div class="qd-tt">마케팅<span class="m">경쟁 · 콘텐츠</span></div><span class="qd-go">자세히 →</span></div>
           <div class="kpis">
-            <div class="kpi"><div class="k">블로그 자사</div><div class="v">5<small>건</small></div><div class="d">점유율 38%</div></div>
-            <div class="kpi"><div class="k">경쟁사 이슈</div><div class="v">2<small>건</small></div><div class="d dn">즉시 대응</div></div>
-            <div class="kpi"><div class="k">학교·N수</div><div class="v">12<small>개교</small></div><div class="d">관리 대상</div></div>
-            <div class="kpi"><div class="k">우수사례</div><div class="v">4<small>건</small></div><div class="d up">신규</div></div>
+            <div class="kpi soon"><div class="k">블로그 자사</div><div class="v">5<small>건</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
+            <div class="kpi soon"><div class="k">경쟁사 이슈</div><div class="v">2<small>건</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
+            <div class="kpi soon"><div class="k">학교·N수</div><div class="v">12<small>개교</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
+            <div class="kpi soon"><div class="k">우수사례</div><div class="v">4<small>건</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
           </div>
         </div>
       </div>
