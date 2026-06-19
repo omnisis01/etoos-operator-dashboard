@@ -189,6 +189,15 @@
   .chart-soon .cs-t{font-size:14.5px;font-weight:600;color:var(--text3)}
   .qd-note{font-size:11.5px;color:var(--text3);margin-top:12px;padding-top:9px;border-top:1px solid var(--border)}
   .basis-note{font-size:12.5px;color:var(--text3);margin:-2px 2px 14px}
+  .lk{color:var(--purple);font-weight:700;text-decoration:none;font-size:14px;white-space:nowrap}
+  .lk:hover{text-decoration:underline}
+  .mk-cases{display:flex;flex-direction:column}
+  .mk-case{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:15px 4px;border-bottom:1px solid var(--border)}
+  .mk-case:last-child{border-bottom:none}
+  .mc-t{font-weight:700;color:var(--ink);font-size:16px}
+  .mc-d{font-size:14px;color:var(--text2);margin-top:4px}
+  .comp-frame{width:100%;height:560px;border:1px solid var(--border);border-radius:12px;background:#fff;margin-top:4px}
+  .comp-fallback{font-size:12px;color:var(--text3);margin-top:9px}
 
   /* ── DETAIL (2depth) ── */
   .detail{display:none}
@@ -306,9 +315,9 @@
       <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">퇴원 관리 · 재입학</span></a>
 
       <div class="nav-grp clk" data-k="marketing" style="--gc:var(--green)" onclick="navTo('marketing')" title="마케팅"><span class="g-ic" data-icon="mega"></span><span class="glbl">마케팅</span></div>
-      <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">블로그·경쟁사</span></a>
-      <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">학교·N수 현황</span></a>
-      <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">우수사례 공유</span></a>
+      <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">마케팅 활동 · 채널</span></a>
+      <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">클리핑 · 우수사례</span></a>
+      <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">경쟁사 분석</span></a>
 
       <div class="nav-grp" style="--gc:var(--text3)"><span class="g-ic" data-icon="dots"></span><span class="glbl">기타</span></div>
       <a class="nav-item sub2link" href="upload.html" title="데이터 업로드"><span class="ni-ic" data-icon="report"></span><span class="lbl">데이터 업로드</span></a>
@@ -388,12 +397,12 @@
 
         <!-- 마케팅 -->
         <div class="qd marketing" onclick="openDetail('marketing')">
-          <div class="qd-hd"><div class="qd-ic" data-icon="mega"></div><div class="qd-tt">마케팅<span class="m">경쟁 · 콘텐츠</span></div><span class="qd-go">자세히 →</span></div>
+          <div class="qd-hd"><div class="qd-ic" data-icon="mega"></div><div class="qd-tt">마케팅<span class="m">채널 · 클리핑 · 경쟁</span></div><span class="qd-go">자세히 →</span></div>
           <div class="kpis">
-            <div class="kpi soon"><div class="k">블로그 자사</div><div class="v">5<small>건</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
-            <div class="kpi soon"><div class="k">경쟁사 이슈</div><div class="v">2<small>건</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
-            <div class="kpi soon"><div class="k">학교·N수</div><div class="v">12<small>개교</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
-            <div class="kpi soon"><div class="k">우수사례</div><div class="v">4<small>건</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
+            <div class="kpi soon"><div class="k">마케팅 활동</div><div class="v">7<small>건</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
+            <div class="kpi soon"><div class="k">홈페이지 UV</div><div class="v">3,240</div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
+            <div class="kpi soon"><div class="k">인스타 조회</div><div class="v">1,420</div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
+            <div class="kpi soon"><div class="k">이번주 클리핑</div><div class="v">4<small>건</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
           </div>
         </div>
       </div>
@@ -591,19 +600,32 @@
       acts:[['미수금 412만 회수','학생 7명 납부 안내 연락 → 결제링크 재발송','행정 · 48시간'],
             ['일별 수강료 페이스 점검','당월 일매출 추세 vs 전년 — 목표 대비 진척 확인','지점장 · 주간'],
             ['콘텐츠 구매 급감 연동','구매 급감 학생을 운영 고위험으로 자동 연결','운영 · 상시']] },
-    marketing:{ blog:[['자사',5],['경쟁A',4],['경쟁B',3],['경쟁C',2]],
-      issueRows:[['경쟁A 홈피','신규 장학 이벤트 게시','06/14','확인','mid'],
-                 ['경쟁B 홈피','설명회 일정 공지','06/12','확인','mid'],
-                 ['경쟁A 블로그','후기 콘텐츠 다수 게시','06/10','모니터','low']],
-      rows:[['블로그 게시','자사 5건','자사 점유율 38%','권장','low'],
-            ['경쟁사 홈페이지','특이사항 2건','최신 06/14','확인','mid'],
-            ['경쟁사 현황','좌석 등 비교','지점 등록 기준','—','low'],
-            ['학교·N수 현황','12개교','N수 추정 상위','—','low'],
-            ['우수사례 공유','신규 4건','누적 28건','신규','low']],
-      acts:[['블로그 점유율 확대','자사 점유율 38%→50% 목표, 주1회 정기 게시','데스크 · 주간'],
-            ['경쟁사 이슈 대응','장학·설명회 이슈 2건 비교우위 메시지 즉시 대응','마케팅 · 즉시'],
-            ['우수사례 활용','전 지점 우수사례 28건 중 대치 상권 적용 건 선별','지점장 · 이번 주']] }
+    marketing:{
+      // 가맹점 마케팅 채널 — 원자지표 (활동지수 X) [지표, 내 지점, 권역 평균]
+      channelRows:[['홈페이지 UV (월)','3,240','2,870','up'],
+                   ['홈페이지 PV (월)','9,810','8,450','up'],
+                   ['블로그 마지막 게시일','06/16 (3일 전)','평균 6일 전','up'],
+                   ['인스타 게시물 조회수','1,420','1,180','up'],
+                   ['주간 게시 수','블로그 3 · 인스타 4','권역 평균 5','dn']],
+      // 내 지점 마케팅 활동 — 블로그/인스타 게시 (링크) [채널, 제목, 게시일, 조회수]
+      activityRows:[['블로그','6월 모의고사 분석 후기','06/16','312','#'],
+                    ['인스타','자습실 환경 리뉴얼','06/15','840','#'],
+                    ['블로그','정시 설명회 안내','06/13','205','#'],
+                    ['인스타','재원생 합격 후기','06/11','1,120','#']],
+      // 이번주 마케팅 클리핑 — 권역 기준 / 조회수 기준 [권역, 채널, 제목, 조회수]
+      clipRows:[['강남권','인스타','대치 자습실 리뉴얼','840','#'],
+                ['강남권','블로그','정시 설명회 후기','512','#'],
+                ['분당권','인스타','분당 합격 현수막','1,030','#'],
+                ['인천권','블로그','신규 개원 이벤트','388','#']],
+      // 우수사례 (링크)
+      caseRows:[['분당정자점','SNS 합격 후기 캠페인 — 문의 +38%','#'],
+                ['평촌점','지역 맘카페 제휴 설명회','#'],
+                ['일산점','자습실 브이로그 시리즈','#']],
+      acts:[['주간 게시 페이스 점검','블로그/인스타 주간 게시 수 권역 평균 5건 대비 보완','마케팅 · 주간'],
+            ['상위 콘텐츠 재활용','조회수 상위(합격후기 1,120) 콘텐츠 포맷 재생산','데스크 · 이번 주'],
+            ['경쟁사 대시보드 점검','권역 경쟁사 신규 이슈 모니터 → 비교우위 메시지','마케팅 · 상시']] }
   };
+  const COMPETITOR_URL='https://competitor-dashboard.chj927il.workers.dev/';
   const META={
     recruit:{name:'모집 · 등록 현황',color:'#EC4899',icon:'people'},
     operation:{name:'운영 · 학생 관리',color:'#22D3EE',icon:'ops'},
@@ -646,6 +668,12 @@
   const seatTable=(rows)=>`<table class="ctable"><thead><tr><th>타입</th><th>총 좌석</th><th>잔여</th><th>입도선매(예정생)</th><th>실잔여</th></tr></thead><tbody>${rows.map(r=>{const[t,tot,rem,pre]=r;const real=rem-pre;return `<tr><td>${t}</td><td>${tot}석</td><td>${rem}석</td><td style="color:var(--text3)">${pre}석</td><td class="risk ${real<=5?'high':real<=10?'mid':'low'}">${real}석</td></tr>`;}).join('')}</tbody></table>`;
   // 콘텐츠별 판매 표 (마켓ECI 연동 예정)
   const contentTable=(rows)=>`<table class="ctable"><thead><tr><th>콘텐츠</th><th>당월 판매</th><th>매출</th><th>전년 동월</th></tr></thead><tbody>${rows.map(r=>{const[n,q,rev,prev]=r;const d=q-prev;return `<tr><td>${n}</td><td>${q}건</td><td>${rev}만</td><td class="risk ${d>=0?'low':'mid'}"><span style="opacity:.55">${prev}건</span> · ${d>=0?'▲ +'+d:'▼ '+d}</td></tr>`;}).join('')}</tbody></table>`;
+  // 마케팅 — 가맹 채널 원자지표 / 게시 링크 / 클리핑 / 우수사례 / 경쟁사 iframe
+  const channelTable=(rows)=>`<table class="ctable"><thead><tr><th>지표</th><th>내 지점</th><th>권역 평균</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td class="risk ${r[3]}">${r[1]}</td><td style="opacity:.6">${r[2]}</td></tr>`).join('')}</tbody></table>`;
+  const postTable=(rows)=>`<table class="ctable"><thead><tr><th>채널</th><th>제목</th><th>게시일</th><th>조회수</th><th></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td style="opacity:.7">${r[2]}</td><td>${r[3]}</td><td><a class="lk" href="${r[4]}">보기 →</a></td></tr>`).join('')}</tbody></table>`;
+  const clipTable=(rows)=>`<table class="ctable"><thead><tr><th>권역</th><th>채널</th><th>제목</th><th>조회수</th><th></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td><a class="lk" href="${r[4]}">보기 →</a></td></tr>`).join('')}</tbody></table>`;
+  const caseList=(rows)=>`<div class="mk-cases">${rows.map(r=>`<div class="mk-case"><div><div class="mc-t">${r[0]}</div><div class="mc-d">${r[1]}</div></div><a class="lk" href="${r[2]}">사례 보기 →</a></div>`).join('')}</div>`;
+  const compPanel=()=>`<div class="panel"><div class="panel-hd"><div class="panel-title">경쟁사 분석</div><a class="lk" href="${COMPETITOR_URL}" target="_blank" rel="noopener">새 탭에서 열기 ↗</a></div><iframe class="comp-frame" src="${COMPETITOR_URL}" loading="lazy" referrerpolicy="no-referrer"></iframe><div class="comp-fallback">외부 대시보드 모듈 — 외부 사이트의 임베드 정책에 따라 표시가 제한될 수 있습니다. 안 보이면 ‘새 탭에서 열기’를 이용하세요.</div></div>`;
   const tbl=(head,rows)=>`<table class="ctable"><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>{const rc=r[r.length-1];const cells=r.slice(0,-1);return `<tr>${cells.map((c,i)=>i===cells.length-1?`<td class="risk ${rc}">${c}</td>`:`<td>${c}</td>`).join('')}</tr>`;}).join('')}</tbody></table>`;
   const actList=(arr)=>`<div class="acts">${arr.map((a,i)=>`<div class="act"><div class="n">${i+1}</div><div><div class="b">${a[0]}</div><div class="p">${a[1]}</div><div class="mt">${a[2]}</div></div></div>`).join('')}</div>`;
 
@@ -691,13 +719,17 @@
       <div class="panel"><div class="panel-hd"><div class="panel-title">미수금 학생 명단</div><span class="panel-more">→ 납부 안내 연락</span></div>${tbl(['학생','미납액','마감','상태'],D.sales.unpaidRows)}</div>
       <div class="panel"><div class="panel-hd"><div class="panel-title">매출 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.sales.rows)}</div>`,
     marketing:()=>`
-      <div class="stat-row">${statS('블로그 자사','5','건')}${statS('경쟁사 이슈','2','건')}${statS('학교·N수','12','개교')}${statS('우수사례','4','건')}</div>
+      <div class="stat-row">${statS('마케팅 활동','7','건')}${statS('홈페이지 UV','3,240','')}${statS('인스타 조회','1,420','')}${statS('이번주 클리핑','4','건')}</div>
       ${actPanel(D.marketing.acts)}
-      <div class="panel"><div class="panel-hd"><div class="panel-title">블로그 게시 점유율</div><span class="panel-more">자사 vs 경쟁</span></div><div id="c1"></div></div>
       <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">경쟁사 특이사항</div><span class="panel-more">본사 취합 · 읽기 전용</span></div>${tbl(['경쟁사','특이사항','게시일','상태'],D.marketing.issueRows)}</div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">마케팅 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.marketing.rows)}</div>
-      </div>`
+        <div class="panel"><div class="panel-hd"><div class="panel-title">가맹점 마케팅 채널</div><span class="panel-more">원자지표 · 권역 비교${soonMore}</span></div>${channelTable(D.marketing.channelRows)}</div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">마케팅 활동 (내 지점)</div><span class="panel-more">블로그·인스타 게시 → 보기${soonMore}</span></div>${postTable(D.marketing.activityRows)}</div>
+      </div>
+      <div class="grid2">
+        <div class="panel"><div class="panel-hd"><div class="panel-title">이번주 마케팅 클리핑</div><span class="panel-more">권역 · 조회수 기준${soonMore}</span></div>${clipTable(D.marketing.clipRows)}</div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">우수사례</div><span class="panel-more">사례 직접 보기${soonMore}</span></div>${caseList(D.marketing.caseRows)}</div>
+      </div>
+      ${compPanel()}`
   };
   const legend=(arr,colors,u)=>arr.map((x,i)=>`<div class="dl-item"><span class="ring" style="border-color:${colors[i]}"></span> ${x[0]} <b>${x[1]}${u||'%'}</b></div>`).join('');
 
@@ -705,7 +737,7 @@
     recruit:()=>{ comboChart('#cInflow',D.recruit.inflowWeeks,D.recruit.inflowThis,D.recruit.inflowPrev,'#EC4899',v=>v+'건'); comboChart('#c1',RD.months,RD.newEnroll,RD.newEnrollPrev,'#EC4899',v=>v+'명'); soonChart('#c2','등록 전환율 — 데이터 적재 후 표시'); },
     operation:()=>{ comboChart('#c1',RD.months,RD.withdraw,RD.withdrawPrev,'#22D3EE',v=>v+'명'); barChart('#cAttend',['등원','지각','결석','조퇴','외출','하원'],[ATT.present,ATT.late,ATT.absent,ATT.early_leave,ATT.out_cnt,ATT.left_cnt],'#22D3EE',v=>v+'명'); },
     sales:()=>{ comboChart('#c1',RD.months,RD.revenue,RD.revenuePrev,'#FBBF24',v=>v+'만'); comboChart('#cTuition',D.sales.tuitionDays,D.sales.tuitionThis,D.sales.tuitionPrev,'#FBBF24',v=>v+'만'); comboChart('#cContent',RD.months,D.sales.contentTrThis,D.sales.contentTrPrev,'#A66BFF',v=>v+'건'); },
-    marketing:()=>{ soonChart('#c1','블로그 게시 점유율 — 데이터 적재 후 표시'); }
+    marketing:()=>{ /* 마케팅: 표·링크·경쟁사 iframe 중심, 차트 없음 */ }
   };
 
   function openDetail(key,fromNav){
