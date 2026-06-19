@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>이투스ECI — 운영자 대시보드 v2 (다크)</title>
+<style>
+  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css');
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --body-bg:#13141F;--glow1:rgba(124,58,237,.20);--glow2:rgba(34,211,238,.10);
+    --sidebar-bg:linear-gradient(180deg,#1A1B28,#15161F);
+    --topbar-bg:rgba(19,20,31,.72);
+    --bg:#13141F;--bg2:#0E0F18;
+    --panel:#1C1D2B;--panel-2:#23253A;--panel-3:#2A2D45;
+    --border:#2C2F45;--border-soft:#24263A;
+    --text:#EDEFF8;--text2:#A6ABC8;--text3:#6E7392;--ink:#FFFFFF;
+    --nav-hover:rgba(255,255,255,.04);
+    --purple:#A66BFF;--purple-2:#7C3AED;
+    --pink:#EC4899;--pink-2:#DB2F9E;
+    --cyan:#22D3EE;--teal:#2DD4BF;--blue:#4F7CFF;
+    --green:#34D399;--red:#F87171;--gold:#FBBF24;
+    --grad-purple:linear-gradient(135deg,#8B5CF6 0%,#EC4899 100%);
+    --grad-cyan:linear-gradient(135deg,#22D3EE 0%,#3B82F6 100%);
+    --grad-btn:linear-gradient(135deg,#A66BFF 0%,#7C3AED 100%);
+    --r:16px;--r-lg:20px;
+    --shadow:0 8px 30px rgba(0,0,0,.35);
+    --sidebar:250px;
+  }
+  /* ── 라이트 테마 오버라이드 ── */
+  body.light{
+    --body-bg:#ECEEF5;--glow1:rgba(124,58,237,.07);--glow2:rgba(34,211,238,.05);
+    --sidebar-bg:linear-gradient(180deg,#FFFFFF,#F4F6FB);
+    --topbar-bg:rgba(255,255,255,.80);
+    --bg:#ECEEF5;--panel:#FFFFFF;--panel-2:#F2F4F9;--panel-3:#E8ECF4;
+    --border:#E4E8F1;--border-soft:#EEF1F7;
+    --text:#1B1F2E;--text2:#535A73;--text3:#8A91A8;--ink:#161A28;
+    --shadow:0 6px 22px rgba(30,41,90,.08);
+    --nav-hover:rgba(20,30,80,.05);
+  }
+  body.light .sidebar{border-right-color:var(--border)}
+  body.light .nb{background:rgba(236,72,153,.12)}
+  body.light .conf{color:var(--text2)}
+  body{font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;background:
+     radial-gradient(900px 600px at 12% -5%, var(--glow1), transparent 60%),
+     radial-gradient(800px 600px at 100% 110%, var(--glow2), transparent 55%),
+     var(--body-bg);color:var(--text);display:flex;min-height:100vh;font-size:17.5px;line-height:1.5;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+
+  /* ── SIDEBAR ── */
+  .sidebar{width:var(--sidebar);background:var(--sidebar-bg);min-height:100vh;flex-shrink:0;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;border-right:1px solid var(--border-soft)}
+  .sb-logo{padding:26px 24px 22px}
+  .sb-logo .brand{font-size:22.5px;font-weight:800;color:var(--ink);letter-spacing:-.3px}
+  .sb-logo .sub{font-size:14px;color:var(--text3);margin-top:4px}
+  .sb-nav{padding:8px 14px;flex:1;overflow-y:auto}
+  .nav-grp{font-size:13px;font-weight:700;color:var(--purple);letter-spacing:1px;text-transform:uppercase;padding:18px 12px 8px;opacity:.85}
+  .nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:11px;color:var(--text2);font-size:16px;font-weight:500;cursor:pointer;margin-bottom:3px;text-decoration:none;transition:.18s;position:relative}
+  .nav-item:hover{background:var(--nav-hover);color:var(--ink)}
+  .nav-item.active{background:linear-gradient(90deg,rgba(166,107,255,.22),rgba(166,107,255,.04));color:var(--ink);font-weight:700}
+  .nav-item.active::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:3px;background:var(--purple)}
+  .nav-dot{width:8px;height:8px;border-radius:3px;background:currentColor;flex-shrink:0;opacity:.55}
+  .nav-item.active .nav-dot{opacity:1;background:var(--purple)}
+  .nb{margin-left:auto;background:rgba(236,72,153,.18);color:var(--pink);font-size:12.5px;font-weight:700;padding:2px 9px;border-radius:10px}
+  .nb.new{background:rgba(52,211,153,.16);color:var(--green)}
+  .sb-foot{padding:16px 18px;border-top:1px solid var(--border-soft)}
+  .dl-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border:none;border-radius:12px;background:var(--grad-btn);color:#fff;font-family:inherit;font-size:15.5px;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(124,58,237,.4)}
+  .user-row{display:flex;align-items:center;gap:11px;padding:14px 4px 4px}
+  .avatar{width:38px;height:38px;border-radius:50%;background:var(--grad-purple);display:flex;align-items:center;justify-content:center;font-size:16.5px;color:#fff;font-weight:700;flex-shrink:0}
+  .uname{font-size:15.5px;color:var(--ink);font-weight:600}
+  .urole{font-size:13.5px;color:var(--text3)}
+
+  /* ── MAIN / TOPBAR ── */
+  .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+  .topbar{height:74px;display:flex;align-items:center;justify-content:space-between;padding:0 36px;position:sticky;top:0;z-index:100;background:var(--topbar-bg);backdrop-filter:blur(10px);border-bottom:1px solid var(--border-soft)}
+  .tb-left{display:flex;align-items:center;gap:14px}
+  .tb-title{font-size:22.5px;font-weight:800;color:var(--ink);letter-spacing:-.3px}
+  .tb-date{font-size:14.5px;color:var(--text2);background:var(--panel);padding:5px 13px;border-radius:20px;border:1px solid var(--border)}
+  #branchPicker{font-family:inherit;font-size:14px;font-weight:700;color:var(--ink);background:var(--panel);border:1px solid var(--purple);border-radius:10px;padding:6px 12px;cursor:pointer}
+  .mode-toggle{display:flex;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:4px;gap:3px}
+  .mode-btn{border:none;background:transparent;font-family:inherit;font-size:15px;font-weight:600;color:var(--text3);padding:8px 18px;border-radius:9px;cursor:pointer;transition:.18s}
+  .mode-btn.on{background:var(--grad-btn);color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(124,58,237,.38)}
+  .sync-badge{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--text3)}
+  .sync-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(52,211,153,.18)}
+  .tb-right{display:flex;align-items:center;gap:16px}
+  .theme-btn{display:flex;align-items:center;gap:7px;border:1px solid var(--border);background:var(--panel);color:var(--text2);font-family:inherit;font-size:14px;font-weight:700;padding:8px 14px;border-radius:10px;cursor:pointer;transition:.18s}
+  .theme-btn:hover{border-color:var(--purple);color:var(--text)}
+  .theme-btn .ic{width:14px;height:14px;border-radius:50%;background:var(--gold);box-shadow:inset -4px -3px 0 0 var(--panel);flex-shrink:0}
+  body.light .theme-btn .ic{background:var(--purple-2);box-shadow:none}
+
+  .content{padding:30px 36px 44px;flex:1;max-width:1700px}
+  .view{display:none}
+  .view.on{display:block}
+
+  /* ── 그리드 ── */
+  .grid-main{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start}
+  .col-right > .panel{display:flex;flex-direction:column}
+  .col-left{display:flex;flex-direction:column;gap:24px;min-width:0}
+  .col-right{display:flex;flex-direction:column;gap:24px}
+  .top-row{display:grid;grid-template-columns:1fr 1fr 1.05fr;gap:20px}
+  .donut-row{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+  /* ── 패널 공통 ── */
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px 26px;box-shadow:var(--shadow)}
+  .panel-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .panel-title{font-size:17.5px;font-weight:700;color:var(--ink)}
+  .panel-more{font-size:14px;font-weight:600;color:var(--text3);cursor:pointer;text-decoration:none}
+  .legend{display:flex;align-items:center;gap:16px;font-size:14px;color:var(--text2)}
+  .lg{display:flex;align-items:center;gap:7px}
+  .lg i{width:18px;height:3px;border-radius:2px;display:inline-block}
+  .lg i.dot{width:16px;border-top:2px dotted var(--purple);height:0;background:none!important}
+
+  /* ── 그라데이션 히어로 카드 ── */
+  .hero{border-radius:var(--r-lg);padding:24px 26px;position:relative;overflow:hidden;min-height:150px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow)}
+  .hero.p{background:var(--grad-purple)}
+  .hero.c{background:var(--grad-cyan)}
+  .hero::after{content:'';position:absolute;right:-30px;top:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.12)}
+  .hero::before{content:'';position:absolute;right:24px;bottom:-40px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.10)}
+  .hero-lbl{font-size:15.5px;font-weight:600;color:rgba(255,255,255,.92);position:relative;z-index:1}
+  .hero-val{position:relative;z-index:1;display:flex;align-items:baseline;gap:6px;color:#fff}
+  .hero-num{font-size:46px;font-weight:800;letter-spacing:-1.5px;line-height:1}
+  .hero-unit{font-size:19.5px;font-weight:600;opacity:.92}
+  .hero-foot{font-size:13px;color:rgba(255,255,255,.85);position:relative;z-index:1}
+
+  /* ── 미니 스탯 카드 ── */
+  .mini-stack{display:flex;flex-direction:column;gap:20px}
+  .mini{flex:1;background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow)}
+  .mini-ic{width:46px;height:46px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14.5px;font-weight:800;color:#fff}
+  .mini-ic.pink{background:rgba(236,72,153,.16);color:var(--pink)}
+  .mini-ic.cyan{background:rgba(34,211,238,.14);color:var(--cyan)}
+  .mini-body{flex:1;min-width:0}
+  .mini-lbl{font-size:13.5px;color:var(--text3);font-weight:600;white-space:nowrap}
+  .mini-val{font-size:21.5px;font-weight:800;color:var(--ink);letter-spacing:-.5px;white-space:nowrap}
+  .badge{font-size:12px;font-weight:700;padding:2px 8px;border-radius:9px;flex-shrink:0;white-space:nowrap}
+  .b-up{background:rgba(52,211,153,.14);color:var(--green)}
+  .b-dn{background:rgba(248,113,113,.14);color:var(--red)}
+
+  /* ── 도넛 센터 / 범례 ── */
+  .donut-wrap{display:flex;align-items:center;gap:14px}
+  .donut-chart{width:150px;flex:0 0 150px}
+  .donut-legend{display:flex;flex-direction:column;gap:13px;flex:1;min-width:0}
+  .dl-item{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text2);white-space:nowrap}
+  .dl-item .ring{width:14px;height:14px;border-radius:50%;border:3px solid;flex-shrink:0}
+  .dl-item b{color:var(--ink);font-weight:700}
+  .cmp-wrap{display:flex;gap:26px;align-items:stretch}
+  .cmp-chart{flex:1;min-width:0}
+  .cmp-side{flex:0 0 270px;border-left:1px solid var(--border);padding-left:22px;display:flex;flex-direction:column}
+  .cmp-side-hd{font-size:13px;font-weight:700;color:var(--text3);letter-spacing:.3px;margin-bottom:14px}
+  .cmp-item{display:flex;align-items:baseline;gap:8px;padding:11px 0;border-bottom:1px solid var(--border)}
+  .cmp-item:last-child{border-bottom:none}
+  .cmp-item .rn{font-size:15px;font-weight:700;color:var(--ink);min-width:62px}
+  .cmp-item .gap{font-size:15px;font-weight:800;margin-left:auto}
+  .cmp-item .gap.up{color:var(--pink)} .cmp-item .gap.dn{color:var(--green)} .cmp-item .gap.flat{color:var(--text3)}
+  .cmp-item .desc{font-size:13px;color:var(--text2)}
+  .cmp-note{margin-top:auto;padding-top:14px;font-size:13px;line-height:1.6;color:var(--text2)}
+  .cmp-note b{color:var(--ink)}
+  @media(max-width:980px){.cmp-wrap{flex-direction:column}.cmp-side{flex:1;border-left:none;border-top:1px solid var(--border);padding-left:0;padding-top:18px}}
+
+  /* ── 영역 차트 패널 풋 ── */
+  .area-foot{margin-top:14px;display:flex;align-items:center;justify-content:space-between;background:var(--panel-2);border-radius:12px;padding:12px 16px}
+  .area-foot .l{font-size:14.5px;color:var(--text2);font-weight:600}
+  .area-foot .dots{color:var(--text3);letter-spacing:2px;font-weight:800}
+
+  /* ── 위험/미납 리스트 (다크) ── */
+  .list-panel .row{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--border-soft)}
+  .list-panel .row:last-child{border-bottom:none}
+  .nm{font-size:16.5px;font-weight:700;color:var(--ink);width:60px;flex-shrink:0}
+  .tag{font-size:13px;font-weight:700;padding:3px 10px;border-radius:7px;flex-shrink:0}
+  .t-u{background:rgba(248,113,113,.16);color:var(--red)}
+  .t-w{background:rgba(251,191,36,.15);color:var(--gold)}
+  .why{font-size:14.5px;color:var(--text3);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .score{font-size:22px;font-weight:800;flex-shrink:0;width:42px;text-align:right}
+  .s-r{color:var(--red)}.s-g{color:var(--gold)}
+
+  /* AI 인사이트 (다크) */
+  .ins-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px}
+  .ins{background:var(--panel);border:1px solid var(--border);border-top:3px solid var(--cyan);border-radius:var(--r-lg);padding:24px 24px;box-shadow:var(--shadow)}
+  .ins-tag{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--cyan);background:rgba(34,211,238,.10);padding:4px 12px;border-radius:9px;margin-bottom:14px}
+  .ins-tag .m{color:var(--text3);font-weight:500}
+  .ins-title{font-size:17.5px;font-weight:700;color:var(--ink);margin-bottom:12px}
+  .ins-list{list-style:none;display:flex;flex-direction:column;gap:9px}
+  .ins-list li{font-size:15.5px;color:var(--text2);padding-left:18px;position:relative;line-height:1.45}
+  .ins-list li::before{content:'';position:absolute;left:2px;top:8px;width:6px;height:6px;border-radius:50%;background:var(--cyan)}
+  .ins-list li b{color:var(--ink);font-weight:700}
+  .ins-foot{margin-top:14px;padding-top:12px;border-top:1px solid var(--border-soft);font-size:13.5px;color:var(--text3)}
+  .conf{background:var(--panel-2);border:1px solid var(--border);border-radius:7px;padding:2px 9px;font-weight:600;color:var(--text2)}
+
+  /* 액션 플랜 */
+  .plan{background:linear-gradient(180deg,rgba(166,107,255,.10),rgba(166,107,255,0));border:1px solid rgba(166,107,255,.28);border-radius:var(--r-lg);padding:24px 28px}
+  .plan-hd{font-size:16.5px;font-weight:800;color:var(--purple);margin-bottom:16px}
+  .plan-hd .sub{font-size:14px;font-weight:600;color:var(--text3);margin-left:8px}
+  .plan-body{display:flex;flex-direction:column;gap:12px}
+  .plan-grp{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+  .plan-pri{font-size:14px;font-weight:800;padding:6px 0;border-radius:8px;width:66px;text-align:center;color:#fff;flex-shrink:0}
+  .pp-u{background:rgba(248,113,113,.85)}.pp-h{background:rgba(251,191,36,.85)}.pp-m{background:rgba(166,107,255,.8)}
+  .plan-kw{font-size:16px;font-weight:700;color:var(--text);background:var(--panel-2);border:1px solid var(--border);border-radius:10px;padding:9px 16px;display:inline-flex;align-items:center;gap:9px}
+  .plan-kw .t{font-size:13.5px;font-weight:700;color:var(--cyan);background:rgba(34,211,238,.12);padding:2px 8px;border-radius:6px}
+
+  /* 섹션 구분 */
+  .zone{display:flex;align-items:center;gap:14px;margin:36px 0 22px}
+  .zone::before,.zone::after{content:'';height:1px;background:var(--border);flex:1}
+  .zone span{font-size:14.5px;font-weight:800;color:var(--text2);white-space:nowrap}
+  .zone span .zb{font-size:13px;font-weight:600;color:var(--text3);margin-left:8px}
+  .zone.ai span{color:var(--cyan)}
+
+  /* HQ 테이블 */
+  .hq-table{width:100%;border-collapse:collapse;font-size:15px}
+  .hq-table th{font-size:13.5px;font-weight:700;color:var(--text3);text-align:right;padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+  .hq-table th:first-child,.hq-table td:first-child{text-align:left}
+  .hq-table td{padding:13px 12px;border-bottom:1px solid var(--border-soft);text-align:right;color:var(--text2);white-space:nowrap}
+  .hq-table tr:last-child td{border-bottom:none}
+  .hq-table tr:hover td{background:rgba(255,255,255,.02)}
+  .hq-table .bnm{font-weight:700;color:var(--ink)}
+  .gp{font-size:12.5px;font-weight:700;padding:2px 9px;border-radius:7px}
+  .gp-a{background:rgba(52,211,153,.14);color:var(--green)}
+  .gp-b{background:rgba(251,191,36,.14);color:var(--gold)}
+  .gp-c{background:rgba(248,113,113,.14);color:var(--red)}
+  .up{color:var(--green);font-weight:700}.dn{color:var(--red);font-weight:700}
+
+  .alert{display:flex;gap:14px;align-items:flex-start;background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.28);border-left:3px solid var(--red);border-radius:14px;padding:16px 20px;margin-bottom:14px}
+  .alert.gold{background:rgba(251,191,36,.06);border-color:rgba(251,191,36,.28);border-left-color:var(--gold)}
+  .alert .dot2{width:10px;height:10px;border-radius:50%;background:var(--red);margin-top:6px;flex-shrink:0;box-shadow:0 0 0 4px rgba(248,113,113,.15)}
+  .alert.gold .dot2{background:var(--gold);box-shadow:0 0 0 4px rgba(251,191,36,.15)}
+  .alert .tt{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:3px}
+  .alert .bd{font-size:14.5px;color:var(--text2);line-height:1.5}
+  .alert .bd b{color:var(--cyan)}
+
+  .ai-note{margin-top:14px;font-size:14.5px;color:var(--text2);line-height:1.5}
+  .ai-note::before{content:'AI';display:inline-block;background:rgba(34,211,238,.12);color:var(--cyan);font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:6px;margin-right:8px}
+
+  /* ── 지점 비교 (전사 모드) ── */
+  .cmp-bar{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .cmp-bar .lbl{font-size:14px;color:var(--text3);font-weight:600}
+  .cmp-bar select{background:var(--panel);border:1px solid var(--border);border-radius:11px;color:var(--ink);padding:11px 16px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer}
+  .cmp-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-bottom:8px}
+  .cmp-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow)}
+  .cmp-k{font-size:13.5px;color:var(--text3);font-weight:600;margin-bottom:12px}
+  .cmp-sel{font-size:28px;font-weight:800;color:var(--ink);letter-spacing:-.5px;line-height:1}
+  .cmp-sel .u{font-size:15px;font-weight:600;color:var(--text2);margin-left:2px}
+  .cmp-avg{font-size:13.5px;color:var(--text2);margin-top:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .cmp-d{font-weight:800;padding:2px 9px;border-radius:7px;font-size:12.5px}
+  .cmp-up{background:rgba(52,211,153,.14);color:var(--green)}
+  .cmp-dn{background:rgba(248,113,113,.14);color:var(--red)}
+  .cmp-flat{background:var(--panel-2);color:var(--text3)}
+
+  /* ── 반응형 (태블릿·모바일) ── */
+  @media (max-width:1024px){
+    body{flex-direction:column}
+    .sidebar{position:static;width:100%;min-height:auto;flex-direction:row;justify-content:space-between;align-items:center;padding:8px 16px}
+    .sb-logo{padding:6px 4px}
+    .sb-nav,.sb-foot .dl-btn{display:none}
+    .sb-foot{border-top:none;padding:6px 4px}
+    .user-row{padding:4px}
+    .main{margin-left:0}
+    .topbar{position:static;height:auto;flex-wrap:wrap;gap:10px;padding:12px 16px}
+    .content{padding:18px 14px 32px;max-width:none}
+    .grid-main{grid-template-columns:1fr;align-items:stretch}
+    .top-row{grid-template-columns:1fr 1fr}
+    .donut-row{grid-template-columns:1fr}
+    .cmp-grid{grid-template-columns:1fr 1fr 1fr}
+    .col-right>.panel:last-child{flex:0 0 auto}
+    #barBranch,#barHQ,#areaBranch,#areaHQ{flex:0 0 auto;min-height:240px}
+  }
+  @media (max-width:560px){
+    .top-row{grid-template-columns:1fr}
+    .cmp-grid{grid-template-columns:1fr 1fr}
+    .donut-wrap{flex-direction:column;align-items:stretch}
+    .donut-chart{width:100%}
+    .tb-title{font-size:19px}
+    .hero-num{font-size:38px}
+    .content{padding:14px 12px 28px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="brand">이투스ECI</div>
+    <div class="sub">운영자 대시보드</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-grp">운영 현황</div>
+    <a class="nav-item active" onclick="goNav('home',this)"><span class="nav-dot"></span> 대시보드 홈</a>
+    <a class="nav-item" onclick="goNav('students',this)"><span class="nav-dot"></span> 재원생 관리</a>
+    <a class="nav-item" onclick="goNav('pay',this)"><span class="nav-dot"></span> 매출·수납 현황 <span class="nb">7</span></a>
+    <a class="nav-item" onclick="goNav('attend',this)"><span class="nav-dot"></span> 출결 관리</a>
+    <a class="nav-item" href="upload.html"><span class="nav-dot"></span> 데이터 업로드</a>
+    <div class="nav-grp">AI 분석</div>
+    <a class="nav-item" onclick="goNav('risk',this)"><span class="nav-dot"></span> 퇴원 위험 감지 <span class="nb">3</span></a>
+    <a class="nav-item" onclick="goNav('consult',this)"><span class="nav-dot"></span> 상담 AI 분석</a>
+    <a class="nav-item" onclick="goNav('soon',this)"><span class="nav-dot"></span> 커뮤니티 모니터</a>
+    <a class="nav-item" onclick="goNav('soon',this)"><span class="nav-dot"></span> MY247 학습 현황 <span class="nb new">new</span></a>
+    <div class="nav-grp">전사 (임원)</div>
+    <a class="nav-item" onclick="goNav('hqcmp',this)"><span class="nav-dot"></span> 지점 비교 분석</a>
+    <a class="nav-item" onclick="goNav('hqregion',this)"><span class="nav-dot"></span> 권역별 현황</a>
+  </nav>
+  <div class="sb-foot">
+    <button class="dl-btn">주간 리포트 다운로드</button>
+    <div class="user-row" onclick="signOut()" style="cursor:pointer" title="로그아웃">
+      <div class="avatar">이</div>
+      <div>
+        <div class="uname">이○○ 원장</div>
+        <div class="urole">강남구 직영점 · 운영 임원</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+  <header class="topbar">
+    <div class="tb-left">
+      <span class="tb-title" id="tbTitle">운영 대시보드</span>
+      <span class="tb-date">2026년 6월 13일 (토)</span>
+      <select id="branchPicker" onchange="loadBranch(this.value)" style="display:none"></select>
+    </div>
+    <div class="mode-toggle">
+      <button class="mode-btn on" id="btnBranch" onclick="setMode('branch')">지점 운영</button>
+      <button class="mode-btn" id="btnHQ" onclick="setMode('hq')">전사 현황</button>
+    </div>
+    <div class="tb-right">
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()"><span class="ic"></span><span id="themeLbl">라이트 모드</span></button>
+      <div class="sync-badge"><span class="sync-dot"></span> 실시간 동기화 · 09:38 갱신</div>
+    </div>
+  </header>
+
+  <main class="content">
+
+  <!-- ════════════ 지점 운영 모드 ════════════ -->
+  <section class="view on" id="viewBranch">
+    <div class="grid-main">
+      <!-- LEFT -->
+      <div class="col-left">
+        <!-- 상단: 그라데이션 히어로 2 + 미니 2 -->
+        <div class="top-row">
+          <div class="hero p">
+            <div class="hero-lbl">당월 누적 매출</div>
+            <div class="hero-val"><span class="hero-num" id="kpiRevenue">1,840</span><span class="hero-unit" id="kpiRevenueUnit">만원</span></div>
+            <div class="hero-foot" id="kpiRevenueFoot">전월 동기 대비 ▲ +12%</div>
+          </div>
+          <div class="hero c">
+            <div class="hero-lbl">총 재원생</div>
+            <div class="hero-val"><span class="hero-num" id="kpiStudents">187</span><span class="hero-unit">명</span></div>
+            <div class="hero-foot" id="kpiStudentsSub">N수 94 · 재학 93 · 주 ▲+3명</div>
+          </div>
+          <div class="mini-stack">
+            <div class="mini">
+              <div class="mini-ic pink">미납</div>
+              <div class="mini-body"><div class="mini-lbl">미납 총액</div><div class="mini-val" id="kpiUnpaid">412만원</div></div>
+              <span class="badge b-dn" id="kpiUnpaidCnt">7건</span>
+            </div>
+            <div class="mini">
+              <div class="mini-ic cyan">출결</div>
+              <div class="mini-body"><div class="mini-lbl">오늘 등원율</div><div class="mini-val" id="kpiAttend">82%</div></div>
+              <span class="badge b-up">+4%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 라인 차트 -->
+        <div class="panel">
+          <div class="panel-hd">
+            <div class="panel-title">월별 신규 등록 vs 퇴원 추이</div>
+            <div class="legend">
+              <span class="lg"><i style="background:#22D3EE"></i> 신규 등록</span>
+              <span class="lg"><i class="dot"></i> 퇴원</span>
+            </div>
+          </div>
+          <div id="lineBranch"></div>
+        </div>
+
+        <!-- 도넛 2 -->
+        <div class="donut-row">
+          <div class="panel">
+            <div class="panel-hd"><div class="panel-title">이탈 사유 분석</div><a class="panel-more">최근 3개월</a></div>
+            <div class="donut-wrap">
+              <div id="donutReason" class="donut-chart"></div>
+              <div class="donut-legend">
+                <div class="dl-item"><span class="ring" style="border-color:#A66BFF"></span> 성적 부진 <b>42%</b></div>
+                <div class="dl-item"><span class="ring" style="border-color:#EC4899"></span> 타 학원 <b>31%</b></div>
+                <div class="dl-item"><span class="ring" style="border-color:#22D3EE"></span> 번아웃 <b>18%</b></div>
+                <div class="dl-item"><span class="ring" style="border-color:#4F7CFF"></span> 비용 <b>9%</b></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-hd"><div class="panel-title">금일 출결 현황</div><a class="panel-more">출결 →</a></div>
+            <div class="donut-wrap">
+              <div id="donutNew" class="donut-chart"></div>
+              <div class="donut-legend" id="attendLegend"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="col-right">
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-title">매출 추이</div></div>
+          <div id="areaBranch"></div>
+          <div class="area-foot"><span class="l">전체 명세 보기</span><span class="dots">· · ·</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-title">금일 상담 현황</div><a class="panel-more">상담 →</a></div>
+          <div id="barBranch"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 위험 / 미납 -->
+    <div class="zone"><span>운영 현황<span class="zb">즉시 확인이 필요한 명단</span></span></div>
+    <div class="donut-row">
+      <div class="panel list-panel">
+        <div class="panel-hd"><div class="panel-title">AI 퇴원 위험 감지 <span id="riskBadge" style="font-size:12px;font-weight:700;color:var(--gold);background:rgba(251,191,36,.14);padding:2px 9px;border-radius:7px;margin-left:4px">예시 · 데이터 연동 예정</span></div><a class="panel-more">전체 →</a></div>
+        <div id="riskList"></div>
+      </div>
+      <div class="panel list-panel">
+        <div class="panel-hd"><div class="panel-title" id="payTitle">미납·결제 관리</div><a class="panel-more">수납 →</a></div>
+        <div id="payList"></div>
+      </div>
+    </div>
+
+    <!-- 퇴원 사유 비교 -->
+    <div class="zone"><span>퇴원 사유 분석<span class="zb">내 지점 vs 전 지점 평균 — 무엇이 다른가</span></span></div>
+    <div class="panel">
+      <div class="panel-hd"><div class="panel-title">퇴원 사유 비교</div><a class="panel-more" id="reasonCmpLbl">내 지점 vs 전 지점</a></div>
+      <div class="cmp-wrap">
+        <div id="reasonCompare" class="cmp-chart"></div>
+        <div class="cmp-side">
+          <div class="cmp-side-hd">전 지점 대비 특이점</div>
+          <div id="reasonInsight"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI 해석 -->
+    <div class="zone ai"><span>AI 해석 &amp; 액션<span class="zb">숫자가 말하는 의미와 다음 행동</span></span></div>
+    <div class="ins-grid">
+      <div class="ins">
+        <span class="ins-tag">원인 진단 <span class="m">왜 이런가</span></span>
+        <div class="ins-title">퇴원 4명, 동일 경로로 이탈</div>
+        <ul class="ins-list">
+          <li>모평 하락 → 상담 ↓ → 순공 급감 <b>(4명 중 3명)</b></li>
+          <li>동일 패턴 초기 단계 <b>5명</b> 추가 감지</li>
+          <li>1순위 사유 = 성적 부진형 <b>42%</b></li>
+        </ul>
+        <div class="ins-foot"><span class="conf">신뢰도 높음</span> &nbsp;상담기록 12건 · 순공 · 모평</div>
+      </div>
+      <div class="ins">
+        <span class="ins-tag">공백 보완 <span class="m">빠진 값 채움</span></span>
+        <div class="ins-title">미상담 47명, 위험도 추정 완료</div>
+        <ul class="ins-list">
+          <li>순공·출결·앱접속으로 공백 보완</li>
+          <li>유사 위험군 <b>6명</b> 신규 추정</li>
+          <li>장기결석 중복 <b>2명</b> 우선 상담</li>
+        </ul>
+        <div class="ins-foot"><span class="conf">신뢰도 중간</span> &nbsp;상담 데이터 확보 시 정확도 ↑</div>
+      </div>
+      <div class="ins">
+        <span class="ins-tag">전망 예측 <span class="m">앞으로 추세</span></span>
+        <div class="ins-title">월말 매출, 목표 95% 전망</div>
+        <ul class="ins-list">
+          <li>일평균 153만 → 월말 <b>4,580만</b></li>
+          <li>미납 60% 회수 시 <b>목표 초과</b></li>
+          <li>등록 전환 1건 = <b>+35만</b> 효과</li>
+        </ul>
+        <div class="ins-foot"><span class="conf">신뢰도 높음</span> &nbsp;최근 3개월 수납 곡선</div>
+      </div>
+    </div>
+
+    <div class="plan" style="margin-top:24px">
+      <div class="plan-hd">오늘의 액션 플랜 <span class="sub">AI 우선순위 · 키워드</span></div>
+      <div class="plan-body" id="planBody"></div>
+    </div>
+  </section>
+
+  <!-- ════════════ 전사 임원 모드 ════════════ -->
+  <section class="view" id="viewHQ">
+    <div class="grid-main">
+      <div class="col-left">
+        <div class="top-row">
+          <div class="hero p">
+            <div class="hero-lbl">당월 전사 매출</div>
+            <div class="hero-val"><span class="hero-num" id="hqRevenue">31.2</span><span class="hero-unit">억</span></div>
+            <div class="hero-foot">전월 동기 대비 ▲ +9% · 목표 페이스 102%</div>
+          </div>
+          <div class="hero c">
+            <div class="hero-lbl">전사 재원생</div>
+            <div class="hero-val"><span class="hero-num" id="hqStudents">9,840</span><span class="hero-unit">명</span></div>
+            <div class="hero-foot">62개 지점 · 전월 ▲ +214명</div>
+          </div>
+          <div class="mini-stack">
+            <div class="mini">
+              <div class="mini-ic pink">퇴원</div>
+              <div class="mini-body"><div class="mini-lbl">금월 퇴원</div><div class="mini-val" id="hqChurn">438명</div></div>
+              <span class="badge b-dn" id="hqChurnSub">금년 3,394</span>
+            </div>
+            <div class="mini">
+              <div class="mini-ic cyan">미납</div>
+              <div class="mini-body"><div class="mini-lbl">전사 미납</div><div class="mini-val" id="hqUnpaid">2.4억</div></div>
+              <span class="badge b-dn">+0.3억</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-hd">
+            <div class="panel-title">전사 월별 매출 추이</div>
+            <div class="legend"><span class="lg"><i style="background:#A66BFF"></i> 매출(억)</span></div>
+          </div>
+          <div id="lineHQ"></div>
+        </div>
+
+        <div class="donut-row">
+          <div class="panel">
+            <div class="panel-hd"><div class="panel-title">권역별 퇴원 비중</div><a class="panel-more">금년 누적</a></div>
+            <div class="donut-wrap">
+              <div id="donutRegion" class="donut-chart"></div>
+              <div class="donut-legend" id="donutRegionLegend"></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-hd"><div class="panel-title">퇴원 사유 (전사)</div><a class="panel-more">최근 3개월</a></div>
+            <div class="donut-wrap">
+              <div id="donutReasonHQ" class="donut-chart"></div>
+              <div class="donut-legend">
+                <div class="dl-item"><span class="ring" style="border-color:#A66BFF"></span> 성적 부진 <b>39%</b></div>
+                <div class="dl-item"><span class="ring" style="border-color:#EC4899"></span> 타 학원 <b>33%</b></div>
+                <div class="dl-item"><span class="ring" style="border-color:#22D3EE"></span> 번아웃 <b>17%</b></div>
+                <div class="dl-item"><span class="ring" style="border-color:#4F7CFF"></span> 비용 <b>11%</b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-right">
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-title">전사 재원생 추이</div></div>
+          <div id="areaHQ"></div>
+          <div class="area-foot"><span class="l">경영 리포트 보기</span><span class="dots">· · ·</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-title">직영점 금년 퇴원 (명)</div></div>
+          <div id="barHQ"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="zone"><span>지점 비교 분석<span class="zb">전 지점 평균 vs 선택 지점</span></span></div>
+    <div class="cmp-bar"><span class="lbl">비교 지점</span><select id="cmpBranch" onchange="renderCompare()"></select></div>
+    <div class="cmp-grid" id="cmpGrid"></div>
+
+    <div class="zone ai" style="margin-top:34px"><span>AI 이상 감지<span class="zb">전사 이상 신호와 대응</span></span></div>
+    <div class="alert">
+      <span class="dot2"></span>
+      <div><div class="tt">대구 범어점 — 퇴원율 급등 (2주 연속)</div>
+        <div class="bd"><b>AI 분석</b> 인근 경쟁사 개원(5월)과 시점 일치 · 상담 부정비율 15%→28% 동반 상승 · 권역 매니저 현장 점검 권장</div></div>
+    </div>
+    <div class="alert gold">
+      <span class="dot2"></span>
+      <div><div class="tt">수도권 5개 지점 — 미납률 동시 상승 (4.2%→6.1%)</div>
+        <div class="bd"><b>AI 분석</b> 학부모 환불 문의 증가 동반 · 모평 계절성 + 알림 발송 지연(평균 9일) 복합 · 알림 자동화 시 회수율 +18%p 기대</div></div>
+    </div>
+
+    <div class="zone"><span>직영점 퇴원 현황<span class="zb">금년 누적 · 금월 · 금일 (실데이터)</span></span></div>
+    <div class="panel">
+      <table class="hq-table">
+        <thead><tr><th>지점</th><th>구분</th><th>지역</th><th>금년 누적</th><th>재학생</th><th>N수생</th><th>전년</th><th>금월</th><th>금일</th></tr></thead>
+        <tbody id="hqTableBody"></tbody>
+      </table>
+      <div class="ai-note">금년 누적 퇴원은 기숙형(이천·독학기숙)이 비기숙 직영(대치·분당정자)보다 큽니다. 전년 대비로는 전사 7,765→3,394로 감소 추세. ※ 매출·재원생·미납률 등은 해당 ERP 데이터 적재 시 자동 반영됩니다.</div>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js?v=hq16"></script>
+<script src="lib/supabase.js?v=hq16"></script>
+<script src="lib/auth.js?v=hq16"></script>
+<script src="lib/data.js?v=hq16"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+/* ── 테마 팔레트 ── */
+function PAL(){const l=document.body.classList.contains('light');return{
+  grid:l?'#E4E8F1':'#2C2F45', axis:l?'#8A91A8':'#6E7392',
+  mode:l?'light':'dark', tip:l?'light':'dark',
+  cVal:l?'#161A28':'#FFFFFF', cLbl:l?'#6E7392':'#A6ABC8',
+  mk:l?'#FFFFFF':'#1C1D2B'};}
+function BASE(){const p=PAL();return{
+  chart:{background:'transparent',toolbar:{show:false},animations:{enabled:false},fontFamily:'Pretendard Variable,system-ui,sans-serif'},
+  theme:{mode:p.mode},grid:{borderColor:p.grid,strokeDashArray:4},tooltip:{theme:p.tip}};}
+function XA(cats,fs){const p=PAL();return{categories:cats,labels:{style:{colors:p.axis,fontSize:(fs||'12px')}},axisBorder:{show:false},axisTicks:{show:false}};}
+function YA(fmt){const p=PAL();return{labels:{style:{colors:p.axis,fontSize:'12px'},formatter:fmt}};}
+
+let CHARTS=[];
+function mk(el,opt){const c=new ApexCharts(document.querySelector(el),opt);c.render();CHARTS.push(c);return c;}
+
+function lineChart(el,cats,reg,quit,maxLabel){const p=PAL();
+  mk(el,{...BASE(),chart:{...BASE().chart,type:'line',height:300},
+    series:[{name:'신규 등록',data:reg},{name:'퇴원',data:quit}],
+    stroke:{width:[4,3],curve:'smooth',dashArray:[0,6]},colors:['#22D3EE','#A66BFF'],
+    markers:{size:0,hover:{size:6}},legend:{show:false},
+    yaxis:YA(),xaxis:XA(cats),fill:{type:'solid'},grid:{...BASE().grid,padding:{right:24}},
+    annotations:maxLabel?{points:[{x:maxLabel.x,y:maxLabel.y,marker:{size:6,fillColor:'#22D3EE',strokeColor:p.mk},label:{text:maxLabel.text,textAnchor:'end',offsetX:-2,offsetY:-2,borderColor:'#A66BFF',style:{background:'#A66BFF',color:'#fff',fontWeight:700,padding:{left:8,right:8,top:4,bottom:4}}}}]}:{}});}
+function areaChart(el,cats,data,color,fmt,height){
+  mk(el,{...BASE(),chart:{...BASE().chart,type:'area',height:height||200},
+    series:[{name:'값',data:data}],stroke:{width:3,curve:'smooth'},colors:[color],
+    fill:{type:'gradient',gradient:{shadeIntensity:1,opacityFrom:.45,opacityTo:.04,stops:[0,100]}},
+    dataLabels:{enabled:false},markers:{size:0,hover:{size:5}},
+    grid:{borderColor:PAL().grid,strokeDashArray:4,padding:{left:8,right:8}},
+    xaxis:XA(cats,'11px'),yaxis:fmt?YA(fmt):{show:false}});}
+function donutChart(el,data,labels,colors,suffix){const p=PAL();const u=suffix||'%';
+  mk(el,{...BASE(),chart:{...BASE().chart,type:'donut',height:185},
+    series:data,labels:labels,colors:colors,stroke:{width:0},
+    plotOptions:{pie:{donut:{size:'72%',labels:{show:true,
+      name:{color:p.cLbl,fontSize:'12px'},
+      total:{show:true,label:labels[0],color:p.cLbl,fontSize:'12px',formatter:()=>data[0]+u},
+      value:{color:p.cVal,fontSize:'22px',fontWeight:800,formatter:v=>v+u}}}}},
+    legend:{show:false},dataLabels:{enabled:false},tooltip:{theme:p.tip,y:{formatter:v=>v+u}}});}
+function barChart(el,cats,data,fmt,height){
+  mk(el,{...BASE(),chart:{...BASE().chart,type:'bar',height:height||240},
+    series:[{name:'값',data:data}],plotOptions:{bar:{borderRadius:6,columnWidth:'52%'}},
+    colors:['#22D3EE'],fill:{type:'gradient',gradient:{shade:'dark',type:'vertical',gradientToColors:['#A66BFF'],stops:[0,100],opacityFrom:1,opacityTo:1}},
+    dataLabels:{enabled:false},grid:{borderColor:PAL().grid,strokeDashArray:4},
+    xaxis:XA(cats),yaxis:YA(fmt||(v=>v)),tooltip:{theme:PAL().tip}});}
+// 퇴원사유 비교 (내 지점 vs 전 지점) — 가로 그룹 막대
+function reasonCompareChart(el,cats,mine,allv,mineName){
+  mk(el,{...BASE(),chart:{...BASE().chart,type:'bar',height:Math.max(240,cats.length*66)},
+    series:[{name:mineName||'내 지점',data:mine},{name:'전 지점 평균',data:allv}],
+    plotOptions:{bar:{horizontal:true,borderRadius:5,barHeight:'70%',dataLabels:{position:'top'}}},
+    colors:['#22D3EE','#A66BFF'],
+    dataLabels:{enabled:true,formatter:v=>v+'%',offsetX:18,style:{fontSize:'12px',fontWeight:700,colors:[PAL().cVal]}},
+    legend:{show:true,position:'top',horizontalAlign:'left',fontSize:'13px',labels:{colors:PAL().axis},markers:{radius:4}},
+    grid:{borderColor:PAL().grid,strokeDashArray:4},
+    xaxis:{...XA(cats),max:Math.max(...mine,...allv)+12,labels:{show:false}},
+    yaxis:YA(),tooltip:{theme:PAL().tip,y:{formatter:v=>v+'%'}}});}
+
+const RC=['#A66BFF','#EC4899','#22D3EE','#4F7CFF'];   // 도넛 색
+let BR=null, HQ=null;                                  // 로드된 데이터
+let built={branch:false,hq:false};
+const won = (n)=> (n>=100000000? (n/100000000).toFixed(1)+'억' : Math.round(n/10000).toLocaleString()+'만원');
+
+function buildBranch(){
+  const d=BR;
+  lineChart('#lineBranch',d.daily.months,d.daily.newEnroll,d.daily.withdraw,
+    {x:d.daily.months[d.daily.months.length-1],y:Math.max(...d.daily.newEnroll),text:'최고 '+Math.max(...d.daily.newEnroll)+'건'});
+  areaChart('#areaBranch',d.daily.months,d.daily.revenue,'#22D3EE',null,230);
+  donutChart('#donutReason',d.reasons.map(r=>r.pct),d.reasons.map(r=>r.label),RC);
+  const at=d.attend;
+  if(at){
+    const A6=['#22D3EE','#FBBF24','#F87171','#A66BFF','#EC4899','#34D399'];
+    const aL=['등원','지각','결석','조퇴','외출','하원'], aV=[at.present,at.late,at.absent,at.early_leave,at.out_cnt,at.left_cnt];
+    donutChart('#donutNew',aV,aL,A6,'명');
+    const lg=document.getElementById('attendLegend');
+    if(lg) lg.innerHTML=aL.map((l,i)=>`<div class="dl-item"><span class="ring" style="border-color:${A6[i]}"></span> ${l} <b>${aV[i]}</b></div>`).join('');
+  }
+  barChart('#barBranch',['신규등록','전화상담','방문상담'],[d.consult.new_enroll,d.consult.phone,d.consult.visit],null,320);
+  buildReasonCompare(d);
+  built.branch=true;
+}
+function curBranchName(){
+  const pk=document.getElementById('branchPicker');
+  if(pk && pk.style.display!=='none' && pk.selectedOptions[0]) return pk.selectedOptions[0].text;
+  const ur=document.querySelector('.urole');
+  if(ur){ const t=ur.textContent.split('·')[0].trim(); if(t && t!=='전사') return t; }
+  return '내 지점';
+}
+function buildReasonCompare(d){
+  const reasons=d.reasons||[], all=d.reasonsAll||[];
+  if(!reasons.length) return;
+  const cats=reasons.map(r=>r.label), mine=reasons.map(r=>r.pct);
+  const allMap=Object.fromEntries(all.map(r=>[r.label,r.pct]));
+  const allv=cats.map(l=>allMap[l]??0);
+  const name=curBranchName();
+  reasonCompareChart('#reasonCompare',cats,mine,allv,name);
+  const lbl=document.getElementById('reasonCmpLbl'); if(lbl) lbl.textContent=name+' vs 전 지점';
+  // 특이점 (전사 대비 격차순)
+  const diffs=cats.map((l,i)=>({label:l,mine:mine[i],all:allv[i],gap:mine[i]-allv[i]}))
+    .sort((a,b)=>Math.abs(b.gap)-Math.abs(a.gap));
+  const cls=g=> g>=2?'up':(g<=-2?'dn':'flat');
+  const fmt=g=> g>=2?`▲ +${g}%p`:(g<=-2?`▼ ${g}%p`:`≈ ${g}%p`);
+  const rows=diffs.map(x=>`<div class="cmp-item"><span class="rn">${x.label}</span><span class="desc">내 ${x.mine}% · 전사 ${x.all}%</span><span class="gap ${cls(x.gap)}">${fmt(x.gap)}</span></div>`).join('');
+  const over=diffs.find(x=>x.gap>=2), under=diffs.find(x=>x.gap<=-2);
+  let note='전 지점 평균과 거의 동일한 분포입니다.';
+  if(over){ note=`<b>${over.label}</b> 사유가 전 지점 대비 <b>+${over.gap}%p</b> 높음 — 이 영역 집중 관리 권장.`;
+    if(under) note+=` <b>${under.label}</b>은 ${Math.abs(under.gap)}%p 낮음.`; }
+  const ins=document.getElementById('reasonInsight'); if(ins) ins.innerHTML=rows+`<div class="cmp-note">${note}</div>`;
+}
+function buildHQ(){
+  const d=HQ;
+  areaChart('#lineHQ',d.daily.months,d.daily.revenue,'#A66BFF',v=>v+'억');
+  areaChart('#areaHQ',d.daily.months,d.daily.students,'#A66BFF',null,230);
+  donutChart('#donutRegion',d.region.map(r=>r.pct),d.region.map(r=>r.label),RC);
+  donutChart('#donutReasonHQ',d.reasonsAll.map(r=>r.pct),d.reasonsAll.map(r=>r.label),RC);
+  barChart('#barHQ',d.barWithdraw.labels,d.barWithdraw.values,v=>v,320);
+  // 권역 범례 (퇴원)
+  const rl=document.getElementById('donutRegionLegend');
+  if(rl) rl.innerHTML=d.region.map((r,i)=>`<div class="dl-item"><span class="ring" style="border-color:${RC[i%RC.length]}"></span> ${r.label} <b>${r.value.toLocaleString()}명</b></div>`).join('');
+  // 직영 퇴원 테이블
+  const tb=document.getElementById('hqTableBody');
+  if(tb) tb.innerHTML=d.directTable.map(t=>
+    `<tr><td class="bnm">${t.name}</td><td>${t.type}</td><td>${t.region}</td><td>${t.ytd.toLocaleString()}</td><td>${t.cur}</td><td>${t.rep}</td><td style="color:var(--text3)">${t.prev.toLocaleString()}</td><td>${t.month}</td><td>${t.today}</td></tr>`).join('');
+  built.hq=true;
+}
+
+// ── KPI / 명단 렌더 (DATA → DOM) ──────────────────────────
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function renderBranchKPI(){
+  const s=BR.snap;
+  if(s.mtd_revenue==null){ setText('kpiRevenue','—'); setText('kpiRevenueUnit',''); setText('kpiRevenueFoot','ERP 연동 예정'); }
+  else if(s.mtd_revenue>=1e8){ setText('kpiRevenue',(s.mtd_revenue/1e8).toFixed(2)); setText('kpiRevenueUnit','억'); setText('kpiRevenueFoot','전월 동기 대비 ▲ +12%'); }
+  else { setText('kpiRevenue',Math.round(s.mtd_revenue/1e4).toLocaleString()); setText('kpiRevenueUnit','만원'); setText('kpiRevenueFoot','전월 동기 대비 ▲ +12%'); }
+  setText('kpiStudents', s.total_students ?? '—');
+  setText('kpiStudentsSub', s.total_students!=null ? `N수 ${s.n_repeat} · 재학 ${s.n_current} · 주 ▲+3명` : '재원생 데이터 적재 예정');
+  setText('kpiUnpaid', s.unpaid_total ? won(s.unpaid_total) : '0원');
+  setText('kpiUnpaidCnt', (s.unpaid_count||0)+'명');
+  setText('payTitle',`미납·결제 관리 · 총 ${s.unpaid_total?won(s.unpaid_total):'0원'}`);
+  setText('kpiAttend', s.attend_rate!=null ? s.attend_rate+'%' : '—');
+  const rb=document.getElementById('riskBadge'); if(rb){ if(BR.riskReal){ rb.textContent='AI 위험 산출'; rb.style.color='var(--green)'; rb.style.background='rgba(52,211,153,.14)'; } else { rb.textContent='예시 · 데이터 연동 예정'; } }
+  const tagCls={urgent:'t-u',watch:'t-w'}, tagTxt={urgent:'긴급',watch:'주의'}, scCls={urgent:'s-r',watch:'s-g'};
+  document.getElementById('riskList').innerHTML = BR.risks.map(r=>
+    `<div class="row"><span class="nm">${r.name}</span><span class="tag ${tagCls[r.level]}">${tagTxt[r.level]}</span><span class="why">${r.signals.join(' · ')}</span><span class="score ${scCls[r.level]}">${r.score}</span></div>`).join('');
+  document.getElementById('payList').innerHTML = BR.payments.map(p=>{
+    const man=Math.round(p.amount/10000).toLocaleString();
+    const due=p.due?('마감 '+String(p.due).slice(5).replace('-','/')):'';
+    return `<div class="row"><span class="nm">${p.name}</span><span class="tag t-w">${p.items}건</span><span class="why">${due}</span><span class="score s-r" style="font-size:18.5px;width:86px">${man}만</span></div>`;}).join('');
+  const pp={urgent:'pp-u',high:'pp-h',followup:'pp-m'}, pt={urgent:'긴급',high:'중요',followup:'팔로업'};
+  const groups={urgent:[],high:[],followup:[]}; BR.actions.forEach(a=>groups[a.priority]?.push(a));
+  document.getElementById('planBody').innerHTML = Object.keys(groups).filter(k=>groups[k].length).map(k=>
+    `<div class="plan-grp"><span class="plan-pri ${pp[k]}">${pt[k]}</span>`+
+    groups[k].map(a=>`<span class="plan-kw">${a.title}${a.time?` <span class="t">${a.time}</span>`:''}</span>`).join('')+`</div>`).join('');
+}
+
+function renderHqKPI(){
+  if(!HQ) return; const s=HQ.snap;
+  setText('hqRevenue', s.revenueEok);
+  setText('hqStudents', Number(s.students).toLocaleString());
+  setText('hqChurn', (s.withdrawMonth??0)+'명');
+  setText('hqChurnSub', '금년 '+Number(s.withdrawYtd??0).toLocaleString());
+  setText('hqUnpaid', s.unpaidEok+'억');
+}
+const CMP_KPIS=[
+  {k:'ytd',label:'금년 퇴원',unit:'명',good:'low',dec:0},
+  {k:'month',label:'금월 퇴원',unit:'명',good:'low',dec:0},
+  {k:'cur',label:'재학생 퇴원',unit:'명',good:'low',dec:0},
+  {k:'rep',label:'N수생 퇴원',unit:'명',good:'low',dec:0},
+];
+function renderCompare(){
+  if(!HQ?.compare?.branches?.length) return;
+  const bs=HQ.compare.branches, sel=document.getElementById('cmpBranch');
+  if(!sel.options.length) sel.innerHTML=bs.map((b,i)=>`<option value="${i}">${b.name}</option>`).join('');
+  const b=bs[+sel.value||0];
+  const avg=(k)=>bs.reduce((a,x)=>a+x[k],0)/bs.length;
+  const fmt=(v,d)=>d?(+v).toFixed(d):Math.round(v).toLocaleString();
+  document.getElementById('cmpGrid').innerHTML=CMP_KPIS.map(K=>{
+    const a=avg(K.k), s=b[K.k], d=s-a;
+    const better=K.good==='high'?d>0:d<0;
+    const cls=Math.abs(d)<1e-9?'cmp-flat':(better?'cmp-up':'cmp-dn');
+    const arrow=d>0?'▲':(d<0?'▼':'→');
+    const dtxt=(d>0?'+':'')+(K.dec?d.toFixed(K.dec):Math.round(d));
+    return `<div class="cmp-card"><div class="cmp-k">${K.label}</div>
+      <div class="cmp-sel">${fmt(s,K.dec)}<span class="u">${K.unit}</span></div>
+      <div class="cmp-avg">평균 ${fmt(a,K.dec)}${K.unit}<span class="cmp-d ${cls}">${arrow} ${dtxt}</span></div></div>`;
+  }).join('');
+}
+function curMode(){return document.getElementById('viewHQ').classList.contains('on')?'hq':'branch';}
+async function ensureHQ(){ if(!HQ) HQ=await DATA.hq(); renderHqKPI(); renderCompare(); }
+
+function setMode(m){
+  document.getElementById('viewBranch').classList.toggle('on',m==='branch');
+  document.getElementById('viewHQ').classList.toggle('on',m==='hq');
+  document.getElementById('btnBranch').classList.toggle('on',m==='branch');
+  document.getElementById('btnHQ').classList.toggle('on',m==='hq');
+  document.getElementById('tbTitle').textContent=m==='branch'?'운영 대시보드':'전사 경영 현황';
+  if(m==='branch'&&!built.branch)buildBranch();
+  if(m==='hq'&&!built.hq)ensureHQ().then(buildHQ);
+  setTimeout(()=>window.dispatchEvent(new Event('resize')),60);
+}
+function toggleTheme(){
+  document.body.classList.toggle('light');
+  const light=document.body.classList.contains('light');
+  document.getElementById('themeLbl').textContent=light?'다크 모드':'라이트 모드';
+  CHARTS.forEach(c=>{try{c.destroy()}catch(e){}});CHARTS=[];built={branch:false,hq:false};
+  if(curMode()==='hq'){buildHQ();}else{buildBranch();}
+}
+// 임원: 지점 선택 시 해당 지점 실데이터로 재로드
+async function loadBranch(id){
+  if(!id) return;
+  BR = await DATA.branch(id);
+  CHARTS.forEach(c=>{try{c.destroy()}catch(e){}}); CHARTS=[]; built={branch:false,hq:false};
+  setMode('branch');
+  renderBranchKPI(); buildBranch();
+}
+
+// ── 사이드바 네비게이션 ───────────────────────────────────
+function goNav(key, el){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  if(key==='soon'){ alert('준비 중입니다 — 곧 제공됩니다.'); return; }
+  const toHQ = (key==='hqcmp'||key==='hqregion');
+  setMode(toHQ?'hq':'branch');
+  const target={ home:null, students:'kpiStudents', pay:'payList', attend:'donutNew',
+    risk:'riskList', consult:'barBranch', hqcmp:'cmpGrid', hqregion:'donutRegion' }[key];
+  setTimeout(()=>{
+    if(!target){ window.scrollTo({top:0,behavior:'smooth'}); return; }
+    const e=document.getElementById(target); const panel=e?(e.closest('.panel')||e):null;
+    if(panel) panel.scrollIntoView({behavior:'smooth',block:'center'});
+  }, toHQ?400:120);
+}
+
+// ── 부팅: 인증 → 데이터 로드 → 렌더 ───────────────────────
+(async function init(){
+  const profile = await requireAuth();
+  if(!profile && !window.USE_MOCK) return;   // 로그인 화면으로 이동됨
+  if(profile){
+    const un=document.querySelector('.uname'); if(un) un.textContent=profile.name;
+    const ur=document.querySelector('.urole'); if(ur) ur.textContent=(profile.branch_name||'전사')+(profile.role==='exec'?' · 임원':' · 원장');
+    // 임원만 전사 토글 노출
+    if(profile.role!=='exec'){ const b=document.getElementById('btnHQ'); if(b) b.style.display='none'; }
+  }
+  let branchId = profile?.branch_id;
+  // 임원(지점 미지정): 직영점 선택 드롭다운 노출 + 기본 지점 로드
+  if(profile?.role==='exec' && !window.USE_MOCK){
+    const list = await DATA.branchList();
+    const picker = document.getElementById('branchPicker');
+    if(list.length && picker){
+      picker.innerHTML = list.map(b=>`<option value="${b.id}">${b.name}</option>`).join('');
+      const daechi = list.find(b=>b.name==='대치') || list[0];
+      picker.value = daechi.id; picker.style.display='';
+      branchId = daechi.id;
+    }
+  }
+  BR = await DATA.branch(branchId);
+  renderBranchKPI();
+  buildBranch();
+  // 임원은 전사 화면으로 시작
+  if(profile?.role==='exec'){ setMode('hq'); }
+})();
+</script>
+</body>
+</html>
