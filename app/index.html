@@ -552,7 +552,7 @@
       // 유입량(문의) — 주별 올해 vs 전년, 채널별 (더미)
       inflowWeeks:['5월4주','6월1주','6월2주','6월3주'], inflowThis:[42,38,35,31], inflowPrev:[40,39,37,36],
       inflowCh:[['전화 문의',18,16,'dn'],['방문 상담',7,9,'dn'],['온라인 문의',6,5,'up']],
-      // 좌석 타입별 잔여석 (더미) — [타입, 총석, 잔여, 입도선매(예비생 선점)]
+      // 좌석 타입별 잔여석 (더미) — [타입, 총석, 잔여, 예정생 예약분]
       seatTypes:[['벙커형',60,8,3],['오픈형',90,12,5],['일반형',110,19,6]],
       // 퇴원생 재컨택 추천 (더미)
       recontactRows:[['강OO','05/28 퇴원','성적 회복·재시험 임박','높음','high'],
@@ -630,7 +630,7 @@
     recruit:{name:'모집 · 등록 현황',color:'#EC4899',icon:'people'},
     operation:{name:'운영 · 학생 관리',color:'#22D3EE',icon:'ops'},
     sales:{name:'매출 · 수익 · 미수금',color:'#FBBF24',icon:'won'},
-    marketing:{name:'마케팅 · 경쟁 · 콘텐츠',color:'#34D399',icon:'mega'}
+    marketing:{name:'마케팅 · 채널 · 경쟁',color:'#34D399',icon:'mega'}
   };
 
   // 최상단 우선 처리 — 오늘의 할일 (체크리스트)
@@ -664,8 +664,8 @@
   const soonMore='<span class="soon-tag" style="margin-left:7px">연동 예정</span>';
   // 채널별 유입 표 (이번 주 vs 전년 동주)
   const inflowChTable=(rows)=>`<table class="ctable"><thead><tr><th>채널</th><th>이번 주</th><th>전년 동주</th><th>증감</th></tr></thead><tbody>${rows.map(r=>{const d=r[1]-r[2];return `<tr><td>${r[0]}</td><td>${r[1]}건</td><td style="opacity:.55">${r[2]}건</td><td class="risk ${r[3]}">${d>=0?'▲ +'+d:'▼ '+d}</td></tr>`;}).join('')}</tbody></table>`;
-  // 좌석 타입별 잔여석 (입도선매=등원 예정생 선점, 회색)
-  const seatTable=(rows)=>`<table class="ctable"><thead><tr><th>타입</th><th>총 좌석</th><th>잔여</th><th>입도선매(예정생)</th><th>실잔여</th></tr></thead><tbody>${rows.map(r=>{const[t,tot,rem,pre]=r;const real=rem-pre;return `<tr><td>${t}</td><td>${tot}석</td><td>${rem}석</td><td style="color:var(--text3)">${pre}석</td><td class="risk ${real<=5?'high':real<=10?'mid':'low'}">${real}석</td></tr>`;}).join('')}</tbody></table>`;
+  // 좌석 타입별 잔여석 (예정생 예약분 = 등원 예정생이 미리 예약, 회색)
+  const seatTable=(rows)=>`<table class="ctable"><thead><tr><th>타입</th><th>총 좌석</th><th>잔여</th><th>예정생 예약</th><th>실잔여</th></tr></thead><tbody>${rows.map(r=>{const[t,tot,rem,pre]=r;const real=rem-pre;return `<tr><td>${t}</td><td>${tot}석</td><td>${rem}석</td><td style="color:var(--text3)">${pre}석</td><td class="risk ${real<=5?'high':real<=10?'mid':'low'}">${real}석</td></tr>`;}).join('')}</tbody></table>`;
   // 콘텐츠별 판매 표 (마켓ECI 연동 예정)
   const contentTable=(rows)=>`<table class="ctable"><thead><tr><th>콘텐츠</th><th>당월 판매</th><th>매출</th><th>전년 동월</th></tr></thead><tbody>${rows.map(r=>{const[n,q,rev,prev]=r;const d=q-prev;return `<tr><td>${n}</td><td>${q}건</td><td>${rev}만</td><td class="risk ${d>=0?'low':'mid'}"><span style="opacity:.55">${prev}건</span> · ${d>=0?'▲ +'+d:'▼ '+d}</td></tr>`;}).join('')}</tbody></table>`;
   // 마케팅 — 가맹 채널 원자지표 / 게시 링크 / 클리핑 / 우수사례 / 경쟁사 iframe
@@ -690,7 +690,7 @@
         <div class="panel"><div class="panel-hd"><div class="panel-title">월별 신규 등록</div><span class="panel-more">전월·당월 · 전년 꺾은선</span></div><div id="c1"></div></div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">등록 전환율 추이</div><span class="panel-more">등원 예정생 → 등록</span></div><div id="c2"></div></div>
       </div>
-      <div class="panel"><div class="panel-hd"><div class="panel-title">좌석 타입별 잔여석</div><span class="panel-more">회색 = 등원 예정생 입도선매${soonMore}</span></div>${seatTable(D.recruit.seatTypes)}</div>
+      <div class="panel"><div class="panel-hd"><div class="panel-title">좌석 타입별 잔여석</div><span class="panel-more">회색 = 등원 예정생이 예약한 좌석${soonMore}</span></div>${seatTable(D.recruit.seatTypes)}</div>
       <div class="panel"><div class="panel-hd"><div class="panel-title">퇴원생 재컨택 추천</div><span class="panel-more">재입학 우선 대상${soonMore}</span></div>${tbl(['퇴원생','퇴원','추천 사유','우선도'],D.recruit.recontactRows)}</div>`,
     operation:()=>`
       <div class="stat-row">${stat('출결 현황',RV.attend,'%','등원율 · 오늘','up')}${stat('고위험 학생',RV.highrisk,'명','⚑ 오늘 케어','dn')}${statS('상담 대기','8','명')}${stat('퇴원 관리',RV.withdrawCnt,'명','당월 퇴원','')}</div>
