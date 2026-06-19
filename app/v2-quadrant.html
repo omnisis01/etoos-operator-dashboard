@@ -337,7 +337,7 @@
       </div>
 
       <div class="hub-head">
-        <h1>4대 핵심 운영 지표</h1>
+        <h1>4대 핵심 운영 지표 <span id="dataBadge" style="font-size:13px;font-weight:700;vertical-align:middle;padding:3px 11px;border-radius:8px;color:var(--gold);background:rgba(251,191,36,.14)">예시 데이터</span></h1>
         <p>영역을 클릭하면 세부 대시보드로 이동합니다</p>
       </div>
       <div class="quad">
@@ -348,8 +348,8 @@
         <div class="qd recruit" onclick="openDetail('recruit')">
           <div class="qd-hd"><div class="qd-ic" data-icon="people"></div><div class="qd-tt">모집<span class="m">등록 현황</span></div><span class="qd-go">자세히 →</span></div>
           <div class="kpis">
-            <div class="kpi"><div class="k">재원생</div><div class="v">191<small>명</small></div><div class="d up">전월 +9</div></div>
-            <div class="kpi"><div class="k">좌석 점유율</div><div class="v">79<small>%</small></div><div class="d up">▲ +2%p</div></div>
+            <div class="kpi"><div class="k">재원생</div><div class="v" id="rvStudents">191<small>명</small></div><div class="d up" id="rvStudentsD">전월 +9</div></div>
+            <div class="kpi"><div class="k">좌석 점유율</div><div class="v" id="rvOccupancy">79<small>%</small></div><div class="d up">▲ +2%p</div></div>
             <div class="kpi"><div class="k">신규 등록</div><div class="v">20<small>명</small></div><div class="d">당월</div></div>
             <div class="kpi"><div class="k">예비생</div><div class="v">14<small>명</small></div><div class="d up">전환율 62%</div></div>
           </div>
@@ -359,8 +359,8 @@
         <div class="qd sales" onclick="openDetail('sales')">
           <div class="qd-hd"><div class="qd-ic" data-icon="won"></div><div class="qd-tt">매출<span class="m">수익 · 미수금</span></div><span class="qd-go">자세히 →</span></div>
           <div class="kpis">
-            <div class="kpi"><div class="k">미수금</div><div class="v">412<small>만</small></div><div class="d dn">⚑ 7명</div></div>
-            <div class="kpi"><div class="k">당월 매출</div><div class="v">3,820<small>만</small></div><div class="d up">▲ +12%</div></div>
+            <div class="kpi"><div class="k">미수금</div><div class="v" id="rvUnpaid">412<small>만</small></div><div class="d dn" id="rvUnpaidD">⚑ 7명</div></div>
+            <div class="kpi"><div class="k">당월 매출</div><div class="v" id="rvRevenue">3,820<small>만</small></div><div class="d up">▲ +12%</div></div>
             <div class="kpi"><div class="k">로열티</div><div class="v">382<small>만</small></div><div class="d">매출 10%</div></div>
             <div class="kpi"><div class="k">콘텐츠 판매</div><div class="v">540<small>건</small></div><div class="d up">전월 ▲ +9</div></div>
           </div>
@@ -371,7 +371,7 @@
           <div class="qd-hd"><div class="qd-ic" data-icon="ops"></div><div class="qd-tt">운영<span class="m">학생 관리</span></div><span class="qd-go">자세히 →</span></div>
           <div class="kpis">
             <div class="kpi"><div class="k">상담 대기</div><div class="v">8<small>명</small></div><div class="d warn">⚑ 14일초과 3</div></div>
-            <div class="kpi"><div class="k">고위험 학생</div><div class="v">11<small>명</small></div><div class="d dn">⚑ 오늘 케어</div></div>
+            <div class="kpi"><div class="k">고위험 학생</div><div class="v" id="rvHighrisk">11<small>명</small></div><div class="d dn">⚑ 오늘 케어</div></div>
             <div class="kpi"><div class="k">당월 퇴원율</div><div class="v">3.2<small>%</small></div><div class="d">재등록 81%</div></div>
             <div class="kpi"><div class="k">순공 인당</div><div class="v">42<small>h</small></div><div class="d up">활용 168명</div></div>
           </div>
@@ -425,8 +425,13 @@
   </div><!-- /main -->
 
   <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js?v=hq17"></script>
+  <script src="lib/supabase.js?v=hq17"></script>
+  <script src="lib/auth.js?v=hq17"></script>
+  <script src="lib/data.js?v=hq17"></script>
   <script>
-  const MONTHS=['1월','2월','3월','4월','5월','6월'];
+  // MONTHS·computeRisk·DATA 는 lib/data.js 전역 사용 (중복 선언 금지)
   // ── 아이콘 (SVG, 이모지 X) ──
   const ICONS={
     people:'<path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/>',
@@ -458,6 +463,42 @@
   function barChart(el,cats,data,color,fmt){const p=PAL();mk(el,{...BASE(),chart:{...BASE().chart,type:'bar',height:280},series:[{name:'값',data:data}],plotOptions:{bar:{borderRadius:6,columnWidth:'52%'}},colors:[color||'#22D3EE'],fill:{type:'gradient',gradient:{shade:'dark',type:'vertical',gradientToColors:['#A66BFF'],stops:[0,100],opacityFrom:1,opacityTo:1}},dataLabels:{enabled:false},grid:{borderColor:p.grid,strokeDashArray:4},xaxis:XA(cats),yaxis:YA(fmt||(v=>v)),tooltip:{theme:p.tip}});}
   function donutChart(el,data,labels,colors,suffix){const p=PAL();const u=suffix||'%';mk(el,{...BASE(),chart:{...BASE().chart,type:'donut',height:230},series:data,labels:labels,colors:colors,stroke:{width:0},plotOptions:{pie:{donut:{size:'72%',labels:{show:true,name:{color:p.cLbl,fontSize:'12px'},total:{show:true,label:labels[0],color:p.cLbl,fontSize:'12px',formatter:()=>data[0]+u},value:{color:p.cVal,fontSize:'22px',fontWeight:800,formatter:v=>v+u}}}}},legend:{show:false},dataLabels:{enabled:false},tooltip:{theme:p.tip,y:{formatter:v=>v+u}}});}
   const RC=['#A66BFF','#EC4899','#22D3EE','#4F7CFF'];
+
+  // ── 실데이터 표시값(RV): 기본=예시, 로그인 시 Supabase 값으로 교체 ──
+  const RV = { students:'191', studentsD:'전월 +9', occupancy:'79', revenue:'3,820', unpaid:'412', unpaidCnt:'7', highrisk:'11', isReal:false };
+  function setV(id,val,unit){const e=document.getElementById(id); if(e) e.innerHTML=val+'<small>'+unit+'</small>';}
+  function setHub(){
+    setV('rvStudents',RV.students,'명'); const sd=document.getElementById('rvStudentsD'); if(sd) sd.textContent=RV.studentsD;
+    setV('rvOccupancy',RV.occupancy,'%'); setV('rvRevenue',RV.revenue,'만'); setV('rvUnpaid',RV.unpaid,'만');
+    const ud=document.getElementById('rvUnpaidD'); if(ud) ud.textContent='⚑ '+RV.unpaidCnt+'명';
+    setV('rvHighrisk',RV.highrisk,'명');
+  }
+  function markReal(on){ const b=document.getElementById('dataBadge'); if(!b)return;
+    b.textContent = on?'실데이터 연동':'예시 데이터';
+    b.style.color = on?'var(--green)':'var(--gold)';
+    b.style.background = on?'rgba(52,211,153,.14)':'rgba(251,191,36,.14)';
+  }
+  function applyReal(real){
+    const s = real.snap||{};
+    if(s.total_students!=null) RV.students=String(s.total_students);
+    if(s.n_repeat!=null && s.n_current!=null) RV.studentsD=`N수 ${s.n_repeat} · 재학 ${s.n_current}`;
+    if(s.occupancy!=null) RV.occupancy=String(s.occupancy);
+    if(s.mtd_revenue!=null) RV.revenue=Math.round(s.mtd_revenue/10000).toLocaleString();
+    if(s.unpaid_total!=null) RV.unpaid=Math.round(s.unpaid_total/10000).toLocaleString();
+    if(s.unpaid_count!=null) RV.unpaidCnt=String(s.unpaid_count);
+    if(real.risks) RV.highrisk=String(real.risks.length);
+    RV.isReal = !!(real.riskReal || s.total_students!=null);
+    // 세부 명단(실데이터): 고위험 학생 · 미수금 학생
+    if(real.risks && real.risks.length)
+      D.operation.riskRows = real.risks.slice(0,8).map(r=>[r.name,(r.signals||[]).join(' · ')||'위험 신호',r.level==='urgent'?'즉시':'오늘',r.level==='urgent'?'high':'mid']);
+    if(real.payments && real.payments.length)
+      D.sales.unpaidRows = real.payments.slice(0,8).map(p=>[p.name,Math.round((p.amount||0)/10000).toLocaleString()+'만','마감 '+(String(p.due||'').slice(5)||'-'),'임박','high']);
+    // 즉시 확인 띠
+    IMMEDIATE.forEach(it=>{
+      if(it.label==='고위험 학생' && real.risks) it.v=real.risks.length+'명';
+      if(it.label==='미수금' && s.unpaid_total!=null){ it.v=Math.round(s.unpaid_total/10000).toLocaleString()+'만'; it.sub=`해당 학생 ${s.unpaid_count}명 · 납부 안내 필요`; }
+    });
+  }
 
   // ── 목 데이터 ──
   const D={
@@ -545,7 +586,7 @@
 
   const TPL={
     recruit:()=>`
-      <div class="stat-row">${stat('재원생','191','명','N수 94 · 재학 97','')}${stat('좌석 점유율','79','%','▲ +2%p','up')}${stat('신규 등록','20','명','전월 +9','up')}${stat('예비생','14','명','상담 전환율 62%','up')}</div>
+      <div class="stat-row">${stat('재원생',RV.students,'명',RV.studentsD,'')}${stat('좌석 점유율',RV.occupancy,'%','▲ +2%p','up')}${stat('신규 등록','20','명','전월 +9','up')}${stat('예비생','14','명','상담 전환율 62%','up')}</div>
       <div class="grid2">
         <div class="panel"><div class="panel-hd"><div class="panel-title">재원생 추이</div><span class="panel-more">최근 6개월</span></div><div id="c1"></div></div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">상담 전환율 추이</div><span class="panel-more">예비생 → 등록</span></div><div id="c2"></div></div>
@@ -555,7 +596,7 @@
         <div class="panel"><div class="panel-hd"><div class="panel-title">AI 권장 액션</div></div>${actList(D.recruit.acts)}</div>
       </div>`,
     operation:()=>`
-      <div class="stat-row">${stat('상담 대기','8','명','⚑ 14일초과 3','warn')}${stat('고위험 학생','11','명','⚑ 오늘 케어','dn')}${stat('당월 퇴원율','3.2','%','재등록 81%','')}${stat('순공 인당','42','h','활용 168명','up')}</div>
+      <div class="stat-row">${stat('상담 대기','8','명','⚑ 14일초과 3','warn')}${stat('고위험 학생',RV.highrisk,'명','⚑ 오늘 케어','dn')}${stat('당월 퇴원율','3.2','%','재등록 81%','')}${stat('순공 인당','42','h','활용 168명','up')}</div>
       <div class="grid2">
         <div class="panel"><div class="panel-hd"><div class="panel-title">퇴원율 추이</div><span class="panel-more">최근 6개월</span></div><div id="c1"></div></div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">인당 순공시간 추이</div><span class="panel-more">시간/월</span></div><div id="c2"></div></div>
@@ -569,7 +610,7 @@
         <div class="panel"><div class="panel-hd"><div class="panel-title">AI 권장 액션</div></div>${actList(D.operation.acts)}</div>
       </div>`,
     sales:()=>`
-      <div class="stat-row">${stat('미수금','412','만원','⚑ 7명','dn')}${stat('당월 매출','3,820','만원','▲ +12%','up')}${stat('로열티','382','만원','매출 10%','')}${stat('콘텐츠 판매','540','건','구매 재원 68%','up')}</div>
+      <div class="stat-row">${stat('미수금',RV.unpaid,'만원','⚑ '+RV.unpaidCnt+'명','dn')}${stat('당월 매출',RV.revenue,'만원','▲ +12%','up')}${stat('로열티','382','만원','매출 10%','')}${stat('콘텐츠 판매','540','건','구매 재원 68%','up')}</div>
       <div class="grid2">
         <div class="panel"><div class="panel-hd"><div class="panel-title">월별 매출 추이</div><span class="panel-more">억원</span></div><div id="c1"></div></div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">로열티 추이</div><span class="panel-more">만원/월</span></div><div id="c2"></div></div>
@@ -680,12 +721,30 @@
       `<div class="risk-item" style="cursor:pointer" onclick="openDetail('${r.k}')"><span class="ri-nm">${r.label}</span><span class="ri-lv ${r.lv}">${r.lv==='u'?'긴급':'주의'}</span><span class="ri-sg">${r.sub}</span><span class="ri-sc ${r.lv}">${r.v}</span></div>`).join('');
   }
 
-  fillIcons();
-  buildBand();
-  (function(){const m=document.getElementById('cklMemo');if(m)m.addEventListener('blur',function(){todoMemo=m.textContent.trim();saveTodo();});})();
-  if(window.innerWidth<=1000) document.body.classList.add('nav-collapsed');
-  const h=location.hash.slice(1);
-  if(META[h]) openDetail(h);
+  async function init(){
+    fillIcons();
+    setHub();            // RV 기본값(예시)으로 허브 렌더
+    buildBand();
+    (function(){const m=document.getElementById('cklMemo');if(m)m.addEventListener('blur',function(){todoMemo=m.textContent.trim();saveTodo();});})();
+    if(window.innerWidth<=1000) document.body.classList.add('nav-collapsed');
+
+    // ── 데이터 로드 (예시·실데이터 공통 경로) ──
+    try{
+      const profile = await requireAuth();      // 실모드 비로그인 → login.html 이동 후 null
+      if(profile){
+        let bid = profile.branch_id;
+        if(!bid && profile.role==='exec'){ const list = await DATA.branchList(); bid = (list[0]||{}).id; }
+        const real = await DATA.branch(bid);
+        applyReal(real);
+        setHub(); buildBand();                   // 로드값으로 다시 렌더
+        markReal(!window.USE_MOCK && RV.isReal); // 로그인+실데이터일 때만 '실데이터 연동'
+      }
+    }catch(e){ console.warn('데이터 로드 실패 → 예시 유지', e); }
+
+    const h=location.hash.slice(1);
+    if(META[h]) openDetail(h);
+  }
+  init();
   </script>
 </body>
 </html>
