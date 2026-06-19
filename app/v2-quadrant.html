@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>이투스ECI — 운영OS 허브 (2안 · 사분면)</title>
+<title>247 운영 OS 대시보드</title>
 <style>
   @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css');
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -282,7 +282,7 @@
   <aside class="sidebar" id="sidebar">
     <button class="sb-toggle" onclick="toggleSidebar()" title="메뉴 접기/펴기" data-icon="chevronL"></button>
     <div class="sb-logo">
-      <div class="brand-wrap"><div class="brand2">이투스ECI</div><div class="sub2">운영OS 허브 · 2안</div></div>
+      <div class="brand-wrap"><div class="brand2">247 운영 OS</div><div class="sub2">대시보드</div></div>
     </div>
     <nav class="sb-nav" id="sbNav">
       <a class="nav-item home active" data-k="hub" onclick="navTo('hub',this)" title="운영 허브"><span class="ni-ic" data-icon="home"></span><span class="lbl">운영 허브</span></a>
@@ -321,7 +321,7 @@
   <div class="main">
   <div class="wrap">
     <div class="top">
-      <div class="brand">운영 대시보드<span class="sub">2안 · 사분면 허브 (테스트)</span></div>
+      <div class="brand">247 운영 OS 대시보드<span class="sub">가맹 · 직영 통합 운영</span></div>
       <div class="top-r">
         <span class="pill" id="ctx">대치 · 원장 · 2026.06.17</span>
         <button class="theme-btn" onclick="toggleTheme()"><span class="ic"></span><span id="themeLbl">라이트 모드</span></button>
@@ -348,7 +348,7 @@
       </div>
       <div class="quad">
         <div class="cross-v"></div><div class="cross-h"></div>
-        <div class="hub-center"><div class="hc-t">ECI</div><div class="hc-s">운영OS</div></div>
+        <div class="hub-center"><div class="hc-t">247</div><div class="hc-s">운영OS</div></div>
 
         <!-- 모집 -->
         <div class="qd recruit" onclick="openDetail('recruit')">
@@ -467,6 +467,15 @@
   function lineChart(el,cats,reg,quit,fmt){const p=PAL();mk(el,{...BASE(),chart:{...BASE().chart,type:'line',height:280},series:quit?[{name:'신규 등록',data:reg},{name:'퇴원',data:quit}]:[{name:'값',data:reg}],stroke:{width:quit?[4,3]:4,curve:'smooth',dashArray:quit?[0,6]:0},colors:quit?['#22D3EE','#A66BFF']:['#22D3EE'],markers:{size:0,hover:{size:6}},legend:{show:!!quit,position:'top',horizontalAlign:'right',labels:{colors:p.axis}},yaxis:YA(fmt),xaxis:XA(cats),grid:{borderColor:p.grid,strokeDashArray:4,padding:{right:20}}});}
   function areaChart(el,cats,data,color,fmt){const p=PAL();mk(el,{...BASE(),chart:{...BASE().chart,type:'area',height:260},series:[{name:'값',data:data}],stroke:{width:3,curve:'smooth'},colors:[color],fill:{type:'gradient',gradient:{shadeIntensity:1,opacityFrom:.35,opacityTo:.02,stops:[0,100]}},dataLabels:{enabled:false},markers:{size:0},xaxis:XA(cats),yaxis:fmt?YA(fmt):{show:false}});}
   function barChart(el,cats,data,color,fmt){const p=PAL();mk(el,{...BASE(),chart:{...BASE().chart,type:'bar',height:280},series:[{name:'값',data:data}],plotOptions:{bar:{borderRadius:6,columnWidth:'52%'}},colors:[color||'#22D3EE'],fill:{type:'gradient',gradient:{shade:'dark',type:'vertical',gradientToColors:['#A66BFF'],stops:[0,100],opacityFrom:1,opacityTo:1}},dataLabels:{enabled:false},grid:{borderColor:p.grid,strokeDashArray:4},xaxis:XA(cats),yaxis:YA(fmt||(v=>v)),tooltip:{theme:p.tip}});}
+  // 분절 막대(올해) + 꺾은선(전년, 흐리게) — 공통 추이 스타일
+  function comboChart(el,cats,bar,line,color,fmt){const p=PAL();mk(el,{...BASE(),chart:{...BASE().chart,type:'line',height:280},
+    series:[{name:'올해',type:'column',data:bar||[]},{name:'전년',type:'line',data:line||[]}],
+    plotOptions:{bar:{borderRadius:5,columnWidth:'46%'}},
+    stroke:{width:[0,2.5],curve:'straight',dashArray:[0,5]},
+    colors:[color||'#22D3EE','#94A3B8'],
+    markers:{size:0,hover:{size:5}},dataLabels:{enabled:false},
+    legend:{show:true,position:'top',horizontalAlign:'right',labels:{colors:p.axis}},
+    grid:{borderColor:p.grid,strokeDashArray:4},xaxis:XA(cats),yaxis:YA(fmt||(v=>v)),tooltip:{theme:p.tip}});}
   function donutChart(el,data,labels,colors,suffix){const p=PAL();const u=suffix||'%';mk(el,{...BASE(),chart:{...BASE().chart,type:'donut',height:230},series:data,labels:labels,colors:colors,stroke:{width:0},plotOptions:{pie:{donut:{size:'72%',labels:{show:true,name:{color:p.cLbl,fontSize:'12px'},total:{show:true,label:labels[0],color:p.cLbl,fontSize:'12px',formatter:()=>data[0]+u},value:{color:p.cVal,fontSize:'22px',fontWeight:800,formatter:v=>v+u}}}}},legend:{show:false},dataLabels:{enabled:false},tooltip:{theme:p.tip,y:{formatter:v=>v+u}}});}
   const RC=['#A66BFF','#EC4899','#22D3EE','#4F7CFF'];
 
@@ -474,7 +483,8 @@
   const RV = { students:'191', studentsD:'전월 +9', occupancy:'79', revenue:'3,820', unpaid:'412', unpaidCnt:'7', highrisk:'11',
     newEnroll:'6', withdrawRate:'2.1', royalty:'184', isReal:false };
   // 실데이터 월별 추이(RD): 기본=예시, applyReal에서 교체
-  let RD = { months:MONTHS, newEnroll:[13,15,12,14,16,20], withdraw:[4,3,5,4,6,5], revenue:[1450,1520,1380,1610,1720,1840] };
+  let RD = { months:MONTHS, newEnroll:[13,15,12,14,16,20], withdraw:[4,3,5,4,6,5], revenue:[1450,1520,1380,1610,1720,1840],
+    newEnrollPrev:[12,13,14,12,15,17], withdrawPrev:[5,4,4,5,5,6], revenuePrev:[1320,1400,1350,1480,1560,1690] };
   function setV(id,val,unit){const e=document.getElementById(id); if(e) e.innerHTML=(val==='—')?'—':val+'<small>'+unit+'</small>';}
   function setHub(){
     setV('rvStudents',RV.students,'명'); const sd=document.getElementById('rvStudentsD'); if(sd) sd.textContent=RV.studentsD;
@@ -503,7 +513,7 @@
     RV.newEnroll   = (real.consult && real.consult.new_enroll!=null) ? String(real.consult.new_enroll) : '—';
     RV.withdrawRate= (s.month_withdraw!=null && s.total_students)    ? (s.month_withdraw/s.total_students*100).toFixed(1) : '—';
     RV.royalty     = (s.mtd_revenue!=null) ? Math.round(s.mtd_revenue*0.1/10000).toLocaleString() : '—';
-    if(real.daily) RD = real.daily;   // 월별 추이 실데이터
+    if(real.daily) RD = Object.assign({}, RD, real.daily);   // 올해=실데이터, 전년(Prev)=보존(예시, 과거데이터 적재 시 교체)
     RV.isReal = !!(real.riskReal || s.total_students!=null);
     // 세부 명단(실데이터): 고위험 학생 · 미수금 학생
     if(real.risks && real.risks.length)
@@ -601,51 +611,44 @@
   const SOON='<span class="soon-tag">ERP 연동 예정</span>';
   const statS=(k,v,u)=>`<div class="stat soon"><div class="k">${k}</div><div class="v">${v}${u?`<small>${u}</small>`:''}</div><div class="d">${SOON}</div></div>`;
   const soonChart=(sel,label)=>{const el=document.querySelector(sel); if(el) el.innerHTML=`<div class="chart-soon">${SOON}<div class="cs-t">${label}</div></div>`;};
+  const actPanel=(arr)=>`<div class="panel act-top"><div class="panel-hd"><div class="panel-title">추천 활동</div><span class="panel-more">오늘 우선순위</span></div>${actList(arr)}</div>`;
   const tbl=(head,rows)=>`<table class="ctable"><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>{const rc=r[r.length-1];const cells=r.slice(0,-1);return `<tr>${cells.map((c,i)=>i===cells.length-1?`<td class="risk ${rc}">${c}</td>`:`<td>${c}</td>`).join('')}</tr>`;}).join('')}</tbody></table>`;
   const actList=(arr)=>`<div class="acts">${arr.map((a,i)=>`<div class="act"><div class="n">${i+1}</div><div><div class="b">${a[0]}</div><div class="p">${a[1]}</div><div class="mt">${a[2]}</div></div></div>`).join('')}</div>`;
 
   const TPL={
     recruit:()=>`
       <div class="stat-row">${stat('재원생',RV.students,'명',RV.studentsD,'')}${stat('좌석 점유율',RV.occupancy,'%','▲ +2%p','up')}${stat('신규 등록',RV.newEnroll,'명','오늘 신규','up')}${statS('예비생','14','명')}</div>
+      ${actPanel(D.recruit.acts)}
       <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">월별 신규 등록</div><span class="panel-more">최근 6개월 · 명</span></div><div id="c1"></div></div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">상담 전환율 추이</div><span class="panel-more">예비생 → 등록</span></div><div id="c2"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">월별 신규 등록</div><span class="panel-more">올해 막대 · 전년 꺾은선</span></div><div id="c1"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">등록 전환율 추이</div><span class="panel-more">등원 예정생 → 등록</span></div><div id="c2"></div></div>
       </div>
-      <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">등록 현황 요약</div></div>${tbl(['지표','기본 수치','부가','상태'],D.recruit.rows)}</div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">AI 권장 액션</div></div>${actList(D.recruit.acts)}</div>
-      </div>`,
+      <div class="panel"><div class="panel-hd"><div class="panel-title">등록 현황 요약</div></div>${tbl(['지표','기본 수치','부가','상태'],D.recruit.rows)}</div>`,
     operation:()=>`
       <div class="stat-row">${statS('상담 대기','8','명')}${stat('고위험 학생',RV.highrisk,'명','⚑ 오늘 케어','dn')}${stat('당월 퇴원율',RV.withdrawRate,'%','당월 누적','')}${statS('순공 인당','42','h')}</div>
+      ${actPanel(D.operation.acts)}
       <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">월별 퇴원 추이</div><span class="panel-more">최근 6개월 · 명</span></div><div id="c1"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">월별 퇴원 추이</div><span class="panel-more">올해 막대 · 전년 꺾은선</span></div><div id="c1"></div></div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">인당 순공시간 추이</div><span class="panel-more">시간/월</span></div><div id="c2"></div></div>
       </div>
       <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">상담 대기 명단</div><span class="panel-more">→ 상담기록 입력</span></div>${tbl(['학생','마지막 상담','경과','상태'],D.operation.waitRows)}</div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">고위험 학생 명단</div><span class="panel-more">즉시 케어</span></div>${tbl(['학생','위험 신호','우선도'],D.operation.riskRows)}</div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">상담 대기 명단</div><span class="panel-more">→ 상담기록 입력</span></div>${tbl(['학생','마지막 상담','경과','상태'],D.operation.waitRows)}</div>
       </div>
-      <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">운영 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.operation.rows)}</div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">AI 권장 액션</div></div>${actList(D.operation.acts)}</div>
-      </div>`,
+      <div class="panel"><div class="panel-hd"><div class="panel-title">운영 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.operation.rows)}</div>`,
     sales:()=>`
       <div class="stat-row">${stat('미수금',RV.unpaid,'만원','⚑ '+RV.unpaidCnt+'명','dn')}${stat('당월 매출',RV.revenue,'만원','▲ +12%','up')}${stat('로열티',RV.royalty,'만원','매출의 10%','')}${statS('콘텐츠 판매','540','건')}</div>
+      ${actPanel(D.sales.acts)}
       <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">월별 매출 추이</div><span class="panel-more">최근 6개월 · 만원</span></div><div id="c1"></div></div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">로열티 추이</div><span class="panel-more">만원/월</span></div><div id="c2"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">월별 매출 추이</div><span class="panel-more">올해 막대 · 전년 꺾은선</span></div><div id="c1"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">로열티 추이</div><span class="panel-more">올해 막대 · 전년 꺾은선</span></div><div id="c2"></div></div>
       </div>
-      <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">미수금 학생 명단</div><span class="panel-more">→ 납부 안내 연락</span></div>${tbl(['학생','미납액','마감','상태'],D.sales.unpaidRows)}</div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">AI 권장 액션</div></div>${actList(D.sales.acts)}</div>
-      </div>
+      <div class="panel"><div class="panel-hd"><div class="panel-title">미수금 학생 명단</div><span class="panel-more">→ 납부 안내 연락</span></div>${tbl(['학생','미납액','마감','상태'],D.sales.unpaidRows)}</div>
       <div class="panel"><div class="panel-hd"><div class="panel-title">매출 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.sales.rows)}</div>`,
     marketing:()=>`
       <div class="stat-row">${statS('블로그 자사','5','건')}${statS('경쟁사 이슈','2','건')}${statS('학교·N수','12','개교')}${statS('우수사례','4','건')}</div>
-      <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">블로그 게시 점유율</div><span class="panel-more">자사 vs 경쟁</span></div><div id="c1"></div></div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">AI 권장 액션</div></div>${actList(D.marketing.acts)}</div>
-      </div>
+      ${actPanel(D.marketing.acts)}
+      <div class="panel"><div class="panel-hd"><div class="panel-title">블로그 게시 점유율</div><span class="panel-more">자사 vs 경쟁</span></div><div id="c1"></div></div>
       <div class="grid2">
         <div class="panel"><div class="panel-hd"><div class="panel-title">경쟁사 특이사항</div><span class="panel-more">본사 취합 · 읽기 전용</span></div>${tbl(['경쟁사','특이사항','게시일','상태'],D.marketing.issueRows)}</div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">마케팅 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.marketing.rows)}</div>
@@ -654,9 +657,9 @@
   const legend=(arr,colors,u)=>arr.map((x,i)=>`<div class="dl-item"><span class="ring" style="border-color:${colors[i]}"></span> ${x[0]} <b>${x[1]}${u||'%'}</b></div>`).join('');
 
   const RENDER={
-    recruit:()=>{ barChart('#c1',RD.months,RD.newEnroll,'#EC4899',v=>v+'명'); soonChart('#c2','상담 전환율 — 데이터 적재 후 표시'); },
-    operation:()=>{ barChart('#c1',RD.months,RD.withdraw,'#22D3EE',v=>v+'명'); soonChart('#c2','인당 순공시간 — 데이터 적재 후 표시'); },
-    sales:()=>{ areaChart('#c1',RD.months,RD.revenue,'#FBBF24',v=>v+'만'); areaChart('#c2',RD.months,RD.revenue.map(r=>Math.round(r*0.1)),'#34D399',v=>v+'만'); },
+    recruit:()=>{ comboChart('#c1',RD.months,RD.newEnroll,RD.newEnrollPrev,'#EC4899',v=>v+'명'); soonChart('#c2','상담 전환율 — 데이터 적재 후 표시'); },
+    operation:()=>{ comboChart('#c1',RD.months,RD.withdraw,RD.withdrawPrev,'#22D3EE',v=>v+'명'); soonChart('#c2','인당 순공시간 — 데이터 적재 후 표시'); },
+    sales:()=>{ comboChart('#c1',RD.months,RD.revenue,RD.revenuePrev,'#FBBF24',v=>v+'만'); comboChart('#c2',RD.months,RD.revenue.map(r=>Math.round(r*0.1)),RD.revenuePrev.map(r=>Math.round(r*0.1)),'#34D399',v=>v+'만'); },
     marketing:()=>{ soonChart('#c1','블로그 게시 점유율 — 데이터 적재 후 표시'); }
   };
 
