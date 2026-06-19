@@ -300,10 +300,10 @@
       <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">콘텐츠 판매</span></a>
 
       <div class="nav-grp clk" data-k="operation" style="--gc:var(--cyan)" onclick="navTo('operation')" title="운영"><span class="g-ic" data-icon="ops"></span><span class="glbl">운영</span></div>
-      <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">상담 대기</span><span class="nb">8</span></a>
+      <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">출결 현황</span></a>
       <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">고위험 학생</span><span class="nb" id="nbHighrisk">11</span></a>
-      <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">퇴원·재등록률</span></a>
-      <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">순공·상담 현황</span></a>
+      <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">상담 대기</span><span class="nb">8</span></a>
+      <a class="nav-item sub" data-k="operation" onclick="navTo('operation',this)"><span class="nav-dot"></span><span class="lbl">퇴원 관리 · 재입학</span></a>
 
       <div class="nav-grp clk" data-k="marketing" style="--gc:var(--green)" onclick="navTo('marketing')" title="마케팅"><span class="g-ic" data-icon="mega"></span><span class="glbl">마케팅</span></div>
       <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">블로그·경쟁사</span></a>
@@ -379,10 +379,10 @@
         <div class="qd operation" onclick="openDetail('operation')">
           <div class="qd-hd"><div class="qd-ic" data-icon="ops"></div><div class="qd-tt">운영<span class="m">학생 관리</span></div><span class="qd-go">자세히 →</span></div>
           <div class="kpis">
-            <div class="kpi soon"><div class="k">상담 대기</div><div class="v">8<small>명</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
+            <div class="kpi"><div class="k">출결 현황</div><div class="v" id="rvAttend">88<small>%</small></div><div class="d up">등원율 · 오늘</div></div>
             <div class="kpi"><div class="k">고위험 학생</div><div class="v" id="rvHighrisk">11<small>명</small></div><div class="d dn">⚑ 오늘 케어</div></div>
-            <div class="kpi"><div class="k">당월 퇴원율</div><div class="v" id="rvWithdrawRate">2.1<small>%</small></div><div class="d">당월 누적</div></div>
-            <div class="kpi soon"><div class="k">순공 인당</div><div class="v">42<small>h</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
+            <div class="kpi soon"><div class="k">상담 대기</div><div class="v">8<small>명</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
+            <div class="kpi"><div class="k">퇴원 관리</div><div class="v" id="rvWithdrawCnt">4<small>명</small></div><div class="d">당월 퇴원</div></div>
           </div>
         </div>
 
@@ -484,10 +484,12 @@
 
   // ── 실데이터 표시값(RV): 기본=예시, 로그인 시 Supabase 값으로 교체 ──
   const RV = { students:'191', studentsD:'전월 +9', occupancy:'79', seats:'41', seatsD:'오늘 −2석', revenue:'3,820', unpaid:'412', unpaidCnt:'7', highrisk:'11',
-    newEnroll:'6', withdrawRate:'2.1', royalty:'184', isReal:false };
+    newEnroll:'6', withdrawRate:'2.1', withdrawCnt:'4', attend:'88', royalty:'184', isReal:false };
   // 실데이터 월별 추이(RD): 기본=예시, applyReal에서 교체
   let RD = { months:MONTHS, newEnroll:[13,15,12,14,16,20], withdraw:[4,3,5,4,6,5], revenue:[1450,1520,1380,1610,1720,1840],
     newEnrollPrev:[12,13,14,12,15,17], withdrawPrev:[5,4,4,5,5,6], revenuePrev:[1320,1400,1350,1480,1560,1690] };
+  // 금일 출결(ATT): 기본=예시, applyReal에서 교체
+  let ATT = { present:107, late:62, absent:28, early_leave:11, out_cnt:15, left_cnt:12, total:235 };
   function setV(id,val,unit){const e=document.getElementById(id); if(e) e.innerHTML=(val==='—')?'—':val+'<small>'+unit+'</small>';}
   function setHub(){
     setV('rvStudents',RV.students,'명'); const sd=document.getElementById('rvStudentsD'); if(sd) sd.textContent=RV.studentsD;
@@ -495,6 +497,7 @@
     const ud=document.getElementById('rvUnpaidD'); if(ud) ud.textContent='⚑ '+RV.unpaidCnt+'명';
     setV('rvHighrisk',RV.highrisk,'명');
     setV('rvNewEnroll',RV.newEnroll,'명'); setV('rvWithdrawRate',RV.withdrawRate,'%'); setV('rvRoyalty',RV.royalty,'만');
+    setV('rvAttend',RV.attend,'%'); setV('rvWithdrawCnt',RV.withdrawCnt,'명');
     const nu=document.getElementById('nbUnpaid'); if(nu) nu.textContent=RV.unpaidCnt;
     const nh=document.getElementById('nbHighrisk'); if(nh) nh.textContent=RV.highrisk;
   }
@@ -516,6 +519,9 @@
     // 승격 3종 (데이터 있으면 실값, 없으면 '—')
     RV.newEnroll   = (real.consult && real.consult.new_enroll!=null) ? String(real.consult.new_enroll) : '—';
     RV.withdrawRate= (s.month_withdraw!=null && s.total_students)    ? (s.month_withdraw/s.total_students*100).toFixed(1) : '—';
+    RV.withdrawCnt = (s.month_withdraw!=null) ? String(s.month_withdraw) : '—';
+    RV.attend      = (s.attend_rate!=null) ? String(s.attend_rate) : '—';
+    if(real.attend) ATT = real.attend;
     RV.royalty     = (s.mtd_revenue!=null) ? Math.round(s.mtd_revenue*0.1/10000).toLocaleString() : '—';
     if(real.daily) RD = Object.assign({}, RD, real.daily);   // 올해=실데이터, 전년(Prev)=보존(예시, 과거데이터 적재 시 교체)
     RV.isReal = !!(real.riskReal || s.total_students!=null);
@@ -546,22 +552,26 @@
       acts:[['등원 예정생 전환 집중','등록 전환율 62%→70% 목표, 미전환 예정생 1:1 팔로업','지점장 · 이번 주'],
             ['모집 감소 원인 점검','유입량 전년比 주별 하락 — 계절 요인 vs 실질 감소 판별','지점장 · 이번 주'],
             ['퇴원생 재컨택 3명','강·윤·서 — 재입학 우선 추천 대상 연락','담임 · 이번 주']] },
-    operation:{ churnTr:[3.6,3.4,3.1,3.5,3.3,3.2], studyTr:[36,38,37,40,41,42],
+    operation:{ churnTr:[3.6,3.4,3.1,3.5,3.3,3.2],
       waitRows:[['김OO','마지막 상담 06/03','경과 14일','초과','high'],
                 ['이OO','마지막 상담 06/09','경과 8일','주기 도래','mid'],
                 ['박OO','마지막 상담 06/10','경과 7일','주기 도래','mid']],
       riskRows:[['홍OO','30일 미상담 · 콘텐츠 구매 급감','즉시','high'],
                 ['정OO','출석 급감 · 순공 −32%','즉시','high'],
                 ['최OO','성적 2계단↓ · 분위기 이탈','오늘','mid']],
-      rows:[['상담 대기','8명','7일주기 5 · 14일초과 3','즉시','high'],
+      // 재입학 관리 (퇴원생 재컨택 실행) — [퇴원생, 퇴원일, 컨택 상태, 재입학 가능성, 액션]
+      reenrollRows:[['강OO','05/28','1차 연락 완료','높음','재방문 예약','high'],
+                    ['윤OO','06/02','문자 발송','높음','통화 시도','high'],
+                    ['서OO','05/15','미접촉','중간','장학 안내','mid']],
+      rows:[['출결 현황','등원율 88%','지각 62·결석 28 (명부 235)','주의','mid'],
             ['고위험 학생','11명','30일 미상담·콘텐츠/출석 급감','즉시','high'],
-            ['퇴원율/재등록률','3.2% / 81%','누적 퇴원율 9.4%','주의','mid'],
+            ['상담 대기','8명','7일주기 5 · 14일초과 3','즉시','high'],
+            ['퇴원 관리','당월 4명','누적 18명 · 재등록 81%','주의','mid'],
             ['재원기간','평균 312일','전년 대비 +18일','양호','low'],
-            ['순공시간','인당 42h','활용 168명·총 7,050h','양호','low'],
             ['상담 현황','당월 142건','미상담 17명·평균 9일','주의','mid']],
       acts:[['오늘 상담 대기 8명 처리','14일 초과 3명 우선, 7일 주기 5명 예약 → 상담기록 즉시 입력','담임 전원 · 오늘'],
             ['고위험 11명 케어','30일 미상담·급감 신호 학생 1차 연락→상담 예약','담임 · 오늘'],
-            ['순공·상담 연계','순공 급감=고위험 트리거, 자동 상담 우선순위 정렬','운영OS · 상시']] },
+            ['재입학 관리 3명','퇴원생 재컨택 — 강·윤 통화, 서 장학 안내','담임 · 이번 주']] },
     sales:{
       unpaidRows:[['김OO','98만','마감 06/30','임박','high'],
                   ['정OO','85만','마감 06/30','임박','high'],
@@ -655,16 +665,17 @@
       <div class="panel"><div class="panel-hd"><div class="panel-title">좌석 타입별 잔여석</div><span class="panel-more">회색 = 등원 예정생 입도선매${soonMore}</span></div>${seatTable(D.recruit.seatTypes)}</div>
       <div class="panel"><div class="panel-hd"><div class="panel-title">퇴원생 재컨택 추천</div><span class="panel-more">재입학 우선 대상${soonMore}</span></div>${tbl(['퇴원생','퇴원','추천 사유','우선도'],D.recruit.recontactRows)}</div>`,
     operation:()=>`
-      <div class="stat-row">${statS('상담 대기','8','명')}${stat('고위험 학생',RV.highrisk,'명','⚑ 오늘 케어','dn')}${stat('당월 퇴원율',RV.withdrawRate,'%','당월 누적','')}${statS('순공 인당','42','h')}</div>
+      <div class="stat-row">${stat('출결 현황',RV.attend,'%','등원율 · 오늘','up')}${stat('고위험 학생',RV.highrisk,'명','⚑ 오늘 케어','dn')}${statS('상담 대기','8','명')}${stat('퇴원 관리',RV.withdrawCnt,'명','당월 퇴원','')}</div>
       ${actPanel(D.operation.acts)}
       <div class="grid2">
         <div class="panel"><div class="panel-hd"><div class="panel-title">월별 퇴원 추이</div><span class="panel-more">올해 막대 · 전년 꺾은선</span></div><div id="c1"></div></div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">인당 순공시간 추이</div><span class="panel-more">시간/월</span></div><div id="c2"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">금일 출결 현황</div><span class="panel-more">등원·지각·결석·조퇴·외출·하원</span></div><div id="cAttend"></div></div>
       </div>
       <div class="grid2">
         <div class="panel"><div class="panel-hd"><div class="panel-title">고위험 학생 명단</div><span class="panel-more">즉시 케어</span></div>${tbl(['학생','위험 신호','우선도'],D.operation.riskRows)}</div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">상담 대기 명단</div><span class="panel-more">→ 상담기록 입력</span></div>${tbl(['학생','마지막 상담','경과','상태'],D.operation.waitRows)}</div>
       </div>
+      <div class="panel"><div class="panel-hd"><div class="panel-title">재입학 관리</div><span class="panel-more">퇴원생 재컨택 실행${soonMore}</span></div>${tbl(['퇴원생','퇴원','컨택 상태','재입학 가능성','액션'],D.operation.reenrollRows)}</div>
       <div class="panel"><div class="panel-hd"><div class="panel-title">운영 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.operation.rows)}</div>`,
     sales:()=>`
       <div class="stat-row">${stat('미수금',RV.unpaid,'만원','⚑ '+RV.unpaidCnt+'명','dn')}${stat('당월 매출',RV.revenue,'만원','▲ +12%','up')}${statS('미수금 회수율','64','%')}${statS('콘텐츠 판매','540','건')}</div>
@@ -692,7 +703,7 @@
 
   const RENDER={
     recruit:()=>{ comboChart('#cInflow',D.recruit.inflowWeeks,D.recruit.inflowThis,D.recruit.inflowPrev,'#EC4899',v=>v+'건'); comboChart('#c1',RD.months,RD.newEnroll,RD.newEnrollPrev,'#EC4899',v=>v+'명'); soonChart('#c2','등록 전환율 — 데이터 적재 후 표시'); },
-    operation:()=>{ comboChart('#c1',RD.months,RD.withdraw,RD.withdrawPrev,'#22D3EE',v=>v+'명'); soonChart('#c2','인당 순공시간 — 데이터 적재 후 표시'); },
+    operation:()=>{ comboChart('#c1',RD.months,RD.withdraw,RD.withdrawPrev,'#22D3EE',v=>v+'명'); barChart('#cAttend',['등원','지각','결석','조퇴','외출','하원'],[ATT.present,ATT.late,ATT.absent,ATT.early_leave,ATT.out_cnt,ATT.left_cnt],'#22D3EE',v=>v+'명'); },
     sales:()=>{ comboChart('#c1',RD.months,RD.revenue,RD.revenuePrev,'#FBBF24',v=>v+'만'); comboChart('#cTuition',D.sales.tuitionDays,D.sales.tuitionThis,D.sales.tuitionPrev,'#FBBF24',v=>v+'만'); comboChart('#cContent',RD.months,D.sales.contentTrThis,D.sales.contentTrPrev,'#A66BFF',v=>v+'건'); },
     marketing:()=>{ soonChart('#c1','블로그 게시 점유율 — 데이터 적재 후 표시'); }
   };
