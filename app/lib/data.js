@@ -6,33 +6,58 @@
 const MONTHS = ["1월","2월","3월","4월","5월","6월"];
 const COLORS = ["#A66BFF","#EC4899","#22D3EE","#4F7CFF"];
 
-// ── 퇴원 위험 점수 엔진 (6대 팩터 · 이탈의도 중심 가중치) ──
-//  분류: 의사·정서(커뮤니티/부정어) · 행동(순공/출결) · 성과·재무(성적/미납)
-//  산식: 0.7×가중합 + 0.3×최고팩터(단일 강신호 surfacing) + 3개↑ 동시발화 가산
+// ══════════════════════════════════════════════════════════
+//  퇴원 위험 점수 엔진 — 설정값은 모두 아래 3블록에 모음
+//  (개발자가 아니어도 숫자만 바꿔 가중치·임계값·규칙을 조정 가능)
+//  ※ 현재 값은 전문가 추정 출발점 — 실제 퇴원 데이터로 보정 예정
+// ══════════════════════════════════════════════════════════
+// 1) 가중치 (합 1.00) — 이탈의도 중심
 const CHURN_WEIGHTS = { community:0.24, negword:0.20, study:0.18, attend:0.14, grade:0.12, unpaid:0.12 };
+// 2) 정규화 임계값 — 각 팩터가 '100점(최대 위험)'이 되는 기준
+const CHURN_THRESHOLDS = {
+  study_floor:  70,   // 순공 달성률 이 값(%) 이상이면 위험 0, 0%면 100
+  absence_max:  25,   // 지각·결석·조퇴율 이 값(%)이면 100
+  grade_max:    3.33, // 성적 하락 등급 수 이 값이면 100 (1등급≈30점)
+  unpaid_max:   30,   // 미납 일수 이 값(일)이면 100
+  // 커뮤니티/상담 부정어는 NLP가 0~100으로 직접 산출 → 별도 임계값 없음
+};
+// 3) 점수 결합·등급 규칙
+const CHURN_RULES = {
+  blendWeighted: 0.7, // 가중합 비중
+  blendMax:      0.3, // 최고팩터 비중
+  cooccurAt:     45,  // 이 점수 이상인 팩터가
+  cooccurCount:  3,   // 이만큼 동시 발화하면
+  cooccurBonus:  5,   //   가산점
+  intentFloorAt: 70,  // 커뮤니티/부정어가 이 값 이상이면
+  intentFloor:   62,  //   단독이라도 최소 이 점수(주의) 보장
+  levelUrgent:   75,  // 긴급 컷오프
+  levelWatch:    55,  // 주의 컷오프
+  signalAt:      45,  // 근거 신호로 노출할 정규화 임계
+};
+
 function computeRisk(f){
+  const T = CHURN_THRESHOLDS, R = CHURN_RULES, W = CHURN_WEIGHTS;
   // 정규화 0~100
-  const nComm = Math.min(f.community_neg||0, 100);                            // 커뮤니티 부정글 강도(0~100)
-  const nNeg  = Math.min(f.neg_score||0, 100);                               // 상담 부정어 강도(0~100)
-  const nStd  = f.study_pct!=null ? Math.min(Math.max(0,(70-f.study_pct))*(100/70),100):0; // 순공 달성 70%↓
-  const nAtt  = Math.min((f.absence_rate||0)*4, 100);                        // 지각·결석·조퇴율 25%+ → 100
-  const nGrd  = Math.min((f.grade_delta||0)*30, 100);                        // 성적 2등급↓ → 60
-  const nUnp  = Math.min((f.unpaid_days||0)/30*100, 100);                    // 미납 30일+ → 100
-  const W = CHURN_WEIGHTS;
+  const nComm = Math.min(f.community_neg||0, 100);                            // 커뮤니티 부정글(NLP 0~100)
+  const nNeg  = Math.min(f.neg_score||0, 100);                               // 상담 부정어(NLP 0~100)
+  const nStd  = f.study_pct!=null ? Math.min(Math.max(0,(T.study_floor-f.study_pct))*(100/T.study_floor),100):0;
+  const nAtt  = Math.min((f.absence_rate||0)*(100/T.absence_max), 100);
+  const nGrd  = Math.min((f.grade_delta||0)*(100/T.grade_max), 100);
+  const nUnp  = Math.min((f.unpaid_days||0)/T.unpaid_max*100, 100);
   const weighted = nComm*W.community + nNeg*W.negword + nStd*W.study + nAtt*W.attend + nGrd*W.grade + nUnp*W.unpaid;
-  const maxN = Math.max(nComm, nNeg, nStd, nAtt, nGrd, nUnp);                 // 의사 신호 한 건도 등급 튀게
-  let score = Math.round(0.7*weighted + 0.3*maxN);
-  const active = [nComm,nNeg,nStd,nAtt,nGrd,nUnp].filter(n=>n>=45).length;    // 동시 발화(여러 분류) 가산
-  if(active>=3) score = Math.min(score+5, 100);
-  if(nComm>=70 || nNeg>=70) score = Math.max(score, 62);                     // 강한 이탈의도 신호 단독이라도 최소 '주의'
-  const level = score>=75 ? 'urgent' : (score>=55 ? 'watch' : 'low');
-  const sig = [];                                                            // 이탈의도 신호 우선 노출
-  if(nComm>=45) sig.push('커뮤니티 부정글 감지');
-  if(nNeg>=45)  sig.push('상담 부정어 다수');
-  if(nStd>=45)  sig.push(`순공 달성 ${f.study_pct}%`);
-  if(nAtt>=45)  sig.push(`지각·결석 ${f.absence_rate}%`);
-  if(nGrd>=45)  sig.push(`성적 ${f.grade_delta}등급 하락`);
-  if(nUnp>=45)  sig.push(`미납 ${f.unpaid_days}일`);
+  const maxN = Math.max(nComm, nNeg, nStd, nAtt, nGrd, nUnp);                 // 단일 강신호 surfacing
+  let score = Math.round(R.blendWeighted*weighted + R.blendMax*maxN);
+  const active = [nComm,nNeg,nStd,nAtt,nGrd,nUnp].filter(n=>n>=R.cooccurAt).length;
+  if(active>=R.cooccurCount) score = Math.min(score+R.cooccurBonus, 100);
+  if(nComm>=R.intentFloorAt || nNeg>=R.intentFloorAt) score = Math.max(score, R.intentFloor);
+  const level = score>=R.levelUrgent ? 'urgent' : (score>=R.levelWatch ? 'watch' : 'low');
+  const A = R.signalAt, sig = [];                                            // 이탈의도 신호 우선 노출
+  if(nComm>=A) sig.push('커뮤니티 부정글 감지');
+  if(nNeg>=A)  sig.push('상담 부정어 다수');
+  if(nStd>=A)  sig.push(`순공 달성 ${f.study_pct}%`);
+  if(nAtt>=A)  sig.push(`지각·결석 ${f.absence_rate}%`);
+  if(nGrd>=A)  sig.push(`성적 ${f.grade_delta}등급 하락`);
+  if(nUnp>=A)  sig.push(`미납 ${f.unpaid_days}일`);
   return { name:f.student_name, level, score, signals:sig };
 }
 
@@ -203,5 +228,36 @@ const DATA = {
     if (window.USE_MOCK) return [{ id:"mock", name:"강남구 직영점" }];
     try { return await dbBranchList(); }
     catch (e) { console.warn("지점 목록 조회 실패", e); return []; }
+  },
+
+  // ── 퇴원 라벨 스냅샷 (미래 보정용 정답지) ──────────────────
+  //  실제 퇴원 시점의 6팩터값 + 그때의 위험점수를 churn_outcomes에 기록
+  async recordChurnOutcome(branchId, factor, withdrawDate) {
+    if (window.USE_MOCK) return { ok:false, error:"MOCK 모드 — 저장 안 됨" };
+    const r = computeRisk(factor);
+    const { error } = await sb.from("churn_outcomes").insert({
+      branch_id: branchId, student_name: factor.student_name,
+      absence_rate: factor.absence_rate ?? null, study_pct: factor.study_pct ?? null,
+      grade_delta: factor.grade_delta ?? null, unpaid_days: factor.unpaid_days ?? null,
+      neg_score: factor.neg_score ?? null, community_neg: factor.community_neg ?? null,
+      risk_score: r.score, risk_level: r.level, signals: r.signals,
+      withdraw_date: withdrawDate || null,
+    });
+    return { ok: !error, error: error?.message || null, score: r.score, level: r.level };
+  },
+  // 학생명으로 최신 churn_factors를 찾아 스냅샷 기록
+  async recordChurnByName(branchId, studentName, withdrawDate) {
+    if (window.USE_MOCK) return { ok:false, error:"MOCK 모드" };
+    const { data } = await sb.from("churn_factors").select("*")
+      .eq("branch_id", branchId).eq("student_name", studentName).maybeSingle();
+    if (!data) return { ok:false, error:`'${studentName}' 위험요인 데이터 없음` };
+    return await this.recordChurnOutcome(branchId, data, withdrawDate);
+  },
+  // 기록된 퇴원 라벨 조회 (분석·보정용)
+  async churnOutcomes(branchId) {
+    if (window.USE_MOCK) return [];
+    let q = sb.from("churn_outcomes").select("*").order("withdraw_date",{ascending:false});
+    if (branchId) q = q.eq("branch_id", branchId);
+    const { data } = await q; return data || [];
   },
 };
