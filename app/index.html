@@ -305,7 +305,7 @@
 
       <div class="nav-grp clk" data-k="sales" style="--gc:var(--gold)" onclick="navTo('sales')" title="매출"><span class="g-ic" data-icon="won"></span><span class="glbl">매출</span></div>
       <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">미수금</span><span class="nb" id="nbUnpaid">7</span></a>
-      <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">매출 · 미수금 회수</span></a>
+      <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">매출 · 미납 대상자</span></a>
       <a class="nav-item sub" data-k="sales" onclick="navTo('sales',this)"><span class="nav-dot"></span><span class="lbl">콘텐츠 판매</span></a>
 
       <div class="nav-grp clk" data-k="operation" style="--gc:var(--cyan)" onclick="navTo('operation')" title="운영"><span class="g-ic" data-icon="ops"></span><span class="glbl">운영</span></div>
@@ -379,7 +379,7 @@
           <div class="kpis">
             <div class="kpi"><div class="k">미수금</div><div class="v" id="rvUnpaid">412<small>만</small></div><div class="d dn" id="rvUnpaidD">⚑ 7명</div></div>
             <div class="kpi"><div class="k">당월 매출</div><div class="v" id="rvRevenue">3,820<small>만</small></div><div class="d up">▲ +12%</div></div>
-            <div class="kpi soon"><div class="k">미수금 회수율</div><div class="v">64<small>%</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
+            <div class="kpi"><div class="k">미납 대상자</div><div class="v" id="rvUnpaidCnt">7<small>명</small></div><div class="d dn">납부 안내 필요</div></div>
             <div class="kpi soon"><div class="k">콘텐츠 판매</div><div class="v">540<small>건</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
           </div>
         </div>
@@ -504,6 +504,7 @@
     setV('rvStudents',RV.students,'명'); const sd=document.getElementById('rvStudentsD'); if(sd) sd.textContent=RV.studentsD;
     setV('rvOccupancy',RV.occupancy,'%'); setV('rvSeats',RV.seats,'석'); setV('rvRevenue',RV.revenue,'만'); setV('rvUnpaid',RV.unpaid,'만');
     const ud=document.getElementById('rvUnpaidD'); if(ud) ud.textContent='⚑ '+RV.unpaidCnt+'명';
+    setV('rvUnpaidCnt',RV.unpaidCnt,'명');
     setV('rvHighrisk',RV.highrisk,'명');
     setV('rvNewEnroll',RV.newEnroll,'명'); setV('rvWithdrawRate',RV.withdrawRate,'%'); setV('rvRoyalty',RV.royalty,'만');
     setV('rvAttend',RV.attend,'%'); setV('rvWithdrawCnt',RV.withdrawCnt,'명');
@@ -595,7 +596,7 @@
       contentTrThis:[380,410,395,440,470,540], contentTrPrev:[350,360,372,400,430,498],
       rows:[['미수금','412만원','해당 학생 7명','즉시','high'],
             ['당월 매출','3,820만원','당해년도 누적 2.1억','양호','low'],
-            ['미수금 회수','당월 268만','회수율 64% · 잔여 412만','주의','mid'],
+            ['미납 대상자','7명','미수금 412만 · 납부 안내 필요','주의','mid'],
             ['콘텐츠 판매','당월 540건','구매 학생 재원 68%','양호','low']],
       acts:[['미수금 412만 회수','학생 7명 납부 안내 연락 → 결제링크 재발송','행정 · 48시간'],
             ['일별 수강료 페이스 점검','당월 일매출 추세 vs 전년 — 목표 대비 진척 확인','지점장 · 주간'],
@@ -706,7 +707,7 @@
       <div class="panel"><div class="panel-hd"><div class="panel-title">재입학 관리</div><span class="panel-more">퇴원생 재컨택 실행${soonMore}</span></div>${tbl(['퇴원생','퇴원','컨택 상태','재입학 가능성','액션'],D.operation.reenrollRows)}</div>
       <div class="panel"><div class="panel-hd"><div class="panel-title">운영 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.operation.rows)}</div>`,
     sales:()=>`
-      <div class="stat-row">${stat('미수금',RV.unpaid,'만원','⚑ '+RV.unpaidCnt+'명','dn')}${stat('당월 매출',RV.revenue,'만원','▲ +12%','up')}${statS('미수금 회수율','64','%')}${statS('콘텐츠 판매','540','건')}</div>
+      <div class="stat-row">${stat('미수금',RV.unpaid,'만원','⚑ '+RV.unpaidCnt+'명','dn')}${stat('당월 매출',RV.revenue,'만원','▲ +12%','up')}${stat('미납 대상자',RV.unpaidCnt,'명','납부 안내 필요','dn')}${statS('콘텐츠 판매','540','건')}</div>
       ${actPanel(D.sales.acts)}
       <div class="grid2">
         <div class="panel"><div class="panel-hd"><div class="panel-title">월별 매출 추이</div><span class="panel-more">올해 막대 · 전년 꺾은선</span></div><div id="c1"></div></div>
