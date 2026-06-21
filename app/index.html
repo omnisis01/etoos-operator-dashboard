@@ -189,6 +189,8 @@
   .chart-soon .cs-t{font-size:14.5px;font-weight:600;color:var(--text3)}
   .qd-note{font-size:11.5px;color:var(--text3);margin-top:12px;padding-top:9px;border-top:1px solid var(--border)}
   .basis-note{font-size:12.5px;color:var(--text3);margin:-2px 2px 14px}
+  .yoy{font-size:13.5px;color:var(--text2);margin-top:12px;padding-top:11px;border-top:1px solid var(--border);text-align:center}
+  .yoy b{font-weight:800;color:var(--ink)}
   .lk{color:var(--purple);font-weight:700;text-decoration:none;font-size:14px;white-space:nowrap}
   .lk:hover{text-decoration:underline}
   .mk-cases{display:flex;flex-direction:column}
@@ -316,7 +318,7 @@
 
       <div class="nav-grp clk" data-k="marketing" style="--gc:var(--green)" onclick="navTo('marketing')" title="마케팅"><span class="g-ic" data-icon="mega"></span><span class="glbl">마케팅</span></div>
       <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">마케팅 활동 · 채널</span></a>
-      <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">클리핑 · 우수사례</span></a>
+      <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">소식 · 우수사례</span></a>
       <a class="nav-item sub" data-k="marketing" onclick="navTo('marketing',this)"><span class="nav-dot"></span><span class="lbl">경쟁사 분석</span></a>
 
       <div class="nav-grp" style="--gc:var(--text3)"><span class="g-ic" data-icon="dots"></span><span class="glbl">기타</span></div>
@@ -388,7 +390,7 @@
         <div class="qd operation" onclick="openDetail('operation')">
           <div class="qd-hd"><div class="qd-ic" data-icon="ops"></div><div class="qd-tt">운영<span class="m">학생 관리</span></div><span class="qd-go">자세히 →</span></div>
           <div class="kpis">
-            <div class="kpi"><div class="k">출결 현황</div><div class="v" id="rvAttend">88<small>%</small></div><div class="d up">등원율 · 오늘</div></div>
+            <div class="kpi"><div class="k">출결 현황</div><div class="v" id="rvAttend">107/235<small>명</small></div><div class="d up">재원 중 등원</div></div>
             <div class="kpi"><div class="k">고위험 학생</div><div class="v" id="rvHighrisk">11<small>명</small></div><div class="d dn">⚑ 오늘 케어</div></div>
             <div class="kpi soon"><div class="k">상담 대기</div><div class="v">8<small>명</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
             <div class="kpi"><div class="k">퇴원 관리</div><div class="v" id="rvWithdrawCnt">4<small>명</small></div><div class="d">당월 퇴원</div></div>
@@ -397,12 +399,12 @@
 
         <!-- 마케팅 -->
         <div class="qd marketing" onclick="openDetail('marketing')">
-          <div class="qd-hd"><div class="qd-ic" data-icon="mega"></div><div class="qd-tt">마케팅<span class="m">채널 · 클리핑 · 경쟁</span></div><span class="qd-go">자세히 →</span></div>
+          <div class="qd-hd"><div class="qd-ic" data-icon="mega"></div><div class="qd-tt">마케팅<span class="m">채널 · 소식 · 경쟁</span></div><span class="qd-go">자세히 →</span></div>
           <div class="kpis">
             <div class="kpi soon"><div class="k">마케팅 활동</div><div class="v">7<small>건</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
             <div class="kpi soon"><div class="k">홈페이지 UV</div><div class="v">3,240</div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
             <div class="kpi soon"><div class="k">인스타 조회</div><div class="v">1,420</div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
-            <div class="kpi soon"><div class="k">이번주 클리핑</div><div class="v">4<small>건</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
+            <div class="kpi soon"><div class="k">이번주 게시 모음</div><div class="v">4<small>건</small></div><div class="d"><span class="soon-tag">ERP 연동 예정</span></div></div>
           </div>
         </div>
       </div>
@@ -507,7 +509,7 @@
     setV('rvUnpaidCnt',RV.unpaidCnt,'명');
     setV('rvHighrisk',RV.highrisk,'명');
     setV('rvNewEnroll',RV.newEnroll,'명'); setV('rvWithdrawRate',RV.withdrawRate,'%'); setV('rvRoyalty',RV.royalty,'만');
-    setV('rvAttend',RV.attend,'%'); setV('rvWithdrawCnt',RV.withdrawCnt,'명');
+    setV('rvAttend',(ATT&&ATT.total)?ATT.present+'/'+ATT.total:RV.attend,'명'); setV('rvWithdrawCnt',RV.withdrawCnt,'명');
     const nu=document.getElementById('nbUnpaid'); if(nu) nu.textContent=RV.unpaidCnt;
     const nh=document.getElementById('nbHighrisk'); if(nh) nh.textContent=RV.highrisk;
   }
@@ -559,6 +561,8 @@
       recontactRows:[['강OO','05/28 퇴원','성적 회복·재시험 임박','높음','high'],
                      ['윤OO','06/02 퇴원','경쟁학원 불만 SNS 감지','높음','high'],
                      ['서OO','05/15 퇴원','비용 사유 — 장학 안내 가능','중간','mid']],
+      // 등원 예정생 등원 예정일 (더미, 미정 포함 — 대표이사 의견)
+      upcomingRows:[['김OO','06/24'],['이OO','06/26'],['박OO','미정'],['정OO','07/01'],['최OO','미정']],
       acts:[['등원 예정생 전환 집중','등록 전환율 62%→70% 목표, 미전환 예정생 1:1 팔로업','지점장 · 이번 주'],
             ['모집 감소 원인 점검','유입량 전년比 주별 하락 — 계절 요인 vs 실질 감소 판별','지점장 · 이번 주'],
             ['퇴원생 재컨택 3명','강·윤·서 — 재입학 우선 추천 대상 연락','담임 · 이번 주']] },
@@ -609,11 +613,17 @@
                    ['인스타 게시물 조회수','1,420','1,180','up'],
                    ['주간 게시 수','블로그 3 · 인스타 4','권역 평균 5','dn']],
       // 내 지점 마케팅 활동 — 블로그/인스타 게시 (링크) [채널, 제목, 게시일, 조회수]
-      activityRows:[['블로그','6월 모의고사 분석 후기','06/16','312','#'],
+      activityRows:[['공지','오늘의 대치지점 — 6월 모의고사 일정','06/17','—','#'],
+                    ['블로그','6월 모의고사 분석 후기','06/16','312','#'],
+                    ['공지','대치지점 공지 — 여름특강 신청 안내','06/15','—','#'],
                     ['인스타','자습실 환경 리뉴얼','06/15','840','#'],
                     ['블로그','정시 설명회 안내','06/13','205','#'],
                     ['인스타','재원생 합격 후기','06/11','1,120','#']],
-      // 이번주 마케팅 클리핑 — 권역 기준 / 조회수 기준 [권역, 채널, 제목, 조회수]
+      // 커뮤니티 게시글 대응 (대표이사 의견 — 신규) [출처, 게시글, 성격, 대응상태, cls]
+      communityRows:[['오르비','대치 자습실 후기 — 부정 뉘앙스','부정','대응 필요','high'],
+                     ['맘카페(강남)','정시 설명회 문의글','문의','답변 완료','low'],
+                     ['에브리타임','재수 종합반 비교 글','중립','모니터','mid']],
+      // 지점·경쟁사 소식 — 권역 기준 / 조회수 기준 [권역, 채널, 제목, 조회수]
       clipRows:[['강남권','인스타','대치 자습실 리뉴얼','840','#'],
                 ['강남권','블로그','정시 설명회 후기','512','#'],
                 ['분당권','인스타','분당 합격 현수막','1,030','#'],
@@ -669,7 +679,15 @@
   const seatTable=(rows)=>`<table class="ctable"><thead><tr><th>타입</th><th>총 좌석</th><th>잔여</th><th>예정생 예약</th><th>실잔여</th></tr></thead><tbody>${rows.map(r=>{const[t,tot,rem,pre]=r;const real=rem-pre;return `<tr><td>${t}</td><td>${tot}석</td><td>${rem}석</td><td style="color:var(--text3)">${pre}석</td><td class="risk ${real<=5?'high':real<=10?'mid':'low'}">${real}석</td></tr>`;}).join('')}</tbody></table>`;
   // 콘텐츠별 판매 표 (마켓ECI 연동 예정)
   const contentTable=(rows)=>`<table class="ctable"><thead><tr><th>콘텐츠</th><th>당월 판매</th><th>매출</th><th>전년 동월</th></tr></thead><tbody>${rows.map(r=>{const[n,q,rev,prev]=r;const d=q-prev;return `<tr><td>${n}</td><td>${q}건</td><td>${rev}만</td><td class="risk ${d>=0?'low':'mid'}"><span style="opacity:.55">${prev}건</span> · ${d>=0?'▲ +'+d:'▼ '+d}</td></tr>`;}).join('')}</tbody></table>`;
-  // 마케팅 — 가맹 채널 원자지표 / 게시 링크 / 클리핑 / 우수사례 / 경쟁사 iframe
+  // 금일 출결 — 표(막대 대체, 대표이사 의견)
+  const attTable=()=>{const a=ATT,t=a.total||1;const r=[['등원',a.present],['지각',a.late],['결석',a.absent],['조퇴',a.early_leave],['외출',a.out_cnt],['하원',a.left_cnt]];return `<table class="ctable"><thead><tr><th>상태</th><th>인원</th><th>비율</th></tr></thead><tbody>${r.map(x=>`<tr><td>${x[0]}</td><td>${x[1]}명</td><td style="opacity:.7">${Math.round(x[1]/t*100)}%</td></tr>`).join('')}</tbody></table>`;};
+  // 커뮤니티 게시글 대응 (대표이사 의견 — 신규)
+  const communityTable=(rows)=>`<table class="ctable"><thead><tr><th>출처</th><th>게시글</th><th>성격</th><th>대응 상태</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="risk ${r[4]}">${r[2]}</td><td>${r[3]}</td></tr>`).join('')}</tbody></table>`;
+  // 등원 예정생 예정일 (대표이사 의견 — 신규, 미정 표시)
+  const upcomingTable=(rows)=>`<table class="ctable"><thead><tr><th>예정생</th><th>등원 예정일</th><th>상태</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="risk ${r[1]==='미정'?'mid':'low'}">${r[1]==='미정'?'확인 필요':'확정'}</td></tr>`).join('')}</tbody></table>`;
+  // 추이 차트 하단 올해·전년·차이 값행 (대표이사 의견 — 차트+표 병기)
+  function setYoy(id,th,pv,unit){const el=document.getElementById(id);if(!el)return;const a=th.reduce((x,y)=>x+y,0),b=pv.reduce((x,y)=>x+y,0);const d=b?Math.round((a-b)/b*100):0,up=d>=0;el.innerHTML=`올해 <b>${a.toLocaleString()}${unit}</b> · 전년 ${b.toLocaleString()}${unit} · <span style="color:var(--${up?'green':'red'})">${up?'▲ +':'▼ '}${Math.abs(d)}%</span>`;}
+  // 마케팅 — 가맹 채널 원자지표 / 게시 링크 / 소식 / 우수사례 / 경쟁사 iframe
   const channelTable=(rows)=>`<table class="ctable"><thead><tr><th>지표</th><th>내 지점</th><th>권역 평균</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td class="risk ${r[3]}">${r[1]}</td><td style="opacity:.6">${r[2]}</td></tr>`).join('')}</tbody></table>`;
   const postTable=(rows)=>`<table class="ctable"><thead><tr><th>채널</th><th>제목</th><th>게시일</th><th>조회수</th><th></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td style="opacity:.7">${r[2]}</td><td>${r[3]}</td><td><a class="lk" href="${r[4]}">보기 →</a></td></tr>`).join('')}</tbody></table>`;
   const clipTable=(rows)=>`<table class="ctable"><thead><tr><th>권역</th><th>채널</th><th>제목</th><th>조회수</th><th></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td><a class="lk" href="${r[4]}">보기 →</a></td></tr>`).join('')}</tbody></table>`;
@@ -684,60 +702,62 @@
       <div class="basis-note">모집 수치 기준 · <b>전일 대비</b> (오늘 09:00 집계)</div>
       ${actPanel(D.recruit.acts)}
       <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">유입량 — 주별 문의</div><span class="panel-more">올해 막대 · 전년 꺾은선${soonMore}</span></div><div id="cInflow"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">유입량 — 주별 문의</div><span class="panel-more">올해 막대 · 전년 꺾은선${soonMore}</span></div><div id="cInflow"></div><div class="yoy" id="yoyInflow"></div></div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">채널별 유입 (이번 주)</div><span class="panel-more">전화·방문·온라인${soonMore}</span></div>${inflowChTable(D.recruit.inflowCh)}</div>
       </div>
       <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">월별 신규 등록</div><span class="panel-more">전월·당월 · 전년 꺾은선</span></div><div id="c1"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">월별 신규 등록</div><span class="panel-more">전월·당월 · 전년 꺾은선</span></div><div id="c1"></div><div class="yoy" id="yoyNew"></div></div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">등록 전환율 추이</div><span class="panel-more">등원 예정생 → 등록</span></div><div id="c2"></div></div>
       </div>
+      <div class="panel"><div class="panel-hd"><div class="panel-title">등원 예정생 — 예정일</div><span class="panel-more">미정은 확인 필요${soonMore}</span></div>${upcomingTable(D.recruit.upcomingRows)}</div>
       <div class="panel"><div class="panel-hd"><div class="panel-title">좌석 타입별 잔여석</div><span class="panel-more">회색 = 등원 예정생이 예약한 좌석${soonMore}</span></div>${seatTable(D.recruit.seatTypes)}</div>
       <div class="panel"><div class="panel-hd"><div class="panel-title">퇴원생 재컨택 추천</div><span class="panel-more">재입학 우선 대상${soonMore}</span></div>${tbl(['퇴원생','퇴원','추천 사유','우선도'],D.recruit.recontactRows)}</div>`,
     operation:()=>`
-      <div class="stat-row">${stat('출결 현황',RV.attend,'%','등원율 · 오늘','up')}${stat('고위험 학생',RV.highrisk,'명','⚑ 오늘 케어','dn')}${statS('상담 대기','8','명')}${stat('퇴원 관리',RV.withdrawCnt,'명','당월 퇴원','')}</div>
+      <div class="stat-row">${stat('출결 현황',ATT.present+'/'+ATT.total,'명','재원 중 등원','up')}${stat('고위험 학생',RV.highrisk,'명','⚑ 오늘 케어','dn')}${statS('상담 대기','8','명')}${stat('퇴원 관리',RV.withdrawCnt,'명','당월 퇴원','')}</div>
+      <div class="panel"><div class="panel-hd"><div class="panel-title">운영 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.operation.rows)}</div>
       ${actPanel(D.operation.acts)}
       <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">월별 퇴원 추이</div><span class="panel-more">올해 막대 · 전년 꺾은선</span></div><div id="c1"></div></div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">금일 출결 현황</div><span class="panel-more">등원·지각·결석·조퇴·외출·하원</span></div><div id="cAttend"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">월별 퇴원 추이</div><span class="panel-more">올해 막대 · 전년 꺾은선</span></div><div id="c1"></div><div class="yoy" id="yoyWithdraw"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">금일 출결 현황</div><span class="panel-more">등원·지각·결석·조퇴·외출·하원</span></div>${attTable()}</div>
       </div>
       <div class="grid2">
         <div class="panel"><div class="panel-hd"><div class="panel-title">고위험 학생 명단</div><span class="panel-more">즉시 케어</span></div>${tbl(['학생','위험 신호','우선도'],D.operation.riskRows)}</div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">상담 대기 명단</div><span class="panel-more">→ 상담기록 입력</span></div>${tbl(['학생','마지막 상담','경과','상태'],D.operation.waitRows)}</div>
       </div>
-      <div class="panel"><div class="panel-hd"><div class="panel-title">재입학 관리</div><span class="panel-more">퇴원생 재컨택 실행${soonMore}</span></div>${tbl(['퇴원생','퇴원','컨택 상태','재입학 가능성','액션'],D.operation.reenrollRows)}</div>
-      <div class="panel"><div class="panel-hd"><div class="panel-title">운영 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.operation.rows)}</div>`,
+      <div class="panel"><div class="panel-hd"><div class="panel-title">재입학 관리</div><span class="panel-more">퇴원생 재컨택 실행${soonMore}</span></div>${tbl(['퇴원생','퇴원','컨택 상태','재입학 가능성','액션'],D.operation.reenrollRows)}</div>`,
     sales:()=>`
       <div class="stat-row">${stat('미수금',RV.unpaid,'만원','⚑ '+RV.unpaidCnt+'명','dn')}${stat('당월 매출',RV.revenue,'만원','▲ +12%','up')}${stat('미납 대상자',RV.unpaidCnt,'명','납부 안내 필요','dn')}${statS('콘텐츠 판매','540','건')}</div>
+      <div class="panel"><div class="panel-hd"><div class="panel-title">매출 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.sales.rows)}</div>
       ${actPanel(D.sales.acts)}
       <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">월별 매출 추이</div><span class="panel-more">올해 막대 · 전년 꺾은선</span></div><div id="c1"></div></div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">당월 일별 수강료 매출</div><span class="panel-more">올해 막대 · 전년 꺾은선${soonMore}</span></div><div id="cTuition"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">월별 매출 추이</div><span class="panel-more">올해 막대 · 전년 꺾은선</span></div><div id="c1"></div><div class="yoy" id="yoyRev"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">당월 일별 수강료 매출</div><span class="panel-more">올해 막대 · 전년 꺾은선${soonMore}</span></div><div id="cTuition"></div><div class="yoy" id="yoyTuition"></div></div>
       </div>
       <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">콘텐츠 판매 추이</div><span class="panel-more">올해 막대 · 전년 꺾은선${soonMore}</span></div><div id="cContent"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">콘텐츠 판매 추이</div><span class="panel-more">올해 막대 · 전년 꺾은선${soonMore}</span></div><div id="cContent"></div><div class="yoy" id="yoyContent"></div></div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">콘텐츠별 판매</div><span class="panel-more">마켓ECI${soonMore}</span></div>${contentTable(D.sales.contentRows)}</div>
       </div>
-      <div class="panel"><div class="panel-hd"><div class="panel-title">미수금 학생 명단</div><span class="panel-more">→ 납부 안내 연락</span></div>${tbl(['학생','미납액','마감','상태'],D.sales.unpaidRows)}</div>
-      <div class="panel"><div class="panel-hd"><div class="panel-title">매출 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.sales.rows)}</div>`,
+      <div class="panel"><div class="panel-hd"><div class="panel-title">미수금 학생 명단</div><span class="panel-more">→ 납부 안내 연락</span></div>${tbl(['학생','미납액','마감','상태'],D.sales.unpaidRows)}</div>`,
     marketing:()=>`
-      <div class="stat-row">${statS('마케팅 활동','7','건')}${statS('홈페이지 UV','3,240','')}${statS('인스타 조회','1,420','')}${statS('이번주 클리핑','4','건')}</div>
+      <div class="stat-row">${statS('마케팅 활동','7','건')}${statS('홈페이지 UV','3,240','')}${statS('인스타 조회','1,420','')}${statS('이번주 게시 모음','4','건')}</div>
       ${actPanel(D.marketing.acts)}
       <div class="grid2">
         <div class="panel"><div class="panel-hd"><div class="panel-title">가맹점 마케팅 채널</div><span class="panel-more">원자지표 · 권역 비교${soonMore}</span></div>${channelTable(D.marketing.channelRows)}</div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">마케팅 활동 (내 지점)</div><span class="panel-more">블로그·인스타 게시 → 보기${soonMore}</span></div>${postTable(D.marketing.activityRows)}</div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">마케팅 활동 (내 지점)</div><span class="panel-more">공지·블로그·인스타 → 보기${soonMore}</span></div>${postTable(D.marketing.activityRows)}</div>
       </div>
       <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">이번주 마케팅 클리핑</div><span class="panel-more">권역 · 조회수 기준${soonMore}</span></div>${clipTable(D.marketing.clipRows)}</div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">지점·경쟁사 소식</div><span class="panel-more">권역 · 조회수 기준${soonMore}</span></div>${clipTable(D.marketing.clipRows)}</div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">우수사례</div><span class="panel-more">사례 직접 보기${soonMore}</span></div>${caseList(D.marketing.caseRows)}</div>
       </div>
+      <div class="panel"><div class="panel-hd"><div class="panel-title">커뮤니티 게시글 대응</div><span class="panel-more">오르비·맘카페·에타 모니터${soonMore}</span></div>${communityTable(D.marketing.communityRows)}</div>
       ${compPanel()}`
   };
   const legend=(arr,colors,u)=>arr.map((x,i)=>`<div class="dl-item"><span class="ring" style="border-color:${colors[i]}"></span> ${x[0]} <b>${x[1]}${u||'%'}</b></div>`).join('');
 
   const RENDER={
-    recruit:()=>{ comboChart('#cInflow',D.recruit.inflowWeeks,D.recruit.inflowThis,D.recruit.inflowPrev,'#EC4899',v=>v+'건'); comboChart('#c1',RD.months,RD.newEnroll,RD.newEnrollPrev,'#EC4899',v=>v+'명'); soonChart('#c2','등록 전환율 — 데이터 적재 후 표시'); },
-    operation:()=>{ comboChart('#c1',RD.months,RD.withdraw,RD.withdrawPrev,'#22D3EE',v=>v+'명'); barChart('#cAttend',['등원','지각','결석','조퇴','외출','하원'],[ATT.present,ATT.late,ATT.absent,ATT.early_leave,ATT.out_cnt,ATT.left_cnt],'#22D3EE',v=>v+'명'); },
-    sales:()=>{ comboChart('#c1',RD.months,RD.revenue,RD.revenuePrev,'#FBBF24',v=>v+'만'); comboChart('#cTuition',D.sales.tuitionDays,D.sales.tuitionThis,D.sales.tuitionPrev,'#FBBF24',v=>v+'만'); comboChart('#cContent',RD.months,D.sales.contentTrThis,D.sales.contentTrPrev,'#A66BFF',v=>v+'건'); },
+    recruit:()=>{ comboChart('#cInflow',D.recruit.inflowWeeks,D.recruit.inflowThis,D.recruit.inflowPrev,'#EC4899',v=>v+'건'); comboChart('#c1',RD.months,RD.newEnroll,RD.newEnrollPrev,'#EC4899',v=>v+'명'); soonChart('#c2','등록 전환율 — 데이터 적재 후 표시'); setYoy('yoyInflow',D.recruit.inflowThis,D.recruit.inflowPrev,'건'); setYoy('yoyNew',RD.newEnroll,RD.newEnrollPrev,'명'); },
+    operation:()=>{ comboChart('#c1',RD.months,RD.withdraw,RD.withdrawPrev,'#22D3EE',v=>v+'명'); setYoy('yoyWithdraw',RD.withdraw,RD.withdrawPrev,'명'); },
+    sales:()=>{ comboChart('#c1',RD.months,RD.revenue,RD.revenuePrev,'#FBBF24',v=>v+'만'); comboChart('#cTuition',D.sales.tuitionDays,D.sales.tuitionThis,D.sales.tuitionPrev,'#FBBF24',v=>v+'만'); comboChart('#cContent',RD.months,D.sales.contentTrThis,D.sales.contentTrPrev,'#A66BFF',v=>v+'건'); setYoy('yoyRev',RD.revenue,RD.revenuePrev,'만'); setYoy('yoyTuition',D.sales.tuitionThis,D.sales.tuitionPrev,'만'); setYoy('yoyContent',D.sales.contentTrThis,D.sales.contentTrPrev,'건'); },
     marketing:()=>{ /* 마케팅: 표·링크·경쟁사 iframe 중심, 차트 없음 */ }
   };
 
