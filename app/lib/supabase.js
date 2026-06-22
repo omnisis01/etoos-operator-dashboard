@@ -7,7 +7,16 @@
   window.USE_MOCK = forceMock || !(c.USE_SUPABASE && c.SUPABASE_URL && c.SUPABASE_ANON_KEY);
   window.sb = window.USE_MOCK
     ? null
-    : window.supabase.createClient(c.SUPABASE_URL, c.SUPABASE_ANON_KEY);
+    : window.supabase.createClient(c.SUPABASE_URL, c.SUPABASE_ANON_KEY, {
+        // 세션을 sessionStorage 에 보관 → 창/탭을 닫으면 자동 로그아웃,
+        // 같은 탭 내 새로고침에서는 로그인 유지
+        auth: {
+          storage: window.sessionStorage,
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
+        },
+      });
   if (window.USE_MOCK) {
     console.info("[운영 대시보드] MOCK 모드 — config.js 에 Supabase 키를 넣으면 실제 DB로 전환됩니다.");
   }
