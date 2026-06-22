@@ -457,10 +457,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=hq17"></script>
-  <script src="lib/supabase.js?v=hq17"></script>
-  <script src="lib/auth.js?v=hq17"></script>
-  <script src="lib/data.js?v=hq17"></script>
+  <script src="config.js?v=hq18"></script>
+  <script src="lib/supabase.js?v=hq18"></script>
+  <script src="lib/auth.js?v=hq18"></script>
+  <script src="lib/data.js?v=hq18"></script>
   <script>
   // MONTHS·computeRisk·DATA 는 lib/data.js 전역 사용 (중복 선언 금지)
   // ── 아이콘 (SVG, 이모지 X) ──
@@ -772,7 +772,7 @@
     marketing:()=>{ /* 마케팅: 표·링크·경쟁사 iframe 중심, 차트 없음 */ }
   };
 
-  function openDetail(key,fromNav){
+  function openDetail(key,fromNav,hist){
     clearCharts();
     const m=META[key];
     document.getElementById('hub').style.display='none';
@@ -783,11 +783,12 @@
     document.getElementById('dtBody').innerHTML=TPL[key]();
     window.scrollTo(0,0);
     setTimeout(()=>RENDER[key](),30);
-    history.replaceState(null,'','#'+key);
+    if(hist==='replace') history.replaceState({v:key},'','#'+key);
+    else if(hist!=='pop') history.pushState({v:key},'','#'+key);
     if(!fromNav) syncNav(key);
     document.querySelectorAll('#dtNav .dtn').forEach(b=>b.classList.toggle('on', b.dataset.k===key));
   }
-  function goHub(){ clearCharts(); document.getElementById('detail').style.display='none'; document.getElementById('todoboard').style.display='none'; document.getElementById('hub').style.display='block'; history.replaceState(null,'','#'); syncNav('hub'); }
+  function goHub(hist){ clearCharts(); document.getElementById('detail').style.display='none'; document.getElementById('todoboard').style.display='none'; document.getElementById('hub').style.display='block'; if(hist!=='pop') history.pushState({v:'hub'},'','#'); syncNav('hub'); }
   function syncNav(key){
     document.querySelectorAll('#sbNav .nav-item, #sbNav .nav-grp.clk').forEach(n=>n.classList.remove('active'));
     if(key==='hub'){ const h=document.querySelector('#sbNav .nav-item.home'); if(h) h.classList.add('active'); return; }
@@ -805,7 +806,7 @@
   function toggleBand(ev){ if(ev) ev.stopPropagation(); document.getElementById('band').classList.toggle('collapsed'); }
 
   // ── 오늘의 할일 체크리스트 ──
-  function openTodo(){
+  function openTodo(hist){
     clearCharts();
     document.getElementById('hub').style.display='none';
     document.getElementById('detail').style.display='none';
@@ -813,6 +814,7 @@
     document.getElementById('cklIcon').innerHTML=icon('check');
     document.getElementById('cklMemo').textContent=todoMemo;
     renderTodo(); window.scrollTo(0,0);
+    if(hist!=='pop') history.pushState({v:'todo'},'','#todo');
     document.querySelectorAll('#sbNav .nav-item, #sbNav .nav-grp.clk').forEach(n=>n.classList.remove('active'));
   }
   function renderTodo(){
@@ -873,8 +875,17 @@
       }
     }catch(e){ console.warn('데이터 로드 실패 → 예시 유지', e); }
 
+    // 뒤로/앞으로가기 → 대시보드 내부 화면 전환(허브↔세부↔할일), login 으로 튕기지 않음
+    window.addEventListener('popstate', function(e){
+      const v = e.state && e.state.v;
+      if(v && META[v]) openDetail(v,false,'pop');
+      else if(v==='todo') openTodo('pop');
+      else goHub('pop');
+    });
     const h=location.hash.slice(1);
-    if(META[h]) openDetail(h);
+    if(META[h]){ openDetail(h,false,'replace'); }
+    else if(h==='todo'){ history.replaceState({v:'todo'},'',''); openTodo('pop'); }
+    else { history.replaceState({v:'hub'},'','#'); }
   }
   init();
   </script>

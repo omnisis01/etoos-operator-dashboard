@@ -37,14 +37,21 @@
   </form>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=hq16"></script>
-  <script src="lib/supabase.js?v=hq16"></script>
-  <script src="lib/auth.js?v=hq16"></script>
+  <script src="config.js?v=hq18"></script>
+  <script src="lib/supabase.js?v=hq18"></script>
+  <script src="lib/auth.js?v=hq18"></script>
   <script>
     if (window.USE_MOCK) {
       document.getElementById("hint").textContent =
         "현재 MOCK 모드입니다. 아무 값이나 입력 후 로그인하면 대시보드로 이동합니다. (Supabase 키를 config.js 에 넣으면 실제 인증으로 전환)";
     }
+    // 이미 로그인된 상태(세션 유효)면 대시보드로 자동 복귀 — 뒤로가기로 와도 로그아웃처럼 보이지 않게
+    (async () => {
+      if (!window.USE_MOCK && window.sb) {
+        const { data: { session } } = await sb.auth.getSession();
+        if (session) location.replace("index.html" + location.search);
+      }
+    })();
     document.getElementById("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const err = document.getElementById("err"); err.textContent = "";
