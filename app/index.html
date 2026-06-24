@@ -500,12 +500,13 @@
   function areaChart(el,cats,data,color,fmt){const p=PAL();mk(el,{...BASE(),chart:{...BASE().chart,type:'area',height:260},series:[{name:'값',data:data}],stroke:{width:3,curve:'smooth'},colors:[color],fill:{type:'gradient',gradient:{shadeIntensity:1,opacityFrom:.35,opacityTo:.02,stops:[0,100]}},dataLabels:{enabled:false},markers:{size:0},xaxis:XA(cats),yaxis:fmt?YA(fmt):{show:false}});}
   function barChart(el,cats,data,color,fmt){const p=PAL();mk(el,{...BASE(),chart:{...BASE().chart,type:'bar',height:280},series:[{name:'값',data:data}],plotOptions:{bar:{borderRadius:6,columnWidth:'52%'}},colors:[color||'#22D3EE'],fill:{type:'gradient',gradient:{shade:'dark',type:'vertical',gradientToColors:['#A66BFF'],stops:[0,100],opacityFrom:1,opacityTo:1}},dataLabels:{enabled:false},grid:{borderColor:p.grid,strokeDashArray:4},xaxis:XA(cats),yaxis:YA(fmt||(v=>v)),tooltip:{theme:p.tip}});}
   // 분절 막대(올해) + 꺾은선(전년, 흐리게) — 공통 추이 스타일
-  function comboChart(el,cats,bar,line,color,fmt){const p=PAL();mk(el,{...BASE(),chart:{...BASE().chart,type:'line',height:280},
-    series:[{name:'올해',type:'column',data:bar||[]},{name:'전년',type:'line',data:line||[]}],
-    plotOptions:{bar:{borderRadius:5,columnWidth:'46%'}},
-    stroke:{width:[0,2.5],curve:'straight',dashArray:[0,5]},
-    colors:[color||'#22D3EE','#94A3B8'],
-    markers:{size:0,hover:{size:5}},dataLabels:{enabled:false},
+  function comboChart(el,cats,bar,line,color,fmt){const p=PAL();const C=color||'#22D3EE';mk(el,{...BASE(),chart:{...BASE().chart,type:'line',height:280},
+    series:[{name:'올해',type:'column',data:bar||[]},{name:'전년',type:'column',data:line||[]},{name:'올해 추이',type:'line',data:bar||[]}],
+    plotOptions:{bar:{borderRadius:4,columnWidth:'64%'}},
+    stroke:{width:[0,0,2.5],curve:'straight'},
+    colors:[C,'#9AA3B2',C],
+    fill:{opacity:[1,0.9,1]},
+    markers:{size:[0,0,4],strokeWidth:0,hover:{size:6}},dataLabels:{enabled:false},
     legend:{show:true,position:'top',horizontalAlign:'right',labels:{colors:p.axis}},
     grid:{borderColor:p.grid,strokeDashArray:4},xaxis:XA(cats),yaxis:YA(fmt||(v=>v)),tooltip:{theme:p.tip}});}
   function donutChart(el,data,labels,colors,suffix){const p=PAL();const u=suffix||'%';mk(el,{...BASE(),chart:{...BASE().chart,type:'donut',height:230},series:data,labels:labels,colors:colors,stroke:{width:0},plotOptions:{pie:{donut:{size:'72%',labels:{show:true,name:{color:p.cLbl,fontSize:'12px'},total:{show:true,label:labels[0],color:p.cLbl,fontSize:'12px',formatter:()=>data[0]+u},value:{color:p.cVal,fontSize:'22px',fontWeight:800,formatter:v=>v+u}}}}},legend:{show:false},dataLabels:{enabled:false},tooltip:{theme:p.tip,y:{formatter:v=>v+u}}});}
@@ -724,7 +725,7 @@
       <div class="basis-note">모집 수치 기준 · <b>전일 대비</b> (오늘 09:00 집계)</div>
       ${actPanel(D.recruit.acts)}
       <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">유입량 — 주별 문의</div><span class="panel-more">올해 막대 · 전년 꺾은선${soonMore}</span></div><div id="cInflow"></div><div class="yoy" id="yoyInflow"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">유입량 — 주별 문의</div><span class="panel-more">전년 회색 막대 · 올해 추이선${soonMore}</span></div><div id="cInflow"></div><div class="yoy" id="yoyInflow"></div></div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">채널별 유입 (이번 주)</div><span class="panel-more">전화·방문·온라인${soonMore}</span></div>${inflowChTable(D.recruit.inflowCh)}</div>
       </div>
       <div class="grid2">
@@ -739,7 +740,7 @@
       <div class="panel"><div class="panel-hd"><div class="panel-title">운영 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.operation.rows)}</div>
       ${actPanel(D.operation.acts)}
       <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">월별 퇴원 추이</div><span class="panel-more">올해 막대 · 전년 꺾은선</span></div><div id="c1"></div><div class="yoy" id="yoyWithdraw"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">월별 퇴원 추이</div><span class="panel-more">전년 회색 막대 · 올해 추이선</span></div><div id="c1"></div><div class="yoy" id="yoyWithdraw"></div></div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">금일 출결 현황</div><span class="panel-more">등원·지각·결석·조퇴·외출·하원</span></div>${attTable()}</div>
       </div>
       <div class="grid2">
@@ -753,11 +754,11 @@
       <div class="panel"><div class="panel-hd"><div class="panel-title">매출 지표 요약</div></div>${tbl(['지표','기본 수치','상세','상태'],D.sales.rows)}</div>
       ${actPanel(D.sales.acts)}
       <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">월별 매출 추이</div><span class="panel-more">올해 막대 · 전년 꺾은선</span></div><div id="c1"></div><div class="yoy" id="yoyRev"></div></div>
-        <div class="panel"><div class="panel-hd"><div class="panel-title">당월 일별 수강료 매출</div><span class="panel-more">올해 막대 · 전년 꺾은선${soonMore}</span></div><div id="cTuition"></div><div class="yoy" id="yoyTuition"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">월별 매출 추이</div><span class="panel-more">전년 회색 막대 · 올해 추이선</span></div><div id="c1"></div><div class="yoy" id="yoyRev"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">당월 일별 수강료 매출</div><span class="panel-more">전년 회색 막대 · 올해 추이선${soonMore}</span></div><div id="cTuition"></div><div class="yoy" id="yoyTuition"></div></div>
       </div>
       <div class="grid2">
-        <div class="panel"><div class="panel-hd"><div class="panel-title">콘텐츠 판매 추이</div><span class="panel-more">올해 막대 · 전년 꺾은선${soonMore}</span></div><div id="cContent"></div><div class="yoy" id="yoyContent"></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-title">콘텐츠 판매 추이</div><span class="panel-more">전년 회색 막대 · 올해 추이선${soonMore}</span></div><div id="cContent"></div><div class="yoy" id="yoyContent"></div></div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">콘텐츠별 판매</div><span class="panel-more">마켓ECI${soonMore}</span></div>${contentTable(D.sales.contentRows)}</div>
       </div>
       <div class="panel"><div class="panel-hd"><div class="panel-title">미수금 학생 명단</div><span class="panel-more">→ 납부 안내 연락</span></div>${tbl(['학생','미납액','마감','상태'],D.sales.unpaidRows)}</div>`,
