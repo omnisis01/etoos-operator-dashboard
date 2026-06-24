@@ -22,3 +22,5 @@ Thumbs.db
 
 # 아카이브(보관용 구버전)
 _archive/
+DATA pipeline/
+*.xlsb
