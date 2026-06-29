@@ -26,7 +26,7 @@
 <body>
   <form class="card" id="loginForm">
     <div class="brand">247 운영 OS</div>
-    <div class="sub">운영자 대시보드 로그인</div>
+    <div class="sub" id="sub">운영자 대시보드 로그인</div>
     <label for="email">이메일</label>
     <input id="email" type="email" autocomplete="username" placeholder="director@etoos.com" required>
     <label for="pw">비밀번호</label>
@@ -37,13 +37,16 @@
   </form>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=hq18"></script>
-  <script src="lib/supabase.js?v=hq18"></script>
-  <script src="lib/auth.js?v=hq18"></script>
+  <script src="config.js?v=hq19"></script>
+  <script src="lib/supabase.js?v=hq19"></script>
+  <script src="lib/auth.js?v=hq19"></script>
   <script>
     if (window.USE_MOCK) {
-      document.getElementById("hint").textContent =
-        "현재 MOCK 모드입니다. 아무 값이나 입력 후 로그인하면 대시보드로 이동합니다. (Supabase 키를 config.js 에 넣으면 실제 인증으로 전환)";
+      document.getElementById("sub").textContent = "데모 시연 — 예시 데이터";
+      document.getElementById("email").value = "demo@etoos.com";
+      document.getElementById("pw").value = "demo2026";
+      document.getElementById("hint").innerHTML =
+        "🟢 <b>데모 모드</b> — 실제 지점 데이터가 아닌 <b>예시 데이터</b>입니다.<br>아래 데모 계정(또는 아무 값)으로 <b>로그인</b>을 누르면 데모 대시보드로 이동합니다.";
     }
     // 이미 로그인된 상태(세션 유효)면 대시보드로 자동 복귀 — 뒤로가기로 와도 로그아웃처럼 보이지 않게
     (async () => {

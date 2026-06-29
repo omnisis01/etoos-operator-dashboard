@@ -340,7 +340,7 @@
     </nav>
     <div class="sb-foot">
       <button class="dl-btn"><span class="dl-ic" data-icon="report"></span><span class="lbl">주간 리포트</span></button>
-      <div class="user-row"><div class="avatar">이</div><div class="lbl"><div class="uname">이○○ 원장</div><div class="urole">대치 · 원장</div></div></div>
+      <div class="user-row"><div class="avatar">데</div><div class="lbl"><div class="uname">데모 원장</div><div class="urole">데모점 · 원장</div></div></div>
       <button class="logout-btn" onclick="signOut()" title="로그아웃" aria-label="로그아웃">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         <span class="lbl">로그아웃</span>
@@ -354,7 +354,7 @@
     <div class="top">
       <div class="brand">247 운영 OS 대시보드<span class="sub">가맹 · 직영 통합 운영</span></div>
       <div class="top-r">
-        <span class="pill" id="ctx">대치 · 원장 · 2026.06.17</span>
+        <span class="pill" id="ctx">데모점 · 원장 · 2026.06.17</span>
         <button class="theme-btn" onclick="toggleTheme()"><span class="ic"></span><span id="themeLbl">라이트 모드</span></button>
       </div>
     </div>
@@ -464,10 +464,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=hq18"></script>
-  <script src="lib/supabase.js?v=hq18"></script>
-  <script src="lib/auth.js?v=hq18"></script>
-  <script src="lib/data.js?v=hq18"></script>
+  <script src="config.js?v=hq19"></script>
+  <script src="lib/supabase.js?v=hq19"></script>
+  <script src="lib/auth.js?v=hq19"></script>
+  <script src="lib/data.js?v=hq19"></script>
   <script>
   // MONTHS·computeRisk·DATA 는 lib/data.js 전역 사용 (중복 선언 금지)
   // ── 아이콘 (SVG, 이모지 X) ──
@@ -617,7 +617,7 @@
       tuitionThis:[120,95,140,110,160,90,135,150,180,205],
       tuitionPrev:[110,100,120,105,140,95,125,130,150,170],
       // 콘텐츠 판매 (더미, 마켓ECI 연동 예정) — [콘텐츠, 당월 판매량, 매출(만), 전년 동월]
-      contentRows:[['한수 모의고사',182,164,150],['이감 모의고사',141,127,138],['상상 모의고사',96,86,90],['바탕 모의고사',74,67,61],['대성 모의고사',47,42,55]],
+      contentRows:[['모의고사 A',182,164,150],['모의고사 B',141,127,138],['모의고사 C',96,86,90],['모의고사 D',74,67,61],['모의고사 E',47,42,55]],
       contentTrThis:[380,410,395,440,470,540], contentTrPrev:[350,360,372,400,430,498],
       rows:[['미수금','412만원','해당 학생 7명','즉시','high'],
             ['당월 매출','3,820만원','당해년도 누적 2.1억','양호','low'],
@@ -634,25 +634,25 @@
                    ['인스타 게시물 조회수','1,420','1,180','up'],
                    ['주간 게시 수','블로그 3 · 인스타 4','권역 평균 5','dn']],
       // 내 지점 마케팅 활동 — 블로그/인스타 게시 (링크) [채널, 제목, 게시일, 조회수]
-      activityRows:[['공지','오늘의 대치지점 — 6월 모의고사 일정','06/17','—','#'],
+      activityRows:[['공지','오늘의 데모점 — 6월 모의고사 일정','06/17','—','#'],
                     ['블로그','6월 모의고사 분석 후기','06/16','312','#'],
-                    ['공지','대치지점 공지 — 여름특강 신청 안내','06/15','—','#'],
+                    ['공지','데모점 공지 — 여름특강 신청 안내','06/15','—','#'],
                     ['인스타','자습실 환경 리뉴얼','06/15','840','#'],
                     ['블로그','정시 설명회 안내','06/13','205','#'],
                     ['인스타','재원생 합격 후기','06/11','1,120','#']],
       // 커뮤니티 게시글 대응 (대표이사 의견 — 신규) [출처, 게시글, 성격, 대응상태, cls]
-      communityRows:[['오르비','대치 자습실 후기 — 부정 뉘앙스','부정','대응 필요','high'],
-                     ['맘카페(강남)','정시 설명회 문의글','문의','답변 완료','low'],
+      communityRows:[['오르비','자습실 후기 — 부정 뉘앙스','부정','대응 필요','high'],
+                     ['맘카페','정시 설명회 문의글','문의','답변 완료','low'],
                      ['에브리타임','재수 종합반 비교 글','중립','모니터','mid']],
       // 지점·경쟁사 소식 — 권역 기준 / 조회수 기준 [권역, 채널, 제목, 조회수]
-      clipRows:[['강남권','인스타','대치 자습실 리뉴얼','840','#'],
-                ['강남권','블로그','정시 설명회 후기','512','#'],
-                ['분당권','인스타','분당 합격 현수막','1,030','#'],
-                ['인천권','블로그','신규 개원 이벤트','388','#']],
+      clipRows:[['A권역','인스타','자습실 리뉴얼 후기','840','#'],
+                ['A권역','블로그','정시 설명회 후기','512','#'],
+                ['B권역','인스타','합격 현수막 게시','1,030','#'],
+                ['C권역','블로그','신규 개원 이벤트','388','#']],
       // 우수사례 (링크)
-      caseRows:[['분당정자점','SNS 합격 후기 캠페인 — 문의 +38%','#'],
-                ['평촌점','지역 맘카페 제휴 설명회','#'],
-                ['일산점','자습실 브이로그 시리즈','#']],
+      caseRows:[['A 가맹점','SNS 합격 후기 캠페인 — 문의 +38%','#'],
+                ['B 가맹점','지역 맘카페 제휴 설명회','#'],
+                ['C 가맹점','자습실 브이로그 시리즈','#']],
       acts:[['주간 게시 페이스 점검','블로그/인스타 주간 게시 수 권역 평균 5건 대비 보완','마케팅 · 주간'],
             ['상위 콘텐츠 재활용','조회수 상위(합격후기 1,120) 콘텐츠 포맷 재생산','데스크 · 이번 주'],
             ['경쟁사 대시보드 점검','권역 경쟁사 신규 이슈 모니터 → 비교우위 메시지','마케팅 · 상시']] }
@@ -705,8 +705,13 @@
   // 커뮤니티 게시글 대응 (대표이사 의견 — 신규)
   const communityTable=(rows)=>`<table class="ctable"><thead><tr><th>출처</th><th>게시글</th><th>성격</th><th>대응 상태</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="risk ${r[4]}">${r[2]}</td><td>${r[3]}</td></tr>`).join('')}</tbody></table>`;
   // 등원 예정생 예정일 (대표이사 의견 — 신규, 미정 표시)
-  // 퇴원 사유 분석 — 가로 막대 (상담일지 실데이터)
+  // 퇴원 사유 분석 — 가로 막대 (실=상담일지 실데이터 / 데모=가상 분포)
   const reasonBars=(rows)=>{const mx=Math.max(...rows.map(r=>r[2]));return `<div class="rbars">${rows.map(r=>`<div class="rbar"><span class="rb-l">${r[0]}</span><span class="rb-track"><span class="rb-fill" style="width:${Math.round(r[2]/mx*100)}%"></span></span><span class="rb-v">${r[1].toLocaleString()}건 · ${r[2]}%</span></div>`).join('')}</div>`;};
+  const DEMO_REASONS=[['등원 전 환불',58,42.0],['타학원 이동',24,17.4],['독학 전환',18,13.0],['통학거리',12,8.7],['건강 악화',8,5.8],['재수 포기',6,4.3],['학원 부적응',4,2.9],['기타',8,5.8]];
+  const reasonPanel=()=>{const m=window.USE_MOCK;const rows=m?DEMO_REASONS:D.operation.reasonRows;
+    const tag=m?'예시 데이터':'상담일지 실데이터';const sub=m?'예시 · 데모 데이터':'상담일지 · 누적 1,297건';
+    const maj=m?'입시환경 78% · 개인환경 14% · 기타 8%':'입시환경 80% · 개인환경 12% · 기타 8%';
+    return `<div class="panel"><div class="panel-hd"><div class="panel-title">퇴원 사유 분석</div><span class="panel-more">${sub}<span class="data-tag">${tag}</span></span></div>${reasonBars(rows)}<div class="basis-note" style="margin-top:15px">대분류 — ${maj}　|　등원 전 환불·타학원·독학이 다수 → <b style="color:var(--ink)">환불생 재모집 · 타학원/독학생 재컨택 우선</b></div></div>`;};
   const upcomingTable=(rows)=>`<table class="ctable"><thead><tr><th>예정생</th><th>등원 예정일</th><th>상태</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="risk ${r[1]==='미정'?'mid':'low'}">${r[1]==='미정'?'확인 필요':'확정'}</td></tr>`).join('')}</tbody></table>`;
   // 추이 차트 하단 올해·전년·차이 값행 (대표이사 의견 — 차트+표 병기)
   function setYoy(id,th,pv,unit){const el=document.getElementById(id);if(!el)return;const a=th.reduce((x,y)=>x+y,0),b=pv.reduce((x,y)=>x+y,0);const d=b?Math.round((a-b)/b*100):0,up=d>=0;el.innerHTML=`올해 <b>${a.toLocaleString()}${unit}</b> · 전년 ${b.toLocaleString()}${unit} · <span style="color:var(--${up?'green':'red'})">${up?'▲ +':'▼ '}${Math.abs(d)}%</span>`;}
@@ -747,7 +752,7 @@
         <div class="panel"><div class="panel-hd"><div class="panel-title">고위험 학생 명단</div><span class="panel-more">즉시 케어</span></div>${tbl(['학생','위험 신호','우선도'],D.operation.riskRows)}</div>
         <div class="panel"><div class="panel-hd"><div class="panel-title">상담 대기 명단</div><span class="panel-more">→ 상담기록 입력</span></div>${tbl(['학생','마지막 상담','경과','상태'],D.operation.waitRows)}</div>
       </div>
-      <div class="panel"><div class="panel-hd"><div class="panel-title">퇴원 사유 분석</div><span class="panel-more">상담일지 · 누적 1,297건<span class="data-tag">상담일지 실데이터</span></span></div>${reasonBars(D.operation.reasonRows)}<div class="basis-note" style="margin-top:15px">대분류 — 입시환경 80% · 개인환경 12% · 기타 8%　|　등원 전 환불·타학원·독학이 76% → <b style="color:var(--ink)">환불생 재모집 · 타학원/독학생 재컨택 우선</b></div></div>
+      ${reasonPanel()}
       <div class="panel"><div class="panel-hd"><div class="panel-title">재입학 관리</div><span class="panel-more">퇴원생 재컨택 실행${soonMore}</span></div>${tbl(['퇴원생','퇴원','컨택 상태','재입학 가능성','액션'],D.operation.reenrollRows)}</div>`,
     sales:()=>`
       <div class="stat-row">${stat('미수금',RV.unpaid,'만원','⚑ '+RV.unpaidCnt+'명','dn')}${stat('당월 매출',RV.revenue,'만원','▲ +12%','up')}${stat('미납 대상자',RV.unpaidCnt,'명','납부 안내 필요','dn')}${statS('콘텐츠 판매','540','건')}</div>
@@ -879,6 +884,13 @@
     try{
       const profile = await requireAuth();      // 실모드 비로그인 → login.html 이동 후 null
       if(profile){
+        // 헤더 칩·사용자 정보를 프로필에서 (데모=데모점/데모 원장, 실=실 지점)
+        const roleLbl = profile.role==='exec' ? '임원' : '원장';
+        const cx=document.getElementById('ctx'); if(cx) cx.textContent = `${profile.branch_name} · ${roleLbl} · 2026.06.17`;
+        const un=document.querySelector('.uname'); if(un) un.textContent = profile.name;
+        const ur=document.querySelector('.urole'); if(ur) ur.textContent = `${profile.branch_name} · ${roleLbl}`;
+        const av=document.querySelector('.user-row .avatar'); if(av) av.textContent = (profile.name||'데')[0];
+        if(window.USE_MOCK) document.querySelectorAll('a[href="upload.html"]').forEach(a=>a.setAttribute('href','upload.html'+location.search));
         let bid = profile.branch_id;
         if(!bid && profile.role==='exec'){ const list = await DATA.branchList(); bid = (list[0]||{}).id; }
         const real = await DATA.branch(bid);

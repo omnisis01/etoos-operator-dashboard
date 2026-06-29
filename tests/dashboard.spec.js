@@ -7,7 +7,7 @@ const { test, expect } = require('@playwright/test');
 test.describe('로그인', () => {
   test('MOCK 안내 표시 & 로그인 시 대시보드로 이동', async ({ page }) => {
     await page.goto('/app/login.html?mock=1');
-    await expect(page.locator('#hint')).toContainText('MOCK');
+    await expect(page.locator('#hint')).toContainText('데모');
     await page.fill('#email', 'director@etoos.com');
     await page.fill('#pw', 'whatever');
     await page.click('button[type="submit"]');
