@@ -110,6 +110,8 @@
   .pcard.local{--ac:var(--purple);--ac-soft:rgba(166,107,255,.10);grid-area:local}
   .pcard.imm{--ac:var(--red);--ac-soft:rgba(248,113,113,.10);grid-area:imm}
   .imm-body .risk-item{border:1px solid var(--border-soft);border-radius:11px;padding:12px 14px;background:var(--ac-soft)}
+  .pcard.imm .pcard-hd{justify-content:center;position:relative}
+  .pcard.imm .pc-cnt{position:absolute;right:0;top:50%;transform:translateY(-50%);margin-left:0}
   .pcard{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 22px;box-shadow:var(--shadow);position:relative;overflow:hidden}
   .pcard.todo{--ac:var(--purple);--ac-soft:rgba(166,107,255,.10)}
   .pcard.risk{--ac:var(--red);--ac-soft:rgba(248,113,113,.10);cursor:pointer;transition:.18s}
@@ -169,10 +171,10 @@
   .cross-v{--ang:180deg;left:50%;top:0;bottom:0;width:2px;transform:translateX(-50%)}
   .cross-h{--ang:90deg;top:50%;left:0;right:0;height:2px;transform:translateY(-50%)}
   .hub-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;
-    width:140px;height:140px;border-radius:50%;background:var(--grad-btn);border:4px solid var(--body-bg);
+    width:116px;height:116px;border-radius:50%;background:var(--grad-btn);border:4px solid var(--body-bg);
     display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(124,58,237,.5)}
-  .hub-center .hc-t{font-size:30px;font-weight:900;color:#FFFFFF;letter-spacing:.5px;line-height:1}
-  .hub-center .hc-s{font-size:15px;font-weight:700;color:rgba(255,255,255,.88);margin-top:6px}
+  .hub-center .hc-t{font-size:25px;font-weight:900;color:#FFFFFF;letter-spacing:.5px;line-height:1}
+  .hub-center .hc-s{font-size:13px;font-weight:700;color:rgba(255,255,255,.88);margin-top:4px}
   .qd{position:relative;z-index:2;background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);
     padding:24px 26px;box-shadow:var(--shadow);cursor:pointer;transition:.18s;min-height:240px;overflow:hidden}
   .qd:hover{transform:translateY(-3px);border-color:var(--accent)}
@@ -488,10 +490,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=hq27"></script>
-  <script src="lib/supabase.js?v=hq27"></script>
-  <script src="lib/auth.js?v=hq27"></script>
-  <script src="lib/data.js?v=hq27"></script>
+  <script src="config.js?v=hq28"></script>
+  <script src="lib/supabase.js?v=hq28"></script>
+  <script src="lib/auth.js?v=hq28"></script>
+  <script src="lib/data.js?v=hq28"></script>
   <script>
   // MONTHS·computeRisk·DATA 는 lib/data.js 전역 사용 (중복 선언 금지)
   // ── 아이콘 (SVG, 이모지 X) ──
