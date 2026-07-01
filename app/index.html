@@ -488,10 +488,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=hq25"></script>
-  <script src="lib/supabase.js?v=hq25"></script>
-  <script src="lib/auth.js?v=hq25"></script>
-  <script src="lib/data.js?v=hq25"></script>
+  <script src="config.js?v=hq26"></script>
+  <script src="lib/supabase.js?v=hq26"></script>
+  <script src="lib/auth.js?v=hq26"></script>
+  <script src="lib/data.js?v=hq26"></script>
   <script>
   // MONTHS·computeRisk·DATA 는 lib/data.js 전역 사용 (중복 선언 금지)
   // ── 아이콘 (SVG, 이모지 X) ──
@@ -788,26 +788,30 @@
     권역:[['등원 전 환불',26,40.0],['타학원 이동',12,18.5],['독학 전환',9,13.8],['통학거리',6,9.2],['건강 악화',4,6.2],['재수 포기',3,4.6],['학원 부적응',2,3.1],['기타',3,4.6]],
     지점:[['등원 전 환불',11,37.9],['타학원 이동',6,20.7],['독학 전환',4,13.8],['통학거리',3,10.3],['건강 악화',2,6.9],['재수 포기',1,3.4],['학원 부적응',1,3.4],['기타',1,3.4]] };
   const REASON_TOT={real:{전체:'1,297',권역:'430',지점:'139'},mock:{전체:'138',권역:'65',지점:'29'}};
+  // 권역 = 시·도 광역 단위 (연동 시 지점의 region 필드에서 결정). MY_REGION = 우리 지점 소속 권역
+  const REGIONS=['서울','경기','충청','강원','전라','경상','제주'];
+  const MY_REGION='서울';
+  const rlbl=(s)=>s==='권역'?MY_REGION+' 권역':s;   // 탭 라벨은 '권역', 본문/캡션은 실제 권역명 노출
   const scopeTabs=(w)=>`<div class="scope-tabs">${['전체','권역','지점'].map((s,i)=>`<button class="scope-tab${i===0?' on':''}" onclick="setScope('${w}','${s}',this)">${s}</button>`).join('')}</div>`;
   function renderReason(scope){const el=document.getElementById('reasonBody');if(!el)return;const m=window.USE_MOCK;
     const rows=(m?DEMO_REASON_SCOPE:D.operation.reasonScope)[scope];
     const tot=(m?REASON_TOT.mock:REASON_TOT.real)[scope];
-    const sc={전체:'전사 누적',권역:'우리 권역',지점:'우리 지점'}[scope];
+    const sc={전체:'전사 누적',권역:MY_REGION+' 권역',지점:'우리 지점'}[scope];
     el.innerHTML=`<div class="reason-sub">${m?'예시 · 데모':'상담일지'} · ${sc} ${tot}건<span class="data-tag">${m?'예시 데이터':'상담일지 실데이터'}</span></div>${reasonBars(rows)}<div class="basis-note" style="margin-top:15px">등원 전 환불·타학원·독학이 다수 → <b style="color:var(--ink)">환불생 재모집 · 타학원/독학생 재컨택 우선</b></div>`;}
   const reasonPanel=()=>`<div class="panel"><div class="panel-hd"><div class="panel-title">퇴원 사유 분석</div>${scopeTabs('reason')}</div><div id="reasonBody"></div></div>`;
   const diffTxt=(d,lowerBetter,unit)=>{const good=lowerBetter?d<0:d>0;const sign=d>0?'+':(d<0?'−':'');const col=d===0?'var(--text2)':(good?'var(--green)':'var(--red)');return `<b style="color:${col}">${sign}${Math.abs(Math.round(d*10)/10)}${unit}</b>`;};
   function renderChurn(scope){const S=D.operation.churnScope[scope];
-    if(scope==='지점'){benchBar3('#cChurnRank',['전체 평균','권역 평균','우리 지점'],[S.전체,S.권역,S.ourVal],2,'#F87171',v=>v+'%');
-      const el=document.getElementById('churnCap');if(el)el.innerHTML=`우리 지점 <b>${S.ourVal}%</b> · 전체 평균 대비 ${diffTxt(S.ourVal-S.전체,true,'%p')} · 권역 평균 대비 ${diffTxt(S.ourVal-S.권역,true,'%p')}`;return;}
+    if(scope==='지점'){benchBar3('#cChurnRank',['전체 평균',MY_REGION+' 권역','우리 지점'],[S.전체,S.권역,S.ourVal],2,'#F87171',v=>v+'%');
+      const el=document.getElementById('churnCap');if(el)el.innerHTML=`우리 지점 <b>${S.ourVal}%</b> · 전체 평균 대비 ${diffTxt(S.ourVal-S.전체,true,'%p')} · ${MY_REGION} 권역 평균 대비 ${diffTxt(S.ourVal-S.권역,true,'%p')}`;return;}
     const s=benchStats(S.vals,S.ourVal,true);
-    benchBar('#cChurnRank',s.sorted,s.ourIdx,s.avg,'#F87171',scope+' 평균',v=>v+'%');
-    benchCap('churnCap','#F87171',s,S.ourVal+'%','낮을수록 좋음',scope,s.avg+'%');}
+    benchBar('#cChurnRank',s.sorted,s.ourIdx,s.avg,'#F87171',rlbl(scope)+' 평균',v=>v+'%');
+    benchCap('churnCap','#F87171',s,S.ourVal+'%','낮을수록 좋음',rlbl(scope),s.avg+'%');}
   function renderTenure(scope){const S=D.operation.tenureScope[scope];
-    if(scope==='지점'){benchBar3('#cTenureRank',['전체 평균','권역 평균','우리 지점'],[S.전체,S.권역,S.ourVal],2,'#34D399',v=>v+'일');
-      const el=document.getElementById('tenureCap');if(el)el.innerHTML=`우리 지점 <b>${S.ourVal}일</b> · 전체 평균 대비 ${diffTxt(S.ourVal-S.전체,false,'일')} · 권역 평균 대비 ${diffTxt(S.ourVal-S.권역,false,'일')}`;return;}
+    if(scope==='지점'){benchBar3('#cTenureRank',['전체 평균',MY_REGION+' 권역','우리 지점'],[S.전체,S.권역,S.ourVal],2,'#34D399',v=>v+'일');
+      const el=document.getElementById('tenureCap');if(el)el.innerHTML=`우리 지점 <b>${S.ourVal}일</b> · 전체 평균 대비 ${diffTxt(S.ourVal-S.전체,false,'일')} · ${MY_REGION} 권역 평균 대비 ${diffTxt(S.ourVal-S.권역,false,'일')}`;return;}
     const s=benchStats(S.vals,S.ourVal,false);
-    benchBar('#cTenureRank',s.sorted,s.ourIdx,s.avg,'#34D399',scope+' 평균',v=>v+'일');
-    benchCap('tenureCap','#34D399',s,S.ourVal+'일','길수록 좋음',scope,s.avg+'일');}
+    benchBar('#cTenureRank',s.sorted,s.ourIdx,s.avg,'#34D399',rlbl(scope)+' 평균',v=>v+'일');
+    benchCap('tenureCap','#34D399',s,S.ourVal+'일','길수록 좋음',rlbl(scope),s.avg+'일');}
   function setScope(w,scope,btn){[...btn.parentElement.children].forEach(b=>b.classList.toggle('on',b===btn));if(w==='reason')renderReason(scope);else if(w==='churn')renderChurn(scope);else if(w==='tenure')renderTenure(scope);}
   const upcomingTable=(rows)=>`<table class="ctable"><thead><tr><th>예정생</th><th>등원 예정일</th><th>상태</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="risk ${r[1]==='미정'?'mid':'low'}">${r[1]==='미정'?'확인 필요':'확정'}</td></tr>`).join('')}</tbody></table>`;
   // 추이 차트 하단 올해·전년·차이 값행 (대표이사 의견 — 차트+표 병기)
