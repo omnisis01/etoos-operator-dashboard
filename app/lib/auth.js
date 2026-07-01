@@ -1,11 +1,11 @@
 // 인증 · 권한 (Supabase Auth)
-// MOCK 모드 = 데모 시연용. 실 지점/원장 정보 없이 '데모점 원장'으로 동작.
+// MOCK 모드 = 데모 시연용. 실 지점/원장 정보 없이 'TEST점 원장'으로 동작.
 
 const MOCK_PROFILE = {
   name: "데모 원장",
   role: "director",                 // 'director'(원장) | 'exec'(임원)
   branch_id: "11111111-0000-0000-0000-000000000003",
-  branch_name: "데모점",
+  branch_name: "TEST점",
 };
 
 async function currentProfile() {

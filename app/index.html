@@ -360,7 +360,7 @@
     </nav>
     <div class="sb-foot">
       <button class="dl-btn"><span class="dl-ic" data-icon="report"></span><span class="lbl">주간 리포트</span></button>
-      <div class="user-row"><div class="avatar">데</div><div class="lbl"><div class="uname">데모 원장</div><div class="urole">데모점 · 원장</div></div></div>
+      <div class="user-row"><div class="avatar">데</div><div class="lbl"><div class="uname">데모 원장</div><div class="urole">TEST점 · 원장</div></div></div>
       <button class="logout-btn" onclick="signOut()" title="로그아웃" aria-label="로그아웃">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         <span class="lbl">로그아웃</span>
@@ -374,7 +374,7 @@
     <div class="top">
       <div class="brand">247 운영 OS 대시보드<span class="sub">가맹 · 직영 통합 운영</span></div>
       <div class="top-r">
-        <span class="pill" id="ctx">데모점 · 원장 · 2026.06.17</span>
+        <span class="pill" id="ctx">TEST점 · 원장 · 2026.06.17</span>
         <button class="theme-btn" onclick="toggleTheme()"><span class="ic"></span><span id="themeLbl">라이트 모드</span></button>
       </div>
     </div>
@@ -488,10 +488,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=hq26"></script>
-  <script src="lib/supabase.js?v=hq26"></script>
-  <script src="lib/auth.js?v=hq26"></script>
-  <script src="lib/data.js?v=hq26"></script>
+  <script src="config.js?v=hq27"></script>
+  <script src="lib/supabase.js?v=hq27"></script>
+  <script src="lib/auth.js?v=hq27"></script>
+  <script src="lib/data.js?v=hq27"></script>
   <script>
   // MONTHS·computeRisk·DATA 는 lib/data.js 전역 사용 (중복 선언 금지)
   // ── 아이콘 (SVG, 이모지 X) ──
@@ -703,9 +703,9 @@
                    ['인스타 게시물 조회수','1,420','1,180','up'],
                    ['주간 게시 수','블로그 3 · 인스타 4','권역 평균 5','dn']],
       // 내 지점 마케팅 활동 — 블로그/인스타 게시 (링크) [채널, 제목, 게시일, 조회수]
-      activityRows:[['공지','오늘의 데모점 — 6월 모의고사 일정','06/17','—','#'],
+      activityRows:[['공지','오늘의 TEST점 — 6월 모의고사 일정','06/17','—','#'],
                     ['블로그','6월 모의고사 분석 후기','06/16','312','#'],
-                    ['공지','데모점 공지 — 여름특강 신청 안내','06/15','—','#'],
+                    ['공지','TEST점 공지 — 여름특강 신청 안내','06/15','—','#'],
                     ['인스타','자습실 환경 리뉴얼','06/15','840','#'],
                     ['블로그','정시 설명회 안내','06/13','205','#'],
                     ['인스타','재원생 합격 후기','06/11','1,120','#']],
@@ -993,7 +993,7 @@
     try{
       const profile = await requireAuth();      // 실모드 비로그인 → login.html 이동 후 null
       if(profile){
-        // 헤더 칩·사용자 정보를 프로필에서 (데모=데모점/데모 원장, 실=실 지점)
+        // 헤더 칩·사용자 정보를 프로필에서 (데모=TEST점/데모 원장, 실=실 지점)
         const roleLbl = profile.role==='exec' ? '임원' : '원장';
         const cx=document.getElementById('ctx'); if(cx) cx.textContent = `${profile.branch_name} · ${roleLbl} · 2026.06.17`;
         const un=document.querySelector('.uname'); if(un) un.textContent = profile.name;
