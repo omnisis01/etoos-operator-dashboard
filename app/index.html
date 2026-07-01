@@ -521,11 +521,28 @@
 
   <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=hq29"></script>
-  <script src="lib/supabase.js?v=hq29"></script>
-  <script src="lib/auth.js?v=hq29"></script>
-  <script src="lib/data.js?v=hq29"></script>
+  <script src="config.js?v=hq30"></script>
+  <script src="lib/supabase.js?v=hq30"></script>
+  <script src="lib/auth.js?v=hq30"></script>
+  <script src="lib/data.js?v=hq30"></script>
   <script>
+  // 캐시 괴리 방지 — SW 없이 새 배포(?v=) 감지 시 자동 새로고침. 기존 ?v= 를 단일 버전 소스로 재사용.
+  (function(){
+    const verOf = s => ((s||'').match(/[?&]v=(hq\d+)/)||[])[1] || '';
+    const APP_VERSION = verOf(document.querySelector('script[src*="config.js"]')?.getAttribute('src'));
+    let busy=false,last=0;
+    async function check(){
+      if(busy||!APP_VERSION) return;
+      const now=Date.now(); if(now-last<20000) return; last=now;
+      try{
+        const txt = await (await fetch('index.html',{cache:'no-store'})).text();
+        const live = verOf((txt.match(/config\.js\?[^"'>]*/)||[])[0]);
+        if(live && live!==APP_VERSION){ busy=true; location.reload(); }
+      }catch(e){/* 오프라인 등 무시 */}
+    }
+    document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') check(); });
+    setTimeout(check,2500);
+  })();
   // MONTHS·computeRisk·DATA 는 lib/data.js 전역 사용 (중복 선언 금지)
   // ── 아이콘 (SVG, 이모지 X) ──
   const ICONS={
