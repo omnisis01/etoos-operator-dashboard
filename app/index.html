@@ -134,6 +134,20 @@
   .tri-act{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:3px}
   .tri-why{font-size:12.5px;color:var(--text2);line-height:1.5}
   .tri-foot{font-size:11.5px;color:var(--text3);margin-top:2px}
+  .tri-draft-btn{margin-left:auto;border:1px solid var(--border);background:none;color:var(--text2);font-family:inherit;font-size:11.5px;font-weight:800;padding:3px 10px;border-radius:7px;cursor:pointer;flex-shrink:0}
+  .tri-draft-btn:hover{color:var(--purple);border-color:var(--purple)}
+  .tri-draft:empty{display:none}
+  .tri-draft{margin-top:10px;border:1px dashed var(--border);border-radius:10px;padding:11px 12px;background:var(--panel)}
+  .td-hd{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:800;color:var(--ink);margin-bottom:8px}
+  .td-skill{font-size:11px;font-weight:800;color:var(--green);background:rgba(52,211,153,.14);padding:2px 8px;border-radius:6px}
+  .td-note{margin-left:auto;font-size:11.5px;font-weight:600;color:var(--text3)}
+  .td-text{width:100%;min-height:84px;resize:vertical;border:1px solid var(--border);border-radius:9px;background:var(--panel-2);color:var(--ink);font-family:inherit;font-size:13.5px;line-height:1.55;padding:10px 12px;outline:none;box-sizing:border-box}
+  .td-text:focus{border-color:var(--purple)}
+  .td-btns{display:flex;gap:8px;margin-top:9px}
+  .td-ok{border:none;background:var(--purple);color:#fff;font-family:inherit;font-size:12.5px;font-weight:800;padding:7px 14px;border-radius:9px;cursor:pointer}
+  .td-ok:hover{filter:brightness(1.1)}
+  .td-cancel{border:1px solid var(--border);background:none;color:var(--text2);font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 12px;border-radius:9px;cursor:pointer}
+  .td-sent{font-size:13px;font-weight:700;color:var(--green)}
   .pcard{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 22px;box-shadow:var(--shadow);position:relative;overflow:hidden}
   .pcard.todo{--ac:var(--purple);--ac-soft:rgba(166,107,255,.10)}
   .pcard.risk{--ac:var(--red);--ac-soft:rgba(248,113,113,.10);cursor:pointer;transition:.18s}
@@ -544,10 +558,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=hq32"></script>
-  <script src="lib/supabase.js?v=hq32"></script>
-  <script src="lib/auth.js?v=hq32"></script>
-  <script src="lib/data.js?v=hq32"></script>
+  <script src="config.js?v=hq33"></script>
+  <script src="lib/supabase.js?v=hq33"></script>
+  <script src="lib/auth.js?v=hq33"></script>
+  <script src="lib/data.js?v=hq33"></script>
   <script>
   // 캐시 괴리 방지 — SW 없이 새 배포(?v=) 감지 시 자동 새로고침. 기존 ?v= 를 단일 버전 소스로 재사용.
   (function(){
@@ -872,9 +886,49 @@
     finally{ if(btn) btn.disabled=false; }
   }
   function closeTriage(){ const box=document.getElementById('triageBox'); if(box){box.style.display='none';box.innerHTML='';} }
+  let TRIAGE_LAST=null;   // 초안·승인 루프가 참조하는 마지막 트리아지 결과
   function triageView(res){
-    const cards=res.items.map(it=>{const cls=it.urgency==='긴급'?'u':(it.urgency==='주의'?'w':'');return `<div class="tri-card ${cls}"><div class="tri-rank">${it.priority}</div><div class="tri-main"><div class="tri-h"><b>${it.label}</b><span class="tri-badge ${cls}">${it.urgency}</span></div><div class="tri-act">→ ${it.action}</div><div class="tri-why">${it.reason}</div></div></div>`;}).join('');
+    TRIAGE_LAST=res;
+    const cards=res.items.map((it,i)=>{const cls=it.urgency==='긴급'?'u':(it.urgency==='주의'?'w':'');return `<div class="tri-card ${cls}"><div class="tri-rank">${it.priority}</div><div class="tri-main"><div class="tri-h"><b>${it.label}</b><span class="tri-badge ${cls}">${it.urgency}</span><button class="tri-draft-btn" onclick="openDraft(${i})">✉ 초안</button></div><div class="tri-act">→ ${it.action}</div><div class="tri-why">${it.reason}</div><div class="tri-draft" id="triDraft${i}"></div></div></div>`;}).join('');
     return `<div class="tri-hd"><span class="tri-tag">AI 제안 · 예시</span><span class="tri-sum">${res.summary}</span><button class="tri-x" onclick="closeTriage()">닫기</button></div>${cards}<div class="tri-foot">※ 데모용 예시입니다 — 실제 발송·변경은 하지 않습니다. 정식 연동 시 실데이터 기반 제안으로 대체됩니다.</div>`;
+  }
+
+  // ── 3단계: 초안 + 승인 루프 (발송은 승인 클릭 후에만, 그것도 목업) ──
+  // ── 4단계: 스킬 축적 — 승인된 문구를 저장, 다음 초안에 재사용 (헤르메스 패턴) ──
+  const skillKey=l=>(l||'').replace(/\s*\(.*\)\s*$/,'').trim();
+  const loadSkills=()=>{try{return JSON.parse(localStorage.getItem('triSkills')||'{}')}catch(e){return{}}};
+  const saveSkills=s=>{try{localStorage.setItem('triSkills',JSON.stringify(s))}catch(e){}};
+  // 초안 이음새 — 지금은 템플릿 목업, 정식 연동 시 Edge Function 호출로 교체
+  async function draftFor(item){
+    const skills=loadSkills(); const k=skillKey(item.label);
+    if(skills[k]) return {text:skills[k], fromSkill:true};
+    const T={
+      '미수금':'[이투스247 {지점}] 안녕하세요, {학생명} 학부모님. {월}월 수강료가 미납되어 안내드립니다. 편하신 방법으로 납부 부탁드리며, 문의사항은 언제든 연락 주세요. 감사합니다.',
+      '상담 대기':'[이투스247 {지점}] 안녕하세요, {학생명} 학부모님. 정기 상담 일정이 도래하여 연락드립니다. 이번 주 중 편하신 시간에 상담(방문/전화) 예약을 도와드리겠습니다.',
+      '고위험 학생':'[이투스247 {지점}] 안녕하세요, {학생명} 학부모님. 최근 학습 리듬 점검이 필요해 보여 연락드립니다. 담임 상담을 통해 학습 계획을 함께 조정하고자 하니 통화 가능하신 시간 알려주세요.',
+    };
+    return {text:T[k]||`[이투스247 {지점}] ${k} 관련 안내드립니다. 자세한 내용은 지점으로 문의 부탁드립니다.`, fromSkill:false};
+  }
+  async function openDraft(i){
+    const it=TRIAGE_LAST?.items?.[i]; const el=document.getElementById('triDraft'+i);
+    if(!it||!el) return;
+    if(el.dataset.open==='1'){ el.dataset.open=''; el.innerHTML=''; return; }
+    el.dataset.open='1';
+    const d=await draftFor(it);
+    el.innerHTML=`<div class="td-hd">문자 초안${d.fromSkill?'<span class="td-skill">저장된 문구 재사용</span>':''}<span class="td-note">승인 전에는 발송되지 않습니다</span></div>
+      <textarea class="td-text" id="tdText${i}">${d.text}</textarea>
+      <div class="td-btns"><button class="td-ok" onclick="approveDraft(${i})">승인하고 발송 (목업)</button><button class="td-cancel" onclick="openDraft(${i})">취소</button></div>`;
+  }
+  function approveDraft(i){
+    const it=TRIAGE_LAST?.items?.[i]; const el=document.getElementById('triDraft'+i);
+    const ta=document.getElementById('tdText'+i);
+    if(!it||!el||!ta) return;
+    const text=ta.value.trim(); if(!text) return;
+    const skills=loadSkills(); const k=skillKey(it.label);
+    const isNew=skills[k]!==text; skills[k]=text; saveSkills(skills);   // 채택 문구 = 스킬로 축적
+    const t=new Date(); const hh=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+    el.innerHTML=`<div class="td-sent">✓ 발송됨 (목업) · ${hh}${isNew?' · 이 문구를 스킬로 저장했습니다 — 다음 초안부터 재사용됩니다':''}</div>`;
+    el.dataset.open='';
   }
 
   // ── 세부 템플릿 ──
