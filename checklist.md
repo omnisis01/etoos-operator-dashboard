@@ -14,10 +14,11 @@
 - [ ] **(원장님)** supabase CLI 설치 → `supabase link` → 시크릿 등록 → `functions deploy triage`
 - [ ] verify: 더미 입력으로 구조화 출력(JSON) 반환 확인
 
-## 2단계 — 읽기 전용 트리아지 (부작용 0)
-- [ ] index.html 세부 화면에 "우선순위 정리" 버튼
-- [ ] `sb.functions.invoke('triage', {items})` 호출 → 제안 카드 렌더
-- [ ] verify: 화면에 우선순위·다음액션 카드 표시, DB/발송 0
+## 2단계 — 읽기 전용 트리아지 (목업으로 완료 ✅)
+- [x] 즉시 확인 카드에 "✦ 우선순위 정리" 버튼
+- [x] `triage()` 이음새 + 목업 어댑터(triageMock) → 순위 카드 렌더 (모델 호출 0)
+- [x] verify: 프리뷰에서 3항목 우선순위·액션·근거 카드 표시, DB/발송 0, 콘솔 오류 0
+- [ ] (출시 시) triage() 목업 → 실 어댑터(sb.functions.invoke) 한 줄 교체 + Edge Function 배포
 
 ## 3단계 — 초안 + 승인 루프
 - [ ] 문자/알림 초안 생성 (목업 발송)
