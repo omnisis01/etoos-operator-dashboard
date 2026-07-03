@@ -435,7 +435,7 @@
 
     <!-- ════ HUB (사분면) ════ -->
     <section id="hub">
-      <div class="band" id="band">
+      <div class="band collapsed" id="band"><!-- 기본 접힘 — 토글로 펼침 -->
         <div class="pcard local">
           <div class="pcard-hd"><span class="pc-ic" data-icon="check"></span><div class="pc-tt">지점 할일<span class="m">즉시 확인 · 오늘의 할일</span></div><span class="pc-cnt" id="localCnt"></span><button class="tri-btn" id="triageBtn" onclick="event.stopPropagation();runTriage()">✦ 우선순위 정리</button><button class="pc-open" onclick="event.stopPropagation();openTodo()">체크리스트 →</button></div>
           <div class="pc-body">
@@ -555,10 +555,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=hq34"></script>
-  <script src="lib/supabase.js?v=hq34"></script>
-  <script src="lib/auth.js?v=hq34"></script>
-  <script src="lib/data.js?v=hq34"></script>
+  <script src="config.js?v=hq35"></script>
+  <script src="lib/supabase.js?v=hq35"></script>
+  <script src="lib/auth.js?v=hq35"></script>
+  <script src="lib/data.js?v=hq35"></script>
   <script>
   // 캐시 괴리 방지 — SW 없이 새 배포(?v=) 감지 시 자동 새로고침. 기존 ?v= 를 단일 버전 소스로 재사용.
   (function(){
