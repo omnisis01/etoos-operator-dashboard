@@ -150,13 +150,13 @@
   .pcard.risk{--ac:var(--red);--ac-soft:rgba(248,113,113,.10);cursor:pointer;transition:.18s}
   .pcard.risk:hover{transform:translateY(-2px);border-color:var(--red)}
   .pcard.hq{--ac:var(--cyan);--ac-soft:rgba(34,211,238,.10);grid-area:hq}
-  .hq-item{display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:start;padding:9px 0;border-top:1px solid var(--border)}
-  .hq-item:first-child{border-top:none}
-  .hq-cat{font-size:11.5px;font-weight:800;color:var(--cyan);background:rgba(34,211,238,.14);border-radius:6px;padding:3px 0;text-align:center;height:fit-content}
-  .hq-cat.mkt{color:var(--green);background:rgba(52,211,153,.14)}
-  .hq-cat.evt{color:var(--gold);background:rgba(251,191,36,.14)}
+  .hq-grp{font-size:11.5px;font-weight:800;color:var(--cyan);background:rgba(34,211,238,.10);border-left:3px solid var(--cyan);border-radius:0 7px 7px 0;padding:4px 10px;margin:8px 0 2px}
+  .hq-grp:first-child{margin-top:0}
+  .hq-item{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;padding:8px 2px;border-top:1px solid var(--border-soft)}
+  .hq-grp+.hq-item{border-top:none}
   .hq-body{font-size:13.5px;color:var(--ink);line-height:1.5}
   .hq-body .s{font-size:12.5px;color:var(--text2);display:block;margin-top:2px}
+  .hq-note{font-size:11.5px;color:var(--gold);display:block;margin-top:3px}
   .hq-act{border:none;background:var(--grad-btn);color:#fff;font-family:inherit;font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:8px;cursor:pointer;white-space:nowrap;align-self:center}
   .hq-act.ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}
   .pcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--ac)}
@@ -177,7 +177,7 @@
   .band-toggle:hover{transform:translateX(-50%) scale(1.1)}
   .band-toggle .ic-svg{width:22px;height:22px;transition:transform .24s}
   .band.collapsed .band-toggle .ic-svg{transform:rotate(180deg)}
-  .pc-body{display:flex;flex-direction:column;gap:2px;overflow:hidden;transition:max-height .28s ease,opacity .2s,margin .2s;max-height:520px}
+  .pc-body{display:flex;flex-direction:column;gap:2px;overflow:hidden;transition:max-height .28s ease,opacity .2s,margin .2s;max-height:900px}
   .band.collapsed .pc-body{max-height:0;opacity:0;margin:0}
   .band.collapsed .pcard-hd{margin-bottom:0}
   /* 입시 학습 대시보드 플로팅 독 (본사·원장용, 외부 대시보드 링크) */
@@ -555,10 +555,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=hq35"></script>
-  <script src="lib/supabase.js?v=hq35"></script>
-  <script src="lib/auth.js?v=hq35"></script>
-  <script src="lib/data.js?v=hq35"></script>
+  <script src="config.js?v=hq36"></script>
+  <script src="lib/supabase.js?v=hq36"></script>
+  <script src="lib/auth.js?v=hq36"></script>
+  <script src="lib/data.js?v=hq36"></script>
   <script>
   // 캐시 괴리 방지 — SW 없이 새 배포(?v=) 감지 시 자동 새로고침. 기존 ?v= 를 단일 버전 소스로 재사용.
   (function(){
@@ -840,13 +840,29 @@
     {k:'operation',lv:'u',label:'고위험 학생',v:'11명',sub:'30일 미상담 · 콘텐츠/출석 급감'},
     {k:'sales',lv:'w',label:'미수금',v:'412만',sub:'해당 학생 7명 · 납부 안내 필요'},
   ];
-  // 본사 알림장 (목업) — [분류, 제목, 상세, 액션 라벨, 액션 스타일]
-  const HQ_NOTES=[
-    {cat:'지원',cls:'',title:'교재 지원 — 이지영·김민정',detail:'모집 상담 시 활용 가능한 교재 400부 지원. 신청 → 3일 내 도착',act:'신청하기'},
-    {cat:'마케팅',cls:'mkt',title:'권역 설명회 지원 (강남권)',detail:'해당 권역 입시 관심도 상승 감지 — 본사 설명회 강사·현수막 지원',act:'참여 신청'},
-    {cat:'이벤트',cls:'evt',title:'여름 특강 조기 등록 이벤트',detail:'7~8월 특강 조기 등록 시 교재비 50% 지원 · 지점 광고 소재 제공',act:'소재 받기'},
-    {cat:'협업',cls:'',title:'우수 재원생 후기 캠페인',detail:'본사 SNS 노출 · 사례 3건 모집 중',act:'제출',actGhost:true},
+  // 본사 알림장 (목업) — 대표이사 피드백 반영: 5개 카테고리 그룹 구조
+  //  · act = 신청/참여 버튼(목업) · note = 안내 문구(버튼 없음)
+  const HQ_GROUPS=[
+    {grp:'본사 마케팅 키워드',items:[
+      {title:'"Solution" 데이터로 진단하고 합격을 설계하는 247',detail:'28일 시 변화에 따른 자기주도학습의 중요성 강조 — 합격의 길을 설계·안내하는 네비게이션',note:'APP을 통한 구체적 데이터가 핵심 · 활용할수록 정확한 정보가 도출됩니다'},
+    ]},
+    {grp:'지점 분석을 통한 마케팅 키워드',items:[
+      {title:'최상위권이 가장 많은 학원 — 데이터 기반 과목별 분석·설계',detail:'지점 상담 내용 · 권역 시장·경쟁사 분석을 통한 보수적 시장 소비자 인식 대응',note:'방문·전화상담 내용을 LMS에 누적할수록 마케팅 분석이 원활합니다'},
+    ]},
+    {grp:'본사가 진행 중인 마케팅 활동',items:[
+      {title:'권역 온라인 회원 모집 문자 발송',detail:'모집 시 권역 소비자에게 지점 주요 특징과 프로그램 홍보 문자',act:'내용 공유'},
+      {title:'이투스247학원 네이버 영수증 리뷰 이벤트',detail:'온라인 검색량 증가 — 등록 후킹 요소로 이벤트 진행',act:'참여하기'},
+    ]},
+    {grp:'본사 지원 및 협업 활동',items:[
+      {title:'우수 재원생 후기 캠페인',detail:'본사 SNS 노출 · 사례 3건 모집 중',act:'제출',actGhost:true},
+      {title:'권역 설명회 지원 (강남권)',detail:'해당 권역 입시 관심도 상승 감지 — 본사 설명회 강사·현수막 지원',act:'참여 신청'},
+    ]},
+    {grp:'이투스 닷컴 마케팅 지원·협업',items:[
+      {title:'교재 지원 — 정승제 수업 수강 인원 많음',detail:'모집 상담 시 활용 가능한 교재 100부 지원. 신청 → 3일 내 도착',act:'신청하기'},
+      {title:'가장 많이 다니는 OO학교 대상 닷컴 이벤트',detail:'모집 시 지점 주요 소비자 학교 학생에게 편의점 쿠폰 제공',act:'참여하기',note:'등록 시 학생 정보 기입 필수'},
+    ]},
   ];
+  const HQ_COUNT=HQ_GROUPS.reduce((n,g)=>n+g.items.length,0);
 
   // ── 우선순위 정리 도우미 (트리아지) ──
   // 이음새: UI는 triage()만 부른다. 지금은 목업 어댑터, 정식 출시 때 실 어댑터로 한 줄 교체.
@@ -1141,9 +1157,11 @@
     const lc=document.getElementById('localCnt'); if(lc) lc.textContent='즉시 '+IMMEDIATE.length+' · 할일 '+done+'/'+TODO_ITEMS.length;
     document.getElementById('riskBody').innerHTML=IMMEDIATE.map(r=>
       `<div class="risk-item" style="cursor:pointer" onclick="openDetail('${r.k}')"><span class="ri-nm">${r.label}</span><span class="ri-lv ${r.lv}">${r.lv==='u'?'긴급':'주의'}</span><span class="ri-sg">${r.sub}</span><span class="ri-sc ${r.lv}">${r.v}</span></div>`).join('');
-    const hc=document.getElementById('hqCnt'); if(hc) hc.textContent=HQ_NOTES.length+'건 신규';
-    const hb=document.getElementById('hqBody'); if(hb) hb.innerHTML=HQ_NOTES.map(n=>
-      `<div class="hq-item"><span class="hq-cat ${n.cls||''}">${n.cat}</span><span class="hq-body"><b>${n.title}</b><span class="s">${n.detail}</span></span><button class="hq-act ${n.actGhost?'ghost':''}" onclick="alert('본사에 신청됨 (목업)')">${n.act}</button></div>`).join('');
+    const hc=document.getElementById('hqCnt'); if(hc) hc.textContent=HQ_COUNT+'건 신규';
+    const hb=document.getElementById('hqBody'); if(hb) hb.innerHTML=HQ_GROUPS.map(g=>
+      `<div class="hq-grp">${g.grp}</div>`+g.items.map(n=>
+        `<div class="hq-item"><span class="hq-body"><b>${n.title}</b><span class="s">${n.detail}</span>${n.note?`<span class="hq-note">ⓘ ${n.note}</span>`:''}</span>${n.act?`<button class="hq-act ${n.actGhost?'ghost':''}" onclick="alert('본사에 신청됨 (목업)')">${n.act}</button>`:''}</div>`).join('')
+    ).join('');
   }
 
   async function init(){
