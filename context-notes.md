@@ -25,3 +25,10 @@
 
 ## 검증 한계 (솔직히)
 - 이 세션에서는 supabase CLI·API 키·프로젝트 로그인이 없어 라이브 호출 검증 불가. 코드 정합성까지만 확인, 실제 동작 확인은 배포 후 원장님 환경에서.
+
+## 2026-07-03 — 밴드 병합 + 계정 4층위 구조화
+- 즉시 확인 독립 카드 삭제 → '지점 할일' 카드 상단으로 병합. 즉시확인(riskBody)과 오늘의 할일(todoBody) 사이는 실선 한 줄(.imm-divider)로만 구분. 트리아지 버튼·결과 박스도 지점 할일 카드로 이동. 밴드는 다시 1행 2단(local | hq).
+- 계정 층위 확정: (1) exec 대표·임원 = (2) hq_staff 본사 담당 > (3) director 지점 원장 > (4) staff 지점 직원.
+  · '=' 의미 = 조회 범위(전사) 동급, 관리 권한(manage)은 exec 전용.
+  · staff는 매출·미수금 차단(sales:false) — 설문(은평서대문)의 직원 노출 우려 대응 기반.
+  · 프론트: lib/auth.js ROLES/roleInfo()/can() · DB: db/roles.sql (enum 확장 + role_rank + is_hq/can_view_sales, 기존 is_exec() 정책 호환 재정의). 미지정 role은 최소권한(staff) 폴백.
