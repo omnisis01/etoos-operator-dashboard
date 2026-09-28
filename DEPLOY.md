@@ -16,7 +16,7 @@
 | 운영 프로젝트 이름 | `omnisis01's Project` ← Supabase 기본 이름. **`etoos-operator` 아님** |
 | 운영 프로젝트 ID | `oquuwouxgiskxgawjyjv` → https://supabase.com/dashboard/project/oquuwouxgiskxgawjyjv |
 | 예비 프로젝트 ID | `wttugcgionintfzzonyr` (`etoos-operator`, 2026-09-28 생성 — 복구 실패 시 대체용) |
-| 요금제 | Free — **7일간 DB 요청이 적으면 자동 일시정지**, 정지 후 **1년 내** 대시보드에서 Restore 가능 |
+| 요금제 | Free — **7일간 DB 요청이 적으면 자동 일시정지**, 정지 후 **1년 내** 대시보드에서 Restore 가능 (현재 정지분 기한: **2027-10-02**) · 무료 플랜은 동시에 켜둘 수 있는 프로젝트 **최대 2개** |
 | 백업 | Free 플랜은 **자동 백업 없음** (정식 출시 시 Pro 전환 검토) |
 | 정지 방지 | `.github/workflows/supabase-keepalive.yml` — 하루 2회 실DB 쿼리, 실패 시 GitHub 메일 경보 |
 
