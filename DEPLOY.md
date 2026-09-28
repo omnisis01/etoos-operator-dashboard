@@ -8,6 +8,21 @@
 
 ---
 
+## ⚠️ 운영 정보 — Supabase 소유권 (분실 방지, 비밀번호는 절대 적지 말 것)
+
+| 항목 | 값 |
+|---|---|
+| 소유 계정 | `omnisis01@gmail.com` (알림 메일 수신 주소 — 로그인 방식은 GitHub OAuth 추정) |
+| 운영 프로젝트 이름 | `omnisis01's Project` ← Supabase 기본 이름. **`etoos-operator` 아님** |
+| 운영 프로젝트 ID | `oquuwouxgiskxgawjyjv` → https://supabase.com/dashboard/project/oquuwouxgiskxgawjyjv |
+| 예비 프로젝트 ID | `wttugcgionintfzzonyr` (`etoos-operator`, 2026-09-28 생성 — 복구 실패 시 대체용) |
+| 요금제 | Free — **7일간 DB 요청이 적으면 자동 일시정지**, 정지 후 **1년 내** 대시보드에서 Restore 가능 |
+| 백업 | Free 플랜은 **자동 백업 없음** (정식 출시 시 Pro 전환 검토) |
+| 정지 방지 | `.github/workflows/supabase-keepalive.yml` — 하루 2회 실DB 쿼리, 실패 시 GitHub 메일 경보 |
+
+> 2026-08-28 정지 사고 경위·원인은 `context-notes.md` 참고.
+> 데모(`/demo/`, `?mock=1`)는 DB를 전혀 부르지 않음 → **데모 트래픽은 DB 활동으로 잡히지 않음.**
+
 ## 전체 단계 (체크리스트)
 
 - [x] **1. DB 스키마 설계** — `db/schema.sql`

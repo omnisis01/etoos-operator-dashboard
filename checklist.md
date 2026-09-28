@@ -33,14 +33,18 @@
 
 ---
 
-# Supabase 복구 (2026-09-28) — 기존 프로젝트 소실(NXDOMAIN)
+# Supabase 복구 (2026-09-28) — 기존 프로젝트 자동 일시정지(08-28)
 
 - [x] 1. [Claude] roles.sql enum 트랜잭션 버그 발견·문서화 + 복구 번들 2개 생성 (`scripts/build-restore.sh`)
   - [x] verify: PGlite 실제 PostgreSQL에서 12/12 통과 (버그 재현 → 번들 성공 → 권한·RLS)
   - [x] verify: 기존 Playwright 7/7 통과
-- [ ] 2. [원장님] Supabase 새 프로젝트 생성 (GitHub 로그인 · Seoul) → Project URL + anon 키 전달
-- [ ] 3. [원장님] SQL Editor에 `db/restore/1_tables_and_data.sql` RUN → `2_roles.sql` RUN
-- [ ] 4. [Claude] config.js URL·키 교체 + 배포 → verify: 라이브 REST 응답·테이블 존재
-- [ ] 5. [원장님] Authentication → Add user → [Claude] 역할·지점 연결 SQL 제공
-- [ ] 6. [원장님] 실서비스 로그인 → verify: 대시보드 진입
-- [ ] 7. (후속) 실데이터 재적재 — 원본 파일(미수금 xls·상담일지 xlsb 등) 확인 필요
+- [x] 2. [원장님] 새 프로젝트 생성 완료 (`wttugcgionintfzzonyr`, 예비용)
+- [x] 2-1. [Claude] 원인 규명 — Gmail 증거로 **삭제 아닌 일시정지(08-28)** 확인, 1년 내 복구 가능
+- [x] 2-2. [Claude] 재발방지 — keep-alive 워크플로 + 경보 로컬 테스트(2개 경로 exit 1) + DEPLOY.md 소유권 기록
+- [ ] 3. [원장님] **옛 프로젝트 Restore 시도** → https://supabase.com/dashboard/project/oquuwouxgiskxgawjyjv
+  - 성공 시 → config 변경 없음, 실데이터 그대로 복귀 → 4번으로
+  - 실패 시 → 예비 프로젝트에 `db/restore/` 번들 2개 RUN + publishable 키 전달
+- [ ] 4. [Claude] keep-alive 정상(200) 확인 + 푸시 → verify: Actions 수동 실행 초록불
+- [ ] 5. [원장님] 실서비스 로그인 확인 (복구 시 기존 계정 그대로)
+- [ ] 6. [원장님] Gmail 필터 — `from:supabase.com` 휴지통 금지·중요 표시
+- [ ] 7. [원장님 결정] 백업 방식 (Pro 전환 / 암호화 dump / 로컬)

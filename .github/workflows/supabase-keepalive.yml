@@ -1,0 +1,17 @@
+# Supabase 자동정지 방지 + 조기경보 — 하루 2회 실DB 쿼리, 실패 시 GitHub가 저장소 소유자에게 메일 발송
+# 배경: 2026-08-28 무료 플랜 7일 미사용으로 DB 정지 → 알림 메일이 휴지통에 들어가 한 달간 모름 (context-notes 참고)
+name: Supabase keep-alive
+
+on:
+  schedule:
+    - cron: '23 0,12 * * *'   # UTC 00:23 · 12:23 = KST 09:23 · 21:23 (정각 혼잡 회피)
+  workflow_dispatch:          # Actions 탭에서 수동 실행 가능
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Supabase DB 쿼리 1건 (정지·소실 시 실패)
+        run: bash scripts/supabase-keepalive.sh
