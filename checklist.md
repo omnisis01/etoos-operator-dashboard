@@ -30,3 +30,17 @@
 - [x] 다음 초안에서 저장 문구 자동 재사용 + "저장된 문구 재사용" 배지
 - [x] verify: 수정→승인→재오픈 시 수정 문구 그대로 재사용 확인
 - [ ] (출시 시) draftFor()도 실 어댑터로 교체, 스킬 저장을 DB(지점별)로 이전
+
+---
+
+# Supabase 복구 (2026-09-28) — 기존 프로젝트 소실(NXDOMAIN)
+
+- [x] 1. [Claude] roles.sql enum 트랜잭션 버그 발견·문서화 + 복구 번들 2개 생성 (`scripts/build-restore.sh`)
+  - [x] verify: PGlite 실제 PostgreSQL에서 12/12 통과 (버그 재현 → 번들 성공 → 권한·RLS)
+  - [x] verify: 기존 Playwright 7/7 통과
+- [ ] 2. [원장님] Supabase 새 프로젝트 생성 (GitHub 로그인 · Seoul) → Project URL + anon 키 전달
+- [ ] 3. [원장님] SQL Editor에 `db/restore/1_tables_and_data.sql` RUN → `2_roles.sql` RUN
+- [ ] 4. [Claude] config.js URL·키 교체 + 배포 → verify: 라이브 REST 응답·테이블 존재
+- [ ] 5. [원장님] Authentication → Add user → [Claude] 역할·지점 연결 SQL 제공
+- [ ] 6. [원장님] 실서비스 로그인 → verify: 대시보드 진입
+- [ ] 7. (후속) 실데이터 재적재 — 원본 파일(미수금 xls·상담일지 xlsb 등) 확인 필요

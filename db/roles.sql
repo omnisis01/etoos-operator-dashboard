@@ -1,5 +1,8 @@
 -- 계정 층위(4단계) 구조 정의 — (1)대표·임원 = (2)본사 담당직원 > (3)가맹지점 원장 > (4)지점 직원
 -- 실행: schema.sql 이후 Supabase SQL Editor에서 RUN. 기존 exec/director 데이터와 하위호환.
+-- ⚠ 주의: 아래 ALTER TYPE 2줄을 먼저 단독 RUN(커밋)한 뒤, 나머지 함수들을 RUN할 것.
+--   같은 실행에서 방금 추가한 enum 값을 함수가 쓰면 'unsafe use of new value' 에러로 실패함.
+--   복구 시엔 scripts/build-restore.sh 가 이 분리를 자동으로 처리함.
 --
 -- 층위 원칙
 --   · 데이터 범위:  exec·hq_staff = 전사(모든 지점) / director·staff = 자기 지점만

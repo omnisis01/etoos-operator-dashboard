@@ -38,3 +38,13 @@
 - 키워드 그룹(①②)은 버튼 없는 안내 노트형(ⓘ 골드), 활동 그룹(③④⑤)은 신청/참여 버튼(목업).
 - 교재 지원은 이지영·김민정 400부 → 정승제 100부로 교체(대표 표기준).
 - 데이터 구조 HQ_GROUPS — 실연동 시 hq_notes 테이블에 grp 컬럼 추가하면 됨.
+
+## 2026-09-28 — Supabase 프로젝트 소실 및 복구 준비
+- 증상: 원장님 Supabase 계정에서 프로젝트가 안 보임. `oquuwouxgiskxgawjyjv.supabase.co` DNS가 NXDOMAIN → 프로젝트 삭제/회수(무료 플랜 장기 미사용 추정, 마지막 연동 6월 중순).
+- 계정 추정: 모든 커밋 작성자 `omnisis01@gmail.com`, DEPLOY.md가 "GitHub 계정으로 가입" 안내 → GitHub OAuth 로그인 가능성 높음. 비밀번호는 원래부터 저장소에 없음(의도된 보안 규칙).
+- 데모(/demo/)는 Supabase 미사용 목업이라 영향 없음.
+- **발견한 버그**: roles.sql 을 SQL Editor에서 한 번에 RUN하면 실패. PostgreSQL은 다중문 쿼리를 단일 트랜잭션으로 실행하는데, 같은 트랜잭션에서 방금 ADD VALUE 한 enum 값('hq_staff')을 함수 본문이 쓰면 "unsafe use of new value" 에러. 7월 작성 당시 실DB에 돌려본 적 없어 숨어 있었음.
+- 해결: enum 추가 2줄을 번들 1 끝에 넣어 커밋 → 번들 2에서 함수 생성. roles.sql 원본엔 주의문만 추가(원본 내용 유지).
+- 번들 순서 = git 추가 순서(의존 순서). 전부 `if not exists` 멱등이고 SQL Editor가 한 트랜잭션으로 돌리므로 중간 실패 시 전체 롤백 → 재실행 안전. (seed.sql은 insert 10개 중 on conflict 5개라 부분 적용 상태의 재실행은 위험하지만, 트랜잭션 롤백 덕에 그 상황이 안 생김)
+- 검증 방법: PGlite(WASM PostgreSQL)에 Supabase 기본값(auth 스키마·auth.uid()·authenticated 역할·기본 권한)을 흉내 내고 실행. 첫 RLS 실패는 번들 문제가 아니라 테스트 환경에 Supabase 기본 권한을 안 넣은 탓 → 테스트 환경만 보강, 번들은 불변.
+- 실데이터(재원생·미수금·출결 등)는 옛 DB와 함께 소실. 원본 파일 재적재 필요.
