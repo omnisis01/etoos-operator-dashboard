@@ -41,10 +41,10 @@
 - [x] 2. [원장님] 새 프로젝트 생성 완료 (`wttugcgionintfzzonyr`, 예비용)
 - [x] 2-1. [Claude] 원인 규명 — Gmail 증거로 **삭제 아닌 일시정지(08-28)** 확인, 1년 내 복구 가능
 - [x] 2-2. [Claude] 재발방지 — keep-alive 워크플로 + 경보 로컬 테스트(2개 경로 exit 1) + DEPLOY.md 소유권 기록
-- [ ] 3. [원장님] **옛 프로젝트 Restore 시도** → https://supabase.com/dashboard/project/oquuwouxgiskxgawjyjv
+- [x] 3. [원장님] **옛 프로젝트 Restore 완료 (2026-10-27)** — 테이블 전부 응답 200 → https://supabase.com/dashboard/project/oquuwouxgiskxgawjyjv
   - 성공 시 → config 변경 없음, 실데이터 그대로 복귀 → 4번으로
   - 실패 시 → 예비 프로젝트에 `db/restore/` 번들 2개 RUN + publishable 키 전달
-- [ ] 4. [Claude] keep-alive 정상(200) 확인 + 푸시 → verify: Actions 수동 실행 초록불
+- [x] 4. [Claude] keep-alive 정상(200) 확인 + 푸시 → verify: Actions 수동 실행 success (run 40423699935)
 - [ ] 5. [원장님] 실서비스 로그인 확인 (복구 시 기존 계정 그대로)
 - [ ] 6. [원장님] Gmail 필터 — `from:supabase.com` 휴지통 금지·중요 표시
 - [ ] 7. [원장님 결정] 백업 방식 (Pro 전환 / 암호화 dump / 로컬)
